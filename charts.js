@@ -43,7 +43,7 @@
         }
 
         // Set general props we need in multiple methods
-        this.config = config;
+        //this.config = config;
         this.data = data;
         this.highestSeriesValue = highestSeriesValue;
         this.context = context;
@@ -54,52 +54,62 @@
 
             switch (serie.type) {
                 case 'line':
-                    this.line(serie, {
-                        smoothCurves: false,
-                        oneSeriesValueHeight: this.parentHeight / this.highestSeriesValue,
-                        columnWidth: this.parentWidth / (this.data.xAxis.columns.length - 1)
-                    });
-                    this.line(serie, {
-                        smoothCurves: true,
-                        oneSeriesValueHeight: this.parentHeight / this.highestSeriesValue,
-                        columnWidth: this.parentWidth / (this.data.xAxis.columns.length - 1)
-                    });
+                    this._line(serie, config.line);
+                    // this._line(serie, {
+                    //     smoothCurves: true
+                    // });
                     break;
                 case 'bar':
-                    this.bar(serie);
+                    this._bar(serie, config.bar);
+                    break;
             }
 
         }, this);
 
     };
 
-    window.Chart.prototype.bar = function (serie, barConfig) {
-        barConfig = Object.assign(this._getDefaultBarConfig(), barConfig || {});
+    window.Chart.prototype._bar = function (serie, barConfig) {
+        barConfig = Object.assign(this._getBarConfig(barConfig), serie.config || {});
+        this.context.save();
+        this.context.fillStyle = serie.color;
+        serie.values.forEach(function (value, valueIndex, values) {
+            var x = (valueIndex * barConfig.columnWidth) + (valueIndex * barConfig.spaceBetweenBars) + barConfig.spaceBetweenBars / 2;
+            var y = value * barConfig.oneSeriesValueHeight;
+            this.context.fillRect(x, this.parentHeight - y, barConfig.columnWidth, y);
+        }, this);
+        this.context.restore();
     };
 
-    window.Chart.prototype._getDefaultLineConfig = function () {
-        return {
+    window.Chart.prototype._getBarConfig = function (barConfig) {
+        if (!barConfig) barConfig = {};
+        var spaceBetweenBars = ('spaceBetweenBars' in barConfig)
+            ? barConfig.spaceBetweenBars
+            : this.parentWidth / this.data.xAxis.columns.length / 2;
+        return Object.assign({
+            oneSeriesValueHeight: this.parentHeight / this.highestSeriesValue,
+            columnWidth: (this.parentWidth / this.data.xAxis.columns.length) - spaceBetweenBars,
+            spaceBetweenBars: spaceBetweenBars
+        }, barConfig);
+    }
+
+    window.Chart.prototype._getLineConfig = function (lineConfig) {
+        if (!lineConfig) lineConfig = {};
+        return Object.assign({
             smoothCurves: false,
             oneSeriesValueHeight: this.parentHeight / this.highestSeriesValue,
-            columnWidth: this.parentWidth / (this.data.xAxis.columns.length - 1)
-        };
-    };
-
-    window.Chart.prototype._getDefaultBarConfig = function () {
-        return {
-            oneSeriesValueHeight: this.parentHeight / this.highestSeriesValue,
-            columnWidth: this.parentWidth / (this.data.xAxis.columns.length - 1)
-        };
-    };
+            columnWidth: this.parentWidth / this.data.xAxis.columns.length
+        }, lineConfig);
+    }
 
     // https://stackoverflow.com/a/39559854
-    window.Chart.prototype.line = function (serie, lineConfig) {
-        lineConfig = Object.assign(this._getDefaultLineConfig(), lineConfig || {});
+    window.Chart.prototype._line = function (serie, lineConfig) {
+        lineConfig = Object.assign(this._getLineConfig(lineConfig), serie.config || {});
         this.context.save();
         // if (lineConfig.smoothCurves) {
         //     this.context.globalAlpha = 0.4;
         // }
         // If f = 0, this will be a straight line
+        var leftX = lineConfig.columnWidth / 2;
         var f = 0.3;
         //var t = 0.6;
         var t = 0.6;
@@ -113,7 +123,7 @@
         var dy2 = 0;
         var preP = null;
         serie.values.forEach(function (value, valueIndex, values) {
-            var x = valueIndex * lineConfig.columnWidth;
+            var x = leftX + (valueIndex * lineConfig.columnWidth);
             var y = value * lineConfig.oneSeriesValueHeight;
             console.log('Write ' + x + ', ' + y);
             if (valueIndex === 0) {
@@ -123,7 +133,7 @@
                 if (lineConfig.smoothCurves) {
                     var curP = { x: x, y: y };
                     if (valueIndex < valueLastIndex) {
-                        var nexP = { x: (valueIndex + 1) * lineConfig.columnWidth, y: values[valueIndex + 1] * lineConfig.oneSeriesValueHeight };
+                        var nexP = { x: leftX + ((valueIndex + 1) * lineConfig.columnWidth), y: values[valueIndex + 1] * lineConfig.oneSeriesValueHeight };
                         m = gradient(preP, nexP);
                         dx2 = (nexP.x - curP.x) * -f;
                         dy2 = dx2 * m * t;
