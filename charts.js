@@ -9,7 +9,10 @@
         return (chartWidth - ((data.xAxis.columns.length - 1) * spaceBetweenBars)) / data.xAxis.columns.length;
     }
 
-    function getSpaceBetweenBars(config, chartWidth, data) {
+    function getSpaceBetweenBars(config, serieConfig, chartWidth, data) {
+        
+        if ('spaceBetweenBars' in serieConfig) return serieConfig.spaceBetweenBars;
+        
         return ('spaceBetweenBars' in config)
             ? config.spaceBetweenBars
             : chartWidth / data.xAxis.columns.length / 2;
@@ -38,6 +41,8 @@
     // ************************************************************************
     window.Chart = function (parent, config, data) {
 
+        this.config = this._getConfig(config);
+
         var parentRect = parent.getBoundingClientRect();
         var parentWidth = parentRect.width;
         var parentHeight = parentRect.height;
@@ -48,6 +53,10 @@
         canvas.width = parentWidth * scale;
         canvas.height = parentHeight * scale;
         parent.appendChild(canvas);
+
+        if (this.config.backgroundColor) {
+            canvas.style.backgroundColor = this.config.backgroundColor;
+        }
 
         var context = canvas.getContext('2d');
         context.scale(scale, scale);
@@ -68,7 +77,6 @@
         }
 
         // Set general props we need in multiple methods
-        this.config = this._getConfig(config);
         this.data = data;
         this.maxSeriesValue = maxSeriesValue;
         this.minSeriesValue = minSeriesValue;
@@ -79,21 +87,24 @@
         data.series.forEach(function (serie, serieIndex) {
             switch (serie.type) {
                 case 'line':
-                    var lineConfig = this._drawLineChart(serie, config.line);
+                    var lineConfig = this._getLineConfig(this.config.line, serie.config);
                     if (this.config.writeXAxisLabels && serieIndex === 0) {
                         this._drawXAxisLabels(lineConfig);
                         this._drawYAxisLabels(lineConfig);
                     }
+                    this._drawLineChart(serie, lineConfig);
                     // this._line(serie, Object.assign(config.line, {
                     //     smoothCurves: true
                     // }));
                     break;
                 case 'bar':
-                    var barConfig = this._drawBarChart(serie, config.bar);
+                    var barConfig = this._getBarConfig(this.config.bar, serie.config);
+                    console.log(barConfig);
                     if (this.config.writeXAxisLabels && serieIndex === 0) {
                         this._drawXAxisLabels(barConfig);
                         this._drawYAxisLabels(barConfig);
                     }
+                    this._drawBarChart(serie, barConfig);
                     break;
             }
         }, this);
@@ -108,12 +119,13 @@
     // Private chart draw methods
     // ************************************************************************
     window.Chart.prototype._drawBarChart = function (serie, barConfig) {
-        barConfig = Object.assign(this._getBarConfig(barConfig), serie.config || {});
+        //barConfig = Object.assign(this._getBarConfig(barConfig), serie.config || {});
         this.context.save();
         this.context.fillStyle = serie.color;
         serie.values.forEach(function (value, valueIndex, values) {
             var x = getBarXStart(valueIndex, barConfig, this.config);
             var y = value * barConfig.oneSeriesValueHeight;
+            console.log('Bar: ' + this.data.xAxis.columns[valueIndex] + ' = ' + value);
             this.context.fillRect(x, this.chartHeight - y + this.config.padding.top, barConfig.columnWidth, y);
         }, this);
         this.context.restore();
@@ -122,8 +134,11 @@
 
     // https://stackoverflow.com/a/39559854
     window.Chart.prototype._drawLineChart = function (serie, lineConfig) {
-        lineConfig = Object.assign(this._getLineConfig(lineConfig), serie.config || {});
+        //lineConfig = Object.assign(this._getLineConfig(lineConfig), serie.config || {});
         this.context.save();
+        this.context.lineJoin = 'round';
+        this.context.lineCap = 'round';
+        this.context.lineWidth = lineConfig.lineWidth;
         // if (lineConfig.smoothCurves) {
         //     this.context.globalAlpha = 0.4;
         // }
@@ -143,7 +158,7 @@
         serie.values.forEach(function (value, valueIndex, values) {
             var x = getLineX(valueIndex, lineConfig, this.config);
             var y = this.chartHeight - (value * lineConfig.oneSeriesValueHeight) + this.config.padding.top;
-            console.log('Write ' + x + ', ' + y);
+            console.log('Line: ' + this.data.xAxis.columns[valueIndex] + ' = ' + value);
             if (valueIndex === 0) {
                 this.context.moveTo(x, y);
                 preP = { x: x, y: y };
@@ -188,13 +203,20 @@
         this.context.lineWidth = 1;
         this.context.setLineDash([2, 2]);
         this.context.beginPath();
-        this.data.xAxis.columns.forEach(function(value, index) {
+        for (var index = 0; index < this.data.xAxis.columns.length; index += this.config.xAxisStep) {
             var x = getLineX(index, lineOrBarConfig, this.config);
-            this.context.fillText(value, x, this.chartHeight + this.config.padding.top + (this.config.padding.bottom / 2));
+            this.context.fillText(this.data.xAxis.columns[index], x, this.chartHeight + this.config.padding.top + (this.config.padding.bottom / 2));
             var lineX = Math.round(x) + 0.5;
             this.context.moveTo(lineX, this.chartHeight + this.config.padding.top);
             this.context.lineTo(lineX, this.config.padding.top);
-        }, this);
+        }
+        // this.data.xAxis.columns.forEach(function(value, index) {
+        //     var x = getLineX(index, lineOrBarConfig, this.config);
+        //     this.context.fillText(value, x, this.chartHeight + this.config.padding.top + (this.config.padding.bottom / 2));
+        //     var lineX = Math.round(x) + 0.5;
+        //     this.context.moveTo(lineX, this.chartHeight + this.config.padding.top);
+        //     this.context.lineTo(lineX, this.config.padding.top);
+        // }, this);
         this.context.stroke();
         this.context.restore();
     };
@@ -243,24 +265,27 @@
             yAxisStep: 1,
             yAxisGrid: true,
             xAxisGrid: false,
+            xAxisStep: 1,
         }, config);
     };
 
-    window.Chart.prototype._getBarConfig = function (barConfig) {
+    window.Chart.prototype._getBarConfig = function (barConfig, serieConfig) {
         if (!barConfig) barConfig = {};
-        var spaceBetweenBars = getSpaceBetweenBars(barConfig, this.chartWidth, this.data);
+        if (!serieConfig) serieConfig = {};
+        var spaceBetweenBars = getSpaceBetweenBars(barConfig, serieConfig, this.chartWidth, this.data);
         return Object.assign({
             followBars: true,
             oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
             columnWidth: getFollowBarsColumnWidth(this.chartWidth, this.data, spaceBetweenBars),
             spaceBetweenBars: spaceBetweenBars
-        }, barConfig);
+        }, barConfig, serieConfig);
     };
 
-    window.Chart.prototype._getLineConfig = function (lineConfig) {
+    window.Chart.prototype._getLineConfig = function (lineConfig, serieConfig) {
         if (!lineConfig) lineConfig = {};
+        if (!serieConfig) serieConfig = {};
         var followBars = !!lineConfig.followBars;
-        var spaceBetweenBars = getSpaceBetweenBars(lineConfig, this.chartWidth, this.data);
+        var spaceBetweenBars = getSpaceBetweenBars(lineConfig, serieConfig, this.chartWidth, this.data);
         var columnWidth = followBars
             ? getFollowBarsColumnWidth(this.chartWidth, this.data, spaceBetweenBars)
             : (this.chartWidth / (this.data.xAxis.columns.length - 1));
@@ -269,8 +294,9 @@
             followBars: followBars,
             smoothCurves: false,
             oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
-            columnWidth: columnWidth
-        }, lineConfig);
+            columnWidth: columnWidth,
+            lineWidth: 1
+        }, lineConfig, serieConfig);
     };
 
 }(this));
