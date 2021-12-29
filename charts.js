@@ -2,16 +2,40 @@
 
     var scale = window.devicePixelRatio;
 
-    /**
-     * In construvtor set global things we can use for all types of charts:
-     * - Set config
-     * - Set data
-     * - Add canvas en set height / width of canvas we can use
-     * And then loop through series and for each serie:
-     * - Draw the chart we have
-     * - This way we can use for example line and bar charts in the same canvas
-     */
+    // ************************************************************************
+    // Helper functions
+    // ************************************************************************
+    function getFollowBarsColumnWidth(chartWidth, data, spaceBetweenBars) {
+        return (chartWidth - ((data.xAxis.columns.length - 1) * spaceBetweenBars)) / data.xAxis.columns.length;
+    }
 
+    function getSpaceBetweenBars(config, chartWidth, data) {
+        return ('spaceBetweenBars' in config)
+            ? config.spaceBetweenBars
+            : chartWidth / data.xAxis.columns.length / 2;
+    }
+
+    function getLineX(valueIndex, lineConfig, config) {
+        return lineConfig.followBars
+            ? (getBarXStart(valueIndex, lineConfig, config) + lineConfig.columnWidth / 2)
+            : ((valueIndex * lineConfig.columnWidth) + config.padding.start);
+    }
+
+    function getBarXStart(valueIndex, barConfig, config) {
+        return (valueIndex * barConfig.columnWidth) + (valueIndex * barConfig.spaceBetweenBars) + config.padding.start;
+    }
+
+    function gradient(a, b) {
+        return (b.y - a.y) / (b.x - a.x);
+    }
+
+
+
+
+
+    // ************************************************************************
+    // Constructor
+    // ************************************************************************
     window.Chart = function (parent, config, data) {
 
         var parentRect = parent.getBoundingClientRect();
@@ -43,73 +67,63 @@
         }
 
         // Set general props we need in multiple methods
-        //this.config = config;
+        this.config = this._getConfig(config);
         this.data = data;
         this.highestSeriesValue = highestSeriesValue;
         this.context = context;
-        this.parentHeight = parentHeight;
-        this.parentWidth = parentWidth;
+        this.chartHeight = parentHeight - this.config.padding.top - this.config.padding.bottom;
+        this.chartWidth = parentWidth - this.config.padding.start - this.config.padding.end;
 
         data.series.forEach(function (serie, serieIndex) {
-
             switch (serie.type) {
                 case 'line':
-                    this._line(serie, config.line);
-                    // this._line(serie, {
+                    var lineConfig = this._drawLineChart(serie, config.line);
+                    if (this.config.writeXAxisLabels && serieIndex === 0) {
+                        this._drawXAxisLabels(lineConfig);
+                    }
+                    // this._line(serie, Object.assign(config.line, {
                     //     smoothCurves: true
-                    // });
+                    // }));
                     break;
                 case 'bar':
-                    this._bar(serie, config.bar);
+                    var barConfig = this._drawBarChart(serie, config.bar);
+                    if (this.config.writeXAxisLabels && serieIndex === 0) {
+                        this._drawXAxisLabels(barConfig);
+                    }
                     break;
             }
-
         }, this);
 
     };
 
-    window.Chart.prototype._bar = function (serie, barConfig) {
+
+
+
+
+    // ************************************************************************
+    // Private chart draw methods
+    // ************************************************************************
+    window.Chart.prototype._drawBarChart = function (serie, barConfig) {
         barConfig = Object.assign(this._getBarConfig(barConfig), serie.config || {});
         this.context.save();
         this.context.fillStyle = serie.color;
         serie.values.forEach(function (value, valueIndex, values) {
-            var x = (valueIndex * barConfig.columnWidth) + (valueIndex * barConfig.spaceBetweenBars) + barConfig.spaceBetweenBars / 2;
+            var x = getBarXStart(valueIndex, barConfig, this.config);
             var y = value * barConfig.oneSeriesValueHeight;
-            this.context.fillRect(x, this.parentHeight - y, barConfig.columnWidth, y);
+            this.context.fillRect(x, this.chartHeight - y + this.config.padding.top, barConfig.columnWidth, y);
         }, this);
         this.context.restore();
+        return barConfig;
     };
 
-    window.Chart.prototype._getBarConfig = function (barConfig) {
-        if (!barConfig) barConfig = {};
-        var spaceBetweenBars = ('spaceBetweenBars' in barConfig)
-            ? barConfig.spaceBetweenBars
-            : this.parentWidth / this.data.xAxis.columns.length / 2;
-        return Object.assign({
-            oneSeriesValueHeight: this.parentHeight / this.highestSeriesValue,
-            columnWidth: (this.parentWidth / this.data.xAxis.columns.length) - spaceBetweenBars,
-            spaceBetweenBars: spaceBetweenBars
-        }, barConfig);
-    }
-
-    window.Chart.prototype._getLineConfig = function (lineConfig) {
-        if (!lineConfig) lineConfig = {};
-        return Object.assign({
-            smoothCurves: false,
-            oneSeriesValueHeight: this.parentHeight / this.highestSeriesValue,
-            columnWidth: this.parentWidth / this.data.xAxis.columns.length
-        }, lineConfig);
-    }
-
     // https://stackoverflow.com/a/39559854
-    window.Chart.prototype._line = function (serie, lineConfig) {
+    window.Chart.prototype._drawLineChart = function (serie, lineConfig) {
         lineConfig = Object.assign(this._getLineConfig(lineConfig), serie.config || {});
         this.context.save();
         // if (lineConfig.smoothCurves) {
         //     this.context.globalAlpha = 0.4;
         // }
         // If f = 0, this will be a straight line
-        var leftX = lineConfig.columnWidth / 2;
         var f = 0.3;
         //var t = 0.6;
         var t = 0.6;
@@ -123,8 +137,8 @@
         var dy2 = 0;
         var preP = null;
         serie.values.forEach(function (value, valueIndex, values) {
-            var x = leftX + (valueIndex * lineConfig.columnWidth);
-            var y = value * lineConfig.oneSeriesValueHeight;
+            var x = getLineX(valueIndex, lineConfig, this.config);
+            var y = this.chartHeight - (value * lineConfig.oneSeriesValueHeight) + this.config.padding.top;
             console.log('Write ' + x + ', ' + y);
             if (valueIndex === 0) {
                 this.context.moveTo(x, y);
@@ -133,7 +147,7 @@
                 if (lineConfig.smoothCurves) {
                     var curP = { x: x, y: y };
                     if (valueIndex < valueLastIndex) {
-                        var nexP = { x: leftX + ((valueIndex + 1) * lineConfig.columnWidth), y: values[valueIndex + 1] * lineConfig.oneSeriesValueHeight };
+                        var nexP = { x: getLineX(valueIndex + 1, lineConfig, this.config), y: values[valueIndex + 1] * lineConfig.oneSeriesValueHeight };
                         m = gradient(preP, nexP);
                         dx2 = (nexP.x - curP.x) * -f;
                         dy2 = dx2 * m * t;
@@ -152,10 +166,71 @@
         }, this);
         this.context.stroke();
         this.context.restore();
+        return lineConfig;
     };
 
-    function gradient(a, b) {
-        return (b.y - a.y) / (b.x - a.x);
-    }
+
+
+
+
+    // ************************************************************************
+    // Draw xAxis labels
+    // ************************************************************************
+    window.Chart.prototype._drawXAxisLabels = function(lineOrBarConfig) {
+        this.context.save();
+        this.context.textAlign = 'center';
+        this.context.textBaseline = 'middle';
+        this.data.xAxis.columns.forEach(function(value, index) {
+            var x = getLineX(index, lineOrBarConfig, this.config);
+            console.log(value + " = " + x);
+            this.context.fillText(value, x, this.chartHeight + this.config.padding.top + (this.config.padding.bottom / 2));
+        }, this);
+        this.context.restore();
+    };
+
+
+
+    // ************************************************************************
+    // Private config methods
+    // ************************************************************************
+    window.Chart.prototype._getConfig = function (config) {
+        if (!config) config = {};
+        return Object.assign({
+            padding: {
+                start: 10,
+                end: 10,
+                top: 10,
+                bottom: 10
+            },
+            writeXAxisLabels: true
+        }, config);
+    };
+
+    window.Chart.prototype._getBarConfig = function (barConfig) {
+        if (!barConfig) barConfig = {};
+        var spaceBetweenBars = getSpaceBetweenBars(barConfig, this.chartWidth, this.data);
+        return Object.assign({
+            followBars: true,
+            oneSeriesValueHeight: this.chartHeight / this.highestSeriesValue,
+            columnWidth: getFollowBarsColumnWidth(this.chartWidth, this.data, spaceBetweenBars),
+            spaceBetweenBars: spaceBetweenBars
+        }, barConfig);
+    };
+
+    window.Chart.prototype._getLineConfig = function (lineConfig) {
+        if (!lineConfig) lineConfig = {};
+        var followBars = !!lineConfig.followBars;
+        var spaceBetweenBars = getSpaceBetweenBars(lineConfig, this.chartWidth, this.data);
+        var columnWidth = followBars
+            ? getFollowBarsColumnWidth(this.chartWidth, this.data, spaceBetweenBars)
+            : (this.chartWidth / (this.data.xAxis.columns.length - 1));
+        return Object.assign({
+            spaceBetweenBars: spaceBetweenBars,
+            followBars: followBars,
+            smoothCurves: false,
+            oneSeriesValueHeight: this.chartHeight / this.highestSeriesValue,
+            columnWidth: columnWidth
+        }, lineConfig);
+    };
 
 }(this));
