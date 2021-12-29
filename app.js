@@ -1,7 +1,7 @@
 (function (window) {
 
     function getRandomInt(max) {
-        return Math.floor(Math.random() * max);
+        return Math.ceil(Math.random() * max);
     }
 
     var data = {
@@ -44,9 +44,11 @@
         padding: {
             top: 10,
             bottom: 30,
-            start: 10,
+            start: 30,
             end: 10
         },
+        //maxSeriesValue: 30,
+        yAxisStep: 5,
         // Global line config, can be overruled from within serie.config
         line: {
             smoothCurves: false,

@@ -53,15 +53,16 @@
         context.scale(scale, scale);
 
         // Get highest series value if not given;
-        var highestSeriesValue = config.seriesHighestValue;
-        if (typeof highestSeriesValue === 'undefined') {
-            highestSeriesValue = 0;
+        var maxSeriesValue = config.maxSeriesValue;
+        var minSeriesValue = config.minSeriesValue || 0;
+        if (typeof maxSeriesValue === 'undefined') {
+            maxSeriesValue = 0;
             data.series.forEach(function (serie) {
                 var max = serie.values.reduce(function (a, b) {
                     return Math.max(a, b);
                 }, 0);
-                if (max > highestSeriesValue) {
-                    highestSeriesValue = max;
+                if (max > maxSeriesValue) {
+                    maxSeriesValue = max;
                 }
             });
         }
@@ -69,7 +70,8 @@
         // Set general props we need in multiple methods
         this.config = this._getConfig(config);
         this.data = data;
-        this.highestSeriesValue = highestSeriesValue;
+        this.maxSeriesValue = maxSeriesValue;
+        this.minSeriesValue = minSeriesValue;
         this.context = context;
         this.chartHeight = parentHeight - this.config.padding.top - this.config.padding.bottom;
         this.chartWidth = parentWidth - this.config.padding.start - this.config.padding.end;
@@ -80,6 +82,7 @@
                     var lineConfig = this._drawLineChart(serie, config.line);
                     if (this.config.writeXAxisLabels && serieIndex === 0) {
                         this._drawXAxisLabels(lineConfig);
+                        this._drawYAxisLabels(lineConfig);
                     }
                     // this._line(serie, Object.assign(config.line, {
                     //     smoothCurves: true
@@ -89,6 +92,7 @@
                     var barConfig = this._drawBarChart(serie, config.bar);
                     if (this.config.writeXAxisLabels && serieIndex === 0) {
                         this._drawXAxisLabels(barConfig);
+                        this._drawYAxisLabels(barConfig);
                     }
                     break;
             }
@@ -174,19 +178,52 @@
 
 
     // ************************************************************************
-    // Draw xAxis labels
+    // Draw axis labels
     // ************************************************************************
     window.Chart.prototype._drawXAxisLabels = function(lineOrBarConfig) {
         this.context.save();
         this.context.textAlign = 'center';
         this.context.textBaseline = 'middle';
+        this.context.strokeStyle = 'rgba(175, 177, 194, 0.54)';
+        this.context.lineWidth = 1;
+        this.context.setLineDash([2, 2]);
+        this.context.beginPath();
         this.data.xAxis.columns.forEach(function(value, index) {
             var x = getLineX(index, lineOrBarConfig, this.config);
-            console.log(value + " = " + x);
             this.context.fillText(value, x, this.chartHeight + this.config.padding.top + (this.config.padding.bottom / 2));
+            var lineX = Math.round(x) + 0.5;
+            this.context.moveTo(lineX, this.chartHeight + this.config.padding.top);
+            this.context.lineTo(lineX, this.config.padding.top);
         }, this);
+        this.context.stroke();
         this.context.restore();
     };
+
+    window.Chart.prototype._drawYAxisLabels = function(lineOrBarConfig) {
+        this.context.save();
+        this.context.textAlign = 'end';
+        this.context.textBaseline = 'middle';
+        this.context.strokeStyle = 'rgba(175, 177, 194, 0.54)';
+        this.context.lineWidth = 1;
+        this.context.setLineDash([2, 2]);
+        var curValue = this.minSeriesValue;
+        this.context.beginPath();
+        while (curValue <= this.maxSeriesValue) {
+            var y = this.chartHeight - (curValue * lineOrBarConfig.oneSeriesValueHeight) + this.config.padding.top;
+            this.context.fillText(curValue, this.config.padding.start / 2, y);
+            // Write line?
+            // Make sure y.5 if we have line width of 1!
+            // see: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Applying_styles_and_colors#a_linewidth_example
+            var lineY = Math.round(y) + 0.5;
+            this.context.moveTo(this.config.padding.start, lineY);
+            this.context.lineTo(this.chartWidth + this.config.padding.start, lineY);
+            curValue += this.config.yAxisStep;
+        }
+        this.context.stroke();
+        this.context.restore();
+    };
+
+
 
 
 
@@ -202,7 +239,10 @@
                 top: 10,
                 bottom: 10
             },
-            writeXAxisLabels: true
+            writeXAxisLabels: true,
+            yAxisStep: 1,
+            yAxisGrid: true,
+            xAxisGrid: false,
         }, config);
     };
 
@@ -211,7 +251,7 @@
         var spaceBetweenBars = getSpaceBetweenBars(barConfig, this.chartWidth, this.data);
         return Object.assign({
             followBars: true,
-            oneSeriesValueHeight: this.chartHeight / this.highestSeriesValue,
+            oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
             columnWidth: getFollowBarsColumnWidth(this.chartWidth, this.data, spaceBetweenBars),
             spaceBetweenBars: spaceBetweenBars
         }, barConfig);
@@ -228,7 +268,7 @@
             spaceBetweenBars: spaceBetweenBars,
             followBars: followBars,
             smoothCurves: false,
-            oneSeriesValueHeight: this.chartHeight / this.highestSeriesValue,
+            oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
             columnWidth: columnWidth
         }, lineConfig);
     };
