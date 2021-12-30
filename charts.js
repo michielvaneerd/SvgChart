@@ -5,9 +5,6 @@
     // ************************************************************************
     // Helper functions
     // ************************************************************************
-    function getFollowBarsColumnWidth(chartWidth, data, spaceBetweenBars) {
-        return (chartWidth - ((data.xAxis.columns.length - 1) * spaceBetweenBars)) / data.xAxis.columns.length;
-    }
 
     function getSpaceBetweenBars(config, serieConfig, chartWidth, data) {
         
@@ -19,13 +16,11 @@
     }
 
     function getLineX(valueIndex, lineConfig, config) {
-        return lineConfig.followBars
-            ? (getBarXStart(valueIndex, lineConfig, config) + lineConfig.columnWidth / 2)
-            : ((valueIndex * lineConfig.columnWidth) + config.padding.start);
+        return (valueIndex * lineConfig.columnWidth) + (lineConfig.columnWidth / 2) + config.padding.start;
     }
 
     function getBarXStart(valueIndex, barConfig, config) {
-        return (valueIndex * barConfig.columnWidth) + (valueIndex * barConfig.spaceBetweenBars) + config.padding.start;
+        return (valueIndex * barConfig.columnWidth) + (barConfig.spaceBetweenBars / 2) + config.padding.start;
     }
 
     function gradient(a, b) {
@@ -126,7 +121,7 @@
             var x = getBarXStart(valueIndex, barConfig, this.config);
             var y = value * barConfig.oneSeriesValueHeight;
             console.log('Bar: ' + this.data.xAxis.columns[valueIndex] + ' = ' + value);
-            this.context.fillRect(x, this.chartHeight - y + this.config.padding.top, barConfig.columnWidth, y);
+            this.context.fillRect(x, this.chartHeight - y + this.config.padding.top, barConfig.barWidth, y);
         }, this);
         this.context.restore();
         return barConfig;
@@ -273,10 +268,11 @@
         if (!barConfig) barConfig = {};
         if (!serieConfig) serieConfig = {};
         var spaceBetweenBars = getSpaceBetweenBars(barConfig, serieConfig, this.chartWidth, this.data);
+        var columnWidth = this.chartWidth / this.data.xAxis.columns.length;
         return Object.assign({
-            followBars: true,
             oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
-            columnWidth: getFollowBarsColumnWidth(this.chartWidth, this.data, spaceBetweenBars),
+            columnWidth: columnWidth,
+            barWidth: columnWidth - spaceBetweenBars,
             spaceBetweenBars: spaceBetweenBars
         }, barConfig, serieConfig);
     };
@@ -284,14 +280,10 @@
     window.Chart.prototype._getLineConfig = function (lineConfig, serieConfig) {
         if (!lineConfig) lineConfig = {};
         if (!serieConfig) serieConfig = {};
-        var followBars = !!lineConfig.followBars;
-        var spaceBetweenBars = getSpaceBetweenBars(lineConfig, serieConfig, this.chartWidth, this.data);
-        var columnWidth = followBars
-            ? getFollowBarsColumnWidth(this.chartWidth, this.data, spaceBetweenBars)
-            : (this.chartWidth / (this.data.xAxis.columns.length - 1));
+        //var spaceBetweenBars = getSpaceBetweenBars(lineConfig, serieConfig, this.chartWidth, this.data);
+        var columnWidth = this.chartWidth / this.data.xAxis.columns.length;
         return Object.assign({
-            spaceBetweenBars: spaceBetweenBars,
-            followBars: followBars,
+            //spaceBetweenBars: spaceBetweenBars,
             smoothCurves: false,
             oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
             columnWidth: columnWidth,
