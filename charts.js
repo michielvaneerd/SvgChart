@@ -5,16 +5,6 @@
     // ************************************************************************
     // Helper functions
     // ************************************************************************
-
-    function getSpaceBetweenBars(config, serieConfig, chartWidth, data) {
-        
-        if ('spaceBetweenBars' in serieConfig) return serieConfig.spaceBetweenBars;
-        
-        return ('spaceBetweenBars' in config)
-            ? config.spaceBetweenBars
-            : chartWidth / data.xAxis.columns.length / 2;
-    }
-
     function getLineX(valueIndex, lineConfig, config) {
         return (valueIndex * lineConfig.columnWidth) + (lineConfig.columnWidth / 2) + config.padding.start;
     }
@@ -267,7 +257,13 @@
     window.Chart.prototype._getBarConfig = function (barConfig, serieConfig) {
         if (!barConfig) barConfig = {};
         if (!serieConfig) serieConfig = {};
-        var spaceBetweenBars = getSpaceBetweenBars(barConfig, serieConfig, this.chartWidth, this.data);
+        
+        var spaceBetweenBars = ('spaceBetweenBars' in serieConfig)
+            ? serieConfig.spaceBetweenBars
+            :
+            (('spaceBetweenBars' in barConfig)
+                ? barConfig.spaceBetweenBars
+                : this.chartWidth / this.data.xAxis.columns.length / 2);
         var columnWidth = this.chartWidth / this.data.xAxis.columns.length;
         return Object.assign({
             oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
@@ -280,10 +276,8 @@
     window.Chart.prototype._getLineConfig = function (lineConfig, serieConfig) {
         if (!lineConfig) lineConfig = {};
         if (!serieConfig) serieConfig = {};
-        //var spaceBetweenBars = getSpaceBetweenBars(lineConfig, serieConfig, this.chartWidth, this.data);
         var columnWidth = this.chartWidth / this.data.xAxis.columns.length;
         return Object.assign({
-            //spaceBetweenBars: spaceBetweenBars,
             smoothCurves: false,
             oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
             columnWidth: columnWidth,
