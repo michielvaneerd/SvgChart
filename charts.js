@@ -68,6 +68,7 @@
         this.context = context;
         this.chartHeight = parentHeight - this.config.padding.top - this.config.padding.bottom;
         this.chartWidth = parentWidth - this.config.padding.start - this.config.padding.end;
+        this.parentWidth = parentWidth;
 
         data.series.forEach(function (serie, serieIndex) {
             switch (serie.type) {
@@ -93,6 +94,10 @@
                     break;
             }
         }, this);
+
+        if (this.config.legend) {
+            this._drawLegend();
+        }
 
     };
 
@@ -174,7 +179,29 @@
     };
 
 
-
+    // TODO: placement, for now end top
+    window.Chart.prototype._drawLegend = function() {
+        this.context.save();
+        this.context.textAlign = 'start';
+        this.context.textBaseline = 'top';
+        var maxTextWidth = 0;
+        var textHeight = 20;
+        this.data.series.forEach(function(serie) {
+            var width = this.context.measureText(serie.title).width;
+            if (width > maxTextWidth) {
+                maxTextWidth = width;
+            }
+        }, this);
+        var x = this.parentWidth - maxTextWidth - 10;
+        this.data.series.forEach(function(serie, index) {
+            var y = this.config.padding.top + (index * textHeight);
+            this.context.fillStyle = serie.color;
+            this.context.fillRect(x - 20, y, 10, 10);
+            this.context.fillStyle = 'black';
+            this.context.fillText(serie.title, x, y);
+        }, this);
+        this.context.restore();
+    };
 
 
     // ************************************************************************
@@ -251,6 +278,7 @@
             yAxisGrid: true,
             xAxisGrid: false,
             xAxisStep: 1,
+            legend: false,
         }, config);
     };
 

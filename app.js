@@ -16,6 +16,7 @@
             {
                 type: 'bar',
                 name: 'car',
+                title: 'Car',
                 values: Array.from(Array(colCount).keys()).map(function(key) {
                     return getRandomInt(20);
                 }),
@@ -23,18 +24,20 @@
             },
             {
                 type: 'bar',
-                name: 'car',
+                name: 'train',
+                title: 'Train',
                 values: Array.from(Array(colCount).keys()).map(function(key) {
                     return getRandomInt(20);
                 }),
                 color: 'yellow',
                 config: {
-                    spaceBetweenBars: 30
+                    spaceBetweenBars: 20
                 }
             },
             {
                 type: 'line',
-                name: 'train',
+                name: 'plane',
+                title: 'Plane',
                 values: Array.from(Array(colCount).keys()).map(function(key) {
                     return getRandomInt(20);
                 }),
@@ -43,6 +46,7 @@
             {
                 type: 'line',
                 name: 'bike',
+                title: 'Bike',
                 values: Array.from(Array(colCount).keys()).map(function(key) {
                     return getRandomInt(20);
                 }),
@@ -61,11 +65,12 @@
             top: 10,
             bottom: 30,
             start: 30,
-            end: 10
+            end: 100
         },
         maxSeriesValue: 20,
         yAxisStep: 5,
         xAxisStep: 5,
+        legend: true,
         // Global line config, can be overruled from within serie.config
         line: {
             lineWidth: 2,
