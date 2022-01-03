@@ -147,18 +147,24 @@
         var preP = null;
         var points = [];
         serie.values.forEach(function (value, valueIndex, values) {
+
+            if (!lineConfig.connectNullValues && value === null) {
+                preP = null;
+                return;
+            }
+
             var x = getLineX(valueIndex, lineConfig, this.config);
             var y = this.chartHeight - (value * lineConfig.oneSeriesValueHeight) + this.config.padding.top;
             if (value !== null) {
-                points.push({x: x, y: y});
+                points.push({ x: x, y: y });
             }
             console.log('Line: ' + this.data.xAxis.columns[valueIndex] + ' = ' + value);
-            if (valueIndex === 0) {
+            if (valueIndex === 0 || preP === null) {
                 this.context.moveTo(x, y);
                 preP = { x: x, y: y };
             } else {
+                var curP = { x: x, y: y };
                 if (lineConfig.smoothCurves) {
-                    var curP = { x: x, y: y };
                     if (valueIndex < valueLastIndex) {
                         var nexP = { x: getLineX(valueIndex + 1, lineConfig, this.config), y: values[valueIndex + 1] * lineConfig.oneSeriesValueHeight };
                         m = gradient(preP, nexP);
@@ -171,10 +177,10 @@
                     this.context.bezierCurveTo(preP.x - dx1, preP.y - dy1, curP.x + dx2, curP.y + dy2, curP.x, curP.y);
                     dx1 = dx2;
                     dy1 = dy2;
-                    preP = curP;
                 } else {
                     this.context.lineTo(x, y);
                 }
+                preP = curP;
             }
         }, this);
         this.context.stroke();
@@ -182,10 +188,9 @@
         if (lineConfig.points) {
             this.context.beginPath();
             this.context.fillStyle = serie.color;
-            points.forEach(function(point) {
+            points.forEach(function (point) {
                 this.context.moveTo(point.x, point.y);
-                this.context.arc(point.x, point.y, 4, 0, Math.PI * 2);
-                
+                this.context.arc(point.x, point.y, lineConfig.pointWidth || (lineConfig.lineWidth * 2), 0, Math.PI * 2);
             }, this);
             this.context.fill();
         }
@@ -196,20 +201,20 @@
 
 
     // TODO: placement, for now end top
-    window.Chart.prototype._drawLegend = function() {
+    window.Chart.prototype._drawLegend = function () {
         this.context.save();
         this.context.textAlign = 'start';
         this.context.textBaseline = 'top';
         var maxTextWidth = 0;
         var textHeight = 20;
-        this.data.series.forEach(function(serie) {
+        this.data.series.forEach(function (serie) {
             var width = this.context.measureText(serie.title).width;
             if (width > maxTextWidth) {
                 maxTextWidth = width;
             }
         }, this);
         var x = this.parentWidth - maxTextWidth - 10;
-        this.data.series.forEach(function(serie, index) {
+        this.data.series.forEach(function (serie, index) {
             var y = this.config.padding.top + (index * textHeight);
             this.context.fillStyle = serie.color;
             this.context.fillRect(x - 20, y, 10, 10);
@@ -223,7 +228,7 @@
     // ************************************************************************
     // Draw axis labels
     // ************************************************************************
-    window.Chart.prototype._drawXAxisLabels = function(lineOrBarConfig) {
+    window.Chart.prototype._drawXAxisLabels = function (lineOrBarConfig) {
         this.context.save();
         this.context.textAlign = 'center';
         this.context.textBaseline = 'middle';
@@ -249,7 +254,7 @@
         this.context.restore();
     };
 
-    window.Chart.prototype._drawYAxisLabels = function(lineOrBarConfig) {
+    window.Chart.prototype._drawYAxisLabels = function (lineOrBarConfig) {
         this.context.save();
         this.context.textAlign = 'end';
         this.context.textBaseline = 'middle';
@@ -301,7 +306,7 @@
     window.Chart.prototype._getBarConfig = function (barConfig, serieConfig) {
         if (!barConfig) barConfig = {};
         if (!serieConfig) serieConfig = {};
-        
+
         var spaceBetweenBars = ('spaceBetweenBars' in serieConfig)
             ? serieConfig.spaceBetweenBars
             :
@@ -328,6 +333,7 @@
             lineWidth: 1,
             points: false,
             connectNullValues: false,
+            pointWidth: null
         }, lineConfig, serieConfig);
     };
 

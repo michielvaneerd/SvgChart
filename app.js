@@ -3,7 +3,7 @@
     var colCount = 12;
 
     function getRandomInt(max) {
-        if (Math.ceil(Math.random() * 10) < 4) {
+        if (Math.ceil(Math.random() * 10) < 6) {
             return null;
         }
         return Math.ceil(Math.random() * max);
@@ -37,18 +37,19 @@
             //         spaceBetweenBars: 20
             //     }
             // },
-            {
-                type: 'line',
-                name: 'plane',
-                title: 'Plane',
-                values: Array.from(Array(colCount).keys()).map(function(key) {
-                    return getRandomInt(20);
-                }),
-                color: 'rgba(245, 40, 145, 0.8)',
-                config: {
-                    points: false
-                }
-            },
+            // {
+            //     type: 'line',
+            //     name: 'plane',
+            //     title: 'Plane',
+            //     values: Array.from(Array(colCount).keys()).map(function(key) {
+            //         return getRandomInt(20);
+            //     }),
+            //     color: 'rgba(245, 40, 145, 0.8)',
+            //     config: {
+            //         points: true,
+            //         connectNullValues: false
+            //     }
+            // },
             {
                 type: 'line',
                 name: 'bike',
@@ -60,7 +61,8 @@
                 config: {
                     // You can overrule some "global" config
                     smoothCurves: true,
-                    connectNullValues: true
+                    connectNullValues: false,
+                    //pointWidth: 10
                 }
             },
         ]
