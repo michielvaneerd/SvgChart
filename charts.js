@@ -21,7 +21,33 @@
         return (b.y - a.y) / (b.x - a.x);
     }
 
+    // https://stackoverflow.com/a/28056903
+    function hexToRGB(hex, alpha) {
+        var r = parseInt(hex.slice(1, 3), 16),
+            g = parseInt(hex.slice(3, 5), 16),
+            b = parseInt(hex.slice(5, 7), 16);
+    
+        if (alpha) {
+            return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+        } else {
+            return "rgb(" + r + ", " + g + ", " + b + ")";
+        }
+    }
 
+    var rgbaReg = /^rgba/;
+    var hexReg = /^#/;
+
+    function colorIsRgba(color) {
+        return rgbaReg.test(color);
+    }
+
+    function colorIsHex(color) {
+        return hexReg.test(color);
+    }
+
+    function updateRgbAlpha(rgba, newAlpha) {
+        return rgba.replace(/,([^,]+)\)$/, function(match, p1) { return ',' + newAlpha + ')'; });
+    }
 
 
 
@@ -51,11 +77,15 @@
         context.scale(scale, scale);
 
         // Get highest series value if not given;
+        // Update color to rgba if given in hex.
         var maxSeriesValue = config.maxSeriesValue;
         var minSeriesValue = config.minSeriesValue || 0;
         if (typeof maxSeriesValue === 'undefined') {
             maxSeriesValue = 0;
             data.series.forEach(function (serie) {
+                if (serie.color && colorIsHex(serie.color)) {
+                    serie.color = hexToRGB(serie.color, 1);
+                }
                 var max = serie.values.reduce(function (a, b) {
                     return Math.max(a, b);
                 }, 0);
@@ -219,9 +249,9 @@
         }
 
         if (lineConfig.fillArea) {
-            // Probeer op te vullen met zo min mogelijk paths
-            var isNew = true;
-            this.context.fillStyle = serie.color;
+            //this.context.fillStyle = serie.color;
+            //this.context.fillStyle = 'rgba(245, 40, 145, 0.4)';
+            this.context.fillStyle = updateRgbAlpha(serie.color, 0.2);
             points.forEach(function (point, index) {
 
                 if (index + 1 < points.length) {

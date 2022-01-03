@@ -44,29 +44,31 @@
                 values: Array.from(Array(colCount).keys()).map(function(key) {
                     return getRandomInt(20);
                 }),
-                color: 'rgba(245, 40, 145, 0.8)',
+                color: 'rgba(245, 40, 145, 1)',
                 config: {
                     points: true,
                     connectNullValues: false,
                     fillArea: true,
-                    smoothCurves: true,
+                    smoothCurves: false,
                 }
             },
-            // {
-            //     type: 'line',
-            //     name: 'bike',
-            //     title: 'Bike',
-            //     values: Array.from(Array(colCount).keys()).map(function(key) {
-            //         return getRandomInt(20);
-            //     }),
-            //     color: 'rgba(50, 0, 255, 0.8)',
-            //     config: {
-            //         // You can overrule some "global" config
-            //         smoothCurves: true,
-            //         connectNullValues: false,
-            //         //pointWidth: 10
-            //     }
-            // },
+            {
+                type: 'line',
+                name: 'bike',
+                title: 'Bike',
+                values: Array.from(Array(colCount).keys()).map(function(key) {
+                    return getRandomInt(20);
+                }),
+                color: 'rgba(50, 0, 255, 1)',
+                config: {
+                    // You can overrule some "global" config
+                    points: true,
+                    smoothCurves: true,
+                    fillArea: true,
+                    connectNullValues: false,
+                    //pointWidth: 10
+                }
+            },
         ]
     };
     var config = {
