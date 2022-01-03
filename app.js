@@ -37,34 +37,36 @@
             //         spaceBetweenBars: 20
             //     }
             // },
-            // {
-            //     type: 'line',
-            //     name: 'plane',
-            //     title: 'Plane',
-            //     values: Array.from(Array(colCount).keys()).map(function(key) {
-            //         return getRandomInt(20);
-            //     }),
-            //     color: 'rgba(245, 40, 145, 0.8)',
-            //     config: {
-            //         points: true,
-            //         connectNullValues: false
-            //     }
-            // },
             {
                 type: 'line',
-                name: 'bike',
-                title: 'Bike',
+                name: 'plane',
+                title: 'Plane',
                 values: Array.from(Array(colCount).keys()).map(function(key) {
                     return getRandomInt(20);
                 }),
-                color: 'rgba(50, 0, 255, 0.8)',
+                color: 'rgba(245, 40, 145, 0.8)',
                 config: {
-                    // You can overrule some "global" config
-                    smoothCurves: true,
+                    points: true,
                     connectNullValues: false,
-                    //pointWidth: 10
+                    fillArea: true,
+                    smoothCurves: true,
                 }
             },
+            // {
+            //     type: 'line',
+            //     name: 'bike',
+            //     title: 'Bike',
+            //     values: Array.from(Array(colCount).keys()).map(function(key) {
+            //         return getRandomInt(20);
+            //     }),
+            //     color: 'rgba(50, 0, 255, 0.8)',
+            //     config: {
+            //         // You can overrule some "global" config
+            //         smoothCurves: true,
+            //         connectNullValues: false,
+            //         //pointWidth: 10
+            //     }
+            // },
         ]
     };
     var config = {

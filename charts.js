@@ -9,6 +9,10 @@
         return (valueIndex * lineConfig.columnWidth) + (lineConfig.columnWidth / 2) + config.padding.start;
     }
 
+    function getY(value, chartHeight, lineOrBarConfig, config) {
+        return chartHeight - ((value || 0) * lineOrBarConfig.oneSeriesValueHeight) + config.padding.top;
+    }
+
     function getBarXStart(valueIndex, barConfig, config) {
         return (valueIndex * barConfig.columnWidth) + (barConfig.spaceBetweenBars / 2) + config.padding.start;
     }
@@ -148,16 +152,19 @@
         var points = [];
         serie.values.forEach(function (value, valueIndex, values) {
 
+            var x = getLineX(valueIndex, lineConfig, this.config);
+            //var y = this.chartHeight - ((value || 0) * lineConfig.oneSeriesValueHeight) + this.config.padding.top;
+            var y = getY(value, this.chartHeight, lineConfig, this.config);
+
+            var point = { x: x, y: y, value: value };
+
             if (!lineConfig.connectNullValues && value === null) {
+                points.push(point);
+                // TODO: Fill area?
                 preP = null;
                 return;
             }
 
-            var x = getLineX(valueIndex, lineConfig, this.config);
-            var y = this.chartHeight - (value * lineConfig.oneSeriesValueHeight) + this.config.padding.top;
-            if (value !== null) {
-                points.push({ x: x, y: y });
-            }
             console.log('Line: ' + this.data.xAxis.columns[valueIndex] + ' = ' + value);
             if (valueIndex === 0 || preP === null) {
                 this.context.moveTo(x, y);
@@ -175,6 +182,14 @@
                         dy2 = 0;
                     }
                     this.context.bezierCurveTo(preP.x - dx1, preP.y - dy1, curP.x + dx2, curP.y + dy2, curP.x, curP.y);
+                    point.bezier = {
+                        cp1x: preP.x - dx1,
+                        cp1y: preP.y - dy1,
+                        cp2x: curP.x + dx2,
+                        cp2y: curP.y + dy2,
+                        x: curP.x,
+                        y: curP.y
+                    };
                     dx1 = dx2;
                     dy1 = dy2;
                 } else {
@@ -182,17 +197,57 @@
                 }
                 preP = curP;
             }
+
+            points.push(point);
+
         }, this);
         this.context.stroke();
+        //this.context.fillStyle = 'rgba(255, 255, 130, 200)';
+        //this.context.fill();
 
         if (lineConfig.points) {
             this.context.beginPath();
             this.context.fillStyle = serie.color;
             points.forEach(function (point) {
+                if (point.value === null) {
+                    return;
+                }
                 this.context.moveTo(point.x, point.y);
                 this.context.arc(point.x, point.y, lineConfig.pointWidth || (lineConfig.lineWidth * 2), 0, Math.PI * 2);
             }, this);
             this.context.fill();
+        }
+
+        if (lineConfig.fillArea) {
+            // Probeer op te vullen met zo min mogelijk paths
+            var isNew = true;
+            this.context.fillStyle = serie.color;
+            points.forEach(function (point, index) {
+
+                if (index + 1 < points.length) {
+
+                    if (!lineConfig.connectNullValues && (point.value === null || points[index + 1].value === null)) {
+                        return;
+                    }
+
+                    var nextPoint = points[index + 1];
+
+                    console.log('Area voor ' + index + ' en value ' + point.value + ' en x = ' + point.x);
+                    this.context.beginPath();
+                    this.context.moveTo(point.x, getY(0, this.chartHeight, lineConfig, this.config));
+
+                    this.context.lineTo(point.x, point.y);
+
+                    if (lineConfig.smoothCurves) {
+                        this.context.bezierCurveTo(nextPoint.bezier.cp1x, nextPoint.bezier.cp1y, nextPoint.bezier.cp2x, nextPoint.bezier.cp2y, nextPoint.bezier.x, nextPoint.bezier.y);
+                    } else {
+                        this.context.lineTo(nextPoint.x, nextPoint.y);
+                    }
+                    this.context.lineTo(nextPoint.x, getY(0, this.chartHeight, lineConfig, this.config));
+                    this.context.fill();
+                }
+            }, this);
+            //this.context.fill();
         }
 
         this.context.restore();
@@ -333,7 +388,8 @@
             lineWidth: 1,
             points: false,
             connectNullValues: false,
-            pointWidth: null
+            pointWidth: null,
+            fillArea: false
         }, lineConfig, serieConfig);
     };
 
