@@ -145,9 +145,13 @@
         var dx2 = 0;
         var dy2 = 0;
         var preP = null;
+        var points = [];
         serie.values.forEach(function (value, valueIndex, values) {
             var x = getLineX(valueIndex, lineConfig, this.config);
             var y = this.chartHeight - (value * lineConfig.oneSeriesValueHeight) + this.config.padding.top;
+            if (value !== null) {
+                points.push({x: x, y: y});
+            }
             console.log('Line: ' + this.data.xAxis.columns[valueIndex] + ' = ' + value);
             if (valueIndex === 0) {
                 this.context.moveTo(x, y);
@@ -174,6 +178,18 @@
             }
         }, this);
         this.context.stroke();
+
+        if (lineConfig.points) {
+            this.context.beginPath();
+            this.context.fillStyle = serie.color;
+            points.forEach(function(point) {
+                this.context.moveTo(point.x, point.y);
+                this.context.arc(point.x, point.y, 4, 0, Math.PI * 2);
+                
+            }, this);
+            this.context.fill();
+        }
+
         this.context.restore();
         return lineConfig;
     };
@@ -309,7 +325,9 @@
             smoothCurves: false,
             oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
             columnWidth: columnWidth,
-            lineWidth: 1
+            lineWidth: 1,
+            points: false,
+            connectNullValues: false,
         }, lineConfig, serieConfig);
     };
 

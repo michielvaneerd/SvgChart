@@ -1,8 +1,11 @@
 (function (window) {
 
-    var colCount = 26;
+    var colCount = 12;
 
     function getRandomInt(max) {
+        if (Math.ceil(Math.random() * 10) < 4) {
+            return null;
+        }
         return Math.ceil(Math.random() * max);
     }
 
@@ -13,27 +16,27 @@
             }),
         },
         series: [
-            {
-                type: 'bar',
-                name: 'car',
-                title: 'Car',
-                values: Array.from(Array(colCount).keys()).map(function(key) {
-                    return getRandomInt(20);
-                }),
-                color: 'green'
-            },
-            {
-                type: 'bar',
-                name: 'train',
-                title: 'Train',
-                values: Array.from(Array(colCount).keys()).map(function(key) {
-                    return getRandomInt(20);
-                }),
-                color: 'yellow',
-                config: {
-                    spaceBetweenBars: 20
-                }
-            },
+            // {
+            //     type: 'bar',
+            //     name: 'car',
+            //     title: 'Car',
+            //     values: Array.from(Array(colCount).keys()).map(function(key) {
+            //         return getRandomInt(20);
+            //     }),
+            //     color: 'green'
+            // },
+            // {
+            //     type: 'bar',
+            //     name: 'train',
+            //     title: 'Train',
+            //     values: Array.from(Array(colCount).keys()).map(function(key) {
+            //         return getRandomInt(20);
+            //     }),
+            //     color: 'yellow',
+            //     config: {
+            //         spaceBetweenBars: 20
+            //     }
+            // },
             {
                 type: 'line',
                 name: 'plane',
@@ -41,7 +44,10 @@
                 values: Array.from(Array(colCount).keys()).map(function(key) {
                     return getRandomInt(20);
                 }),
-                color: 'rgba(245, 40, 145, 0.8)'
+                color: 'rgba(245, 40, 145, 0.8)',
+                config: {
+                    points: false
+                }
             },
             {
                 type: 'line',
@@ -53,7 +59,8 @@
                 color: 'rgba(50, 0, 255, 0.8)',
                 config: {
                     // You can overrule some "global" config
-                    smoothCurves: true
+                    smoothCurves: true,
+                    connectNullValues: true
                 }
             },
         ]
@@ -69,12 +76,13 @@
         },
         maxSeriesValue: 20,
         yAxisStep: 5,
-        xAxisStep: 5,
+        //xAxisStep: 5,
         legend: true,
         // Global line config, can be overruled from within serie.config
         line: {
             lineWidth: 2,
-            smoothCurves: false
+            smoothCurves: false,
+            points: true
         },
         bar: {
             spaceBetweenBars: 10,
