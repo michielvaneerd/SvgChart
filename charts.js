@@ -16,7 +16,7 @@
             top: 20,
             bottom: 30
         },
-        highlightClicked: false,
+        highlightClickedColumn: false,
         font: '12px sans-serif',
         backgroundColor: 'white',
         onClick: function (index, chartInstance) { },
@@ -43,7 +43,8 @@
             showPoints: false,
             pointWidth: null,
             connectNullValues: false,
-            fillArea: false
+            fillArea: false,
+            showClickedPointValue: false,
         }
     };
 
@@ -96,6 +97,12 @@
         return rgba.replace(/,([^,]+)\)$/, function (match, p1) { return ',' + newAlpha + ')'; });
     }
 
+    function distance(x1, y1, x2, y2) {
+        let xDistance = x2 - x1;
+        let yDistance = y2 - y1;
+        return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+    }
+
 
     // ************************************************************************
     // Constructor
@@ -105,7 +112,6 @@
         var me = this; // For use in closures below.
 
         this.computed = {}; // For computed values, like the height of a bar for 1 value, etc.
-        this.hittableItems = {}; // For hitregion detection, we store the object together with the coordinates.
         this.selectedSeries = null; // For (de)selecting the series by clicking the legend items.
         this.selectedColumnIndex = null; // The index of the currently selected column.
 
@@ -125,31 +131,66 @@
             canvas.style.backgroundColor = this.config.backgroundColor;
         }
 
+        this.valueDiv = document.createElement('div');
+        this.valueDiv.id = "my-chart-value-div";
+
         var context = canvas.getContext('2d');
         context.scale(scale, scale);
         context.font = this.config.font;
 
-        // TODO
-        canvas.addEventListener('click', function (e) {
-
-            // Handle click on legend
-            var pos = me.getMousePos(e);
-            for (var key in me.hittableItems) {
-                var item = me.hittableItems[key];
+        canvas.addEventListener('mousemove', function (e) {
+            var pos = getMousePos.call(me, e);
+            for (var item of me.hittableItems) {
                 if (pos.x > item.x && pos.x < (item.x + item.w) && pos.y > item.y && pos.y < (item.y + item.h)) {
-                    me.selectedSeries[key] = !me.selectedSeries[key];
-                    me.draw();
+                    me.canvas.style.cursor = 'pointer';
                     return;
                 }
             }
+            me.canvas.style.cursor = 'default';
+        });
+
+        canvas.addEventListener('click', function (e) {
+
+            if (me.valueDiv.parentNode) {
+                me.valueDiv.parentNode.removeChild(me.valueDiv);
+                me.valueDiv.innerHTML = '';
+            }
+
+            // Handle click on legend
+            var pos = getMousePos.call(me, e);
+            var mustDraw = false;
+            for (var item of me.hittableItems) {
+                if (pos.x > item.x && pos.x < (item.x + item.w) && pos.y > item.y && pos.y < (item.y + item.h)) {
+                    switch (item.type) {
+                        case 'legend':
+                            me.selectedSeries[item.name] = !me.selectedSeries[item.name];
+                            mustDraw = true;
+                            break;
+                        case 'column':
+                            var index = getIndexForClick.call(me, pos.x, pos.y);
+                            me.selectedColumnIndex = index;
+                            mustDraw = true;
+                            break;
+                        case 'point':
+                            me.valueDiv.style.left = (pos.x + 2) + "px";
+                            me.valueDiv.style.top = (pos.y + 20) + "px";
+                            me.valueDiv.innerHTML += '<div>' + (item.serie.title + ': ' + item.value) + '</div>';
+                            break;
+                    }
+                    //return;
+                }
+            }
+            if (mustDraw) {
+                me.draw();
+            }
+
+            if (me.valueDiv.innerHTML) {
+                parent.appendChild(me.valueDiv);
+            }
 
             // Other click things
-            if (me.config.onClick || me.config.highlightClicked) {
-                var index = me.getIndexForClick(e.offsetX);
-                if (me.config.highlightClicked) {
-                    me.selectedColumnIndex = index;
-                    me.draw();
-                }
+            if (me.config.onClick) {
+                var index = getIndexForClick.call(me, pos.x, pos.y);
                 if (index !== null) {
                     if (me.config.onClick) {
                         me.config.onClick(index, me);
@@ -163,13 +204,13 @@
         this.chartHeight = parentRect.height - this.config.padding.top - this.config.padding.bottom;
         this.chartWidth = parentRect.width - this.config.padding.start - this.config.padding.end;
         this.parentRect = parentRect;
+        this.canvasRect = this.canvas.getBoundingClientRect();
     };
 
-    window.Chart.prototype.getMousePos = function (e) {
-        var r = this.canvas.getBoundingClientRect();
+    function getMousePos(e) {
         return {
-            x: e.clientX - r.left,
-            y: e.clientY - r.top
+            x: e.clientX - this.canvasRect.left,
+            y: e.clientY - this.canvasRect.top
         };
     }
 
@@ -178,7 +219,9 @@
         if (data) {
             this.data = data;
         }
-        this.hittableItems = {};
+
+        this.hittableItems = [];
+
         if (this.selectedSeries === null) {
             this.selectedSeries = {};
             this.data.series.forEach(function (serie) {
@@ -308,10 +351,10 @@
         this.context.restore();
     }
 
-    window.Chart.prototype.getIndexForClick = function (pos) {
-        var index = Math.floor((pos - this.config.padding.start) / this.computed.columnWidth);
-        if (index >= 0 && index < this.data.xAxis.columns.length) {
-            return index;
+    function getIndexForClick(x, y) {
+        var xIndex = Math.floor((x - this.config.padding.start) / this.computed.columnWidth);
+        if (xIndex >= 0 && xIndex < this.data.xAxis.columns.length) {
+            return xIndex;
         }
         return null;
     };
@@ -349,7 +392,7 @@
             var x = getLineX.call(this, index);
             var y = getY.call(this, value);
 
-            var point = { x: x, y: y, value: value };
+            var point = { x: x, y: y, value: value, serie: serie };
 
             if (!this.config.connectNullValues && value === null) {
                 points.push(point);
@@ -374,12 +417,27 @@
         if (this.config.lineChart.showPoints) {
             this.context.beginPath();
             this.context.fillStyle = serie.color || 'black';
+            var pointWidth = this.config.lineChart.pointWidth || (this.config.lineChart.width * 2);
             points.forEach(function (point) {
                 if (point.value === null) {
                     return;
                 }
                 this.context.moveTo(point.x, point.y);
-                this.context.arc(point.x, point.y, this.config.lineChart.pointWidth || (this.config.lineChart.width * 2), 0, Math.PI * 2);
+                this.context.arc(point.x, point.y, pointWidth, 0, Math.PI * 2);
+                if (this.config.lineChart.showClickedPointValue) {
+                    // TODO: work with real circle detection (distance <= radius)
+                    // https://stackoverflow.com/questions/60367198/how-to-detect-when-mouse-is-outside-of-a-certain-circle
+                    this.hittableItems.push({
+                        x: point.x - pointWidth,
+                        y: point.y - pointWidth,
+                        w: pointWidth * 2,
+                        h: pointWidth * 2,
+                        type: 'point',
+                        serie: point.serie,
+                        value: point.value
+
+                    });
+                }
             }, this);
             this.context.fill();
         }
@@ -411,8 +469,6 @@
         this.context.restore();
     };
 
-
-    // TODO: placement, for now end top
     function drawLegend() {
         this.context.save();
         this.context.textAlign = 'start';
@@ -434,7 +490,7 @@
             this.context.fillStyle = 'rgb(0, 0, 0, ' + (this.selectedSeries[serie.name] ? 1 : 0.2) + ')';
             this.context.fillText(serie.title || serie.name, x + 20, y);
             var mt = this.context.measureText(serie.title || serie.name);
-            this.hittableItems[serie.name] = { x: x, y: y, w: mt.width + 20, h: 10 };
+            this.hittableItems.push({ x: x, y: y, w: mt.width + 20, h: 10, type: 'legend', name: serie.name });
         }, this);
         this.context.restore();
     };
@@ -464,15 +520,24 @@
                 this.context.save();
                 this.context.font = "bold 12px sans-serif"; // TODO: make font in config...
             }
-            
-                this.context.fillText(this.data.xAxis.columns[index], x, this.chartHeight + this.config.padding.top + 10);
-            
+
+            this.context.fillText(this.data.xAxis.columns[index], x, this.chartHeight + this.config.padding.top + 10);
+
             if (this.selectedColumnIndex === index) {
                 this.context.restore();
             }
             var lineX = Math.round(gridX) + 0.5; // needed so lines with width of 1 look clear and not blurred.
             this.context.moveTo(lineX, this.chartHeight + this.config.padding.top);
             this.context.lineTo(lineX, this.config.padding.top);
+            if (this.config.highlightClickedColumn) {
+                this.hittableItems.push({
+                    x: lineX - (!this.config.xAxisGridLineHalf ? (this.computed.columnWidth / 2) : 0),
+                    y: this.config.padding.top,
+                    w: this.computed.columnWidth,
+                    h: this.chartHeight,
+                    type: 'column'
+                });
+            }
         }
         if (this.config.xAxisGrid) {
             this.context.stroke();

@@ -1,3 +1,7 @@
-#chart canvas {
-    cursor: pointer;
+#my-chart-value-div {
+    position: absolute;
+    background-color: black;
+    padding: 4px;
+    color: white;
+    font-family: sans-serif;
 }

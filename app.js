@@ -1,10 +1,10 @@
 (function (window) {
 
-    var config  = {
+    var config = {
         title: 'Chart title',
         legend: true,
-        highlightClicked: true,
-        backgroundColor: 'yellow',
+        highlightClickedColumn: false,
+        backgroundColor: '#E0E0E0',
         xAxisGridLineHalf: true,
         xAxisGridDashed: true,
         yAxisGridDashed: true,
@@ -19,7 +19,10 @@
             bottom: 80
         },
         lineChart: {
-            width: 2
+            width: 2,
+            showPoints: true,
+            showClickedPointValue: true,
+            pointWidth: 10
         }
     };
 
@@ -30,14 +33,14 @@
                 title: 'Nose',
                 type: 'line',
                 color: '#CCAA00',
-                values: [20, 45, 60, 70, 56, 23, 99]
+                values: [20, 0, 60, 70, 56, 23, 100]
             },
             {
                 name: 'eye',
                 title: 'Eye',
                 type: 'line',
                 color: '#ABABAB',
-                values: [10, 35, 20, 23, 26, 45, 89]
+                values: [10, 35, 60, 23, 26, 45, 89]
             }
         ],
         xAxis: {
