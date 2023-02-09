@@ -1,20 +1,69 @@
 (function (window) {
 
+    /**
+     * Usage:
+     * var chart = new Chart(domElement, config); // once
+     * chart.draw(data); // everytime the data is changed, if data is null, the previous data will be used.
+     */
+
+    // General config for a chart independent on the type of chart
+    var defaultConfig = {
+        title: null, // String for chart title
+        titleTop: 10,
+        padding: {
+            start: 30,
+            end: 20,
+            top: 20,
+            bottom: 30
+        },
+        highlightClicked: false,
+        font: '12px sans-serif',
+        backgroundColor: 'white',
+        onClick: function (index, chartInstance) { },
+        onDrawBefore: function (chartInstance) { },
+        legend: false,
+        legendPosition: 'top-end',
+        writeXAxisLabels: true,
+        writeYAxisLabels: true,
+        xAxisGrid: true,
+        yAxisGrid: true,
+        xAxisGridColor: 'black',
+        yAxisGridColor: 'black',
+        xAxisGridDashed: false,
+        yAxisGridDashed: false,
+        xAxisStep: 1,
+        yAxisStep: 10,
+        yAxisMin: null, // If null, this value will be computed by taking the lowest value from all series, so if possible you should specify this
+        yAxisMax: null, // If null, this value will be computed by taking the highest value from all series, so if possible you should specify this
+        xAxisGridLineHalf: false, // If true, the x axis gridlines are not at the center of the x axis labels
+        yAxisTitle: null, // String for the title to display
+        xAxisTitle: null, // String for title to display
+        lineChart: {
+            width: 1,
+            showPoints: false,
+            pointWidth: null,
+            connectNullValues: false,
+            fillArea: false
+        }
+    };
+
     var scale = window.devicePixelRatio;
+    var rgbaReg = /^rgba/;
+    var hexReg = /^#/;
 
     // ************************************************************************
     // Helper functions
     // ************************************************************************
-    function getLineX(valueIndex, lineConfig, config) {
-        return (valueIndex * lineConfig.columnWidth) + (lineConfig.columnWidth / 2) + config.padding.start;
+    function getLineX(index) {
+        return (index * this.computed.columnWidth) + (this.computed.columnWidth / 2) + this.config.padding.start;
     }
 
-    function getY(value, chartHeight, lineOrBarConfig, config) {
-        return chartHeight - ((value || 0) * lineOrBarConfig.oneSeriesValueHeight) + config.padding.top;
+    function getY(value) {
+        return this.chartHeight - ((value || 0) * this.computed.valueToHeight) + this.config.padding.top;
     }
 
-    function getBarXStart(valueIndex, barConfig, config) {
-        return (valueIndex * barConfig.columnWidth) + (barConfig.spaceBetweenBars / 2) + config.padding.start;
+    function getBarXStart(index) {
+        return (index * this.computed.columnWidth) + (this.config.spaceBetweenBars / 2) + this.config.padding.start;
     }
 
     function gradient(a, b) {
@@ -23,19 +72,17 @@
 
     // https://stackoverflow.com/a/28056903
     function hexToRGB(hex, alpha) {
+        alpha = alpha || 1;
         var r = parseInt(hex.slice(1, 3), 16),
             g = parseInt(hex.slice(3, 5), 16),
             b = parseInt(hex.slice(5, 7), 16);
-    
+
         if (alpha) {
             return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
         } else {
             return "rgb(" + r + ", " + g + ", " + b + ")";
         }
     }
-
-    var rgbaReg = /^rgba/;
-    var hexReg = /^#/;
 
     function colorIsRgba(color) {
         return rgbaReg.test(color);
@@ -46,28 +93,33 @@
     }
 
     function updateRgbAlpha(rgba, newAlpha) {
-        return rgba.replace(/,([^,]+)\)$/, function(match, p1) { return ',' + newAlpha + ')'; });
+        return rgba.replace(/,([^,]+)\)$/, function (match, p1) { return ',' + newAlpha + ')'; });
     }
-
 
 
     // ************************************************************************
     // Constructor
     // ************************************************************************
-    window.Chart = function (parent, config, data) {
+    window.Chart = function (parent, config) {
 
-        this.config = this._getConfig(config);
+        var me = this; // For use in closures below.
 
+        this.computed = {}; // For computed values, like the height of a bar for 1 value, etc.
+        this.hittableItems = {}; // For hitregion detection, we store the object together with the coordinates.
+        this.selectedSeries = null; // For (de)selecting the series by clicking the legend items.
+        this.selectedColumnIndex = null; // The index of the currently selected column.
+
+        this.config = Object.assign(defaultConfig, config);
+
+        // Create the canvas and add it to the DOM.
         var parentRect = parent.getBoundingClientRect();
-        var parentWidth = parentRect.width;
-        var parentHeight = parentRect.height;
-
         var canvas = document.createElement('canvas');
-        canvas.style.width = parentWidth + 'px';
-        canvas.style.height = parentHeight + 'px';
-        canvas.width = parentWidth * scale;
-        canvas.height = parentHeight * scale;
+        canvas.style.width = parentRect.width + 'px';
+        canvas.style.height = parentRect.height + 'px';
+        canvas.width = parentRect.width * scale;
+        canvas.height = parentRect.height * scale;
         parent.appendChild(canvas);
+        this.canvas = canvas;
 
         if (this.config.backgroundColor) {
             canvas.style.backgroundColor = this.config.backgroundColor;
@@ -75,156 +127,242 @@
 
         var context = canvas.getContext('2d');
         context.scale(scale, scale);
+        context.font = this.config.font;
 
-        // Get highest series value if not given;
-        // Update color to rgba if given in hex.
-        var maxSeriesValue = config.maxSeriesValue;
-        var minSeriesValue = config.minSeriesValue || 0;
-        if (typeof maxSeriesValue === 'undefined') {
-            maxSeriesValue = 0;
-            data.series.forEach(function (serie) {
-                if (serie.color && colorIsHex(serie.color)) {
-                    serie.color = hexToRGB(serie.color, 1);
+        // TODO
+        canvas.addEventListener('click', function (e) {
+
+            // Handle click on legend
+            var pos = me.getMousePos(e);
+            for (var key in me.hittableItems) {
+                var item = me.hittableItems[key];
+                if (pos.x > item.x && pos.x < (item.x + item.w) && pos.y > item.y && pos.y < (item.y + item.h)) {
+                    me.selectedSeries[key] = !me.selectedSeries[key];
+                    me.draw();
+                    return;
                 }
+            }
+
+            // Other click things
+            if (me.config.onClick || me.config.highlightClicked) {
+                var index = me.getIndexForClick(e.offsetX);
+                if (me.config.highlightClicked) {
+                    me.selectedColumnIndex = index;
+                    me.draw();
+                }
+                if (index !== null) {
+                    if (me.config.onClick) {
+                        me.config.onClick(index, me);
+                    }
+                }
+            }
+
+        });
+
+        this.context = context;
+        this.chartHeight = parentRect.height - this.config.padding.top - this.config.padding.bottom;
+        this.chartWidth = parentRect.width - this.config.padding.start - this.config.padding.end;
+        this.parentRect = parentRect;
+    };
+
+    window.Chart.prototype.getMousePos = function (e) {
+        var r = this.canvas.getBoundingClientRect();
+        return {
+            x: e.clientX - r.left,
+            y: e.clientY - r.top
+        };
+    }
+
+    window.Chart.prototype.draw = function (data) {
+
+        if (data) {
+            this.data = data;
+        }
+        this.hittableItems = {};
+        if (this.selectedSeries === null) {
+            this.selectedSeries = {};
+            this.data.series.forEach(function (serie) {
+                this.selectedSeries[serie.name] = true;
+            }, this);
+        }
+
+        this.computed.columnWidth = this.chartWidth / this.data.xAxis.columns.length;
+
+        this.config.yAxisMin = this.config.yAxisMin || 0;
+        var yAxisMax = this.config.yAxisMax;
+        if (yAxisMax === null || typeof yAxisMax === 'undefined') {
+            yAxisMax = 0;
+            this.data.series.forEach(function (serie) {
                 var max = serie.values.reduce(function (a, b) {
                     return Math.max(a, b);
                 }, 0);
-                if (max > maxSeriesValue) {
-                    maxSeriesValue = max;
+                if (max > yAxisMax) {
+                    yAxisMax = max;
                 }
             });
         }
+        this.config.yAxisMax = yAxisMax;
 
-        // Set general props we need in multiple methods
-        this.data = data;
-        this.maxSeriesValue = maxSeriesValue;
-        this.minSeriesValue = minSeriesValue;
-        this.context = context;
-        this.chartHeight = parentHeight - this.config.padding.top - this.config.padding.bottom;
-        this.chartWidth = parentWidth - this.config.padding.start - this.config.padding.end;
-        this.parentWidth = parentWidth;
+        this.computed.valueToHeight = this.chartHeight / (this.config.yAxisMax - this.config.yAxisMin);
 
-        data.series.forEach(function (serie, serieIndex) {
+        // Erase complete canvas
+        this.context.save();
+        this.context.fillStyle = this.config.backgroundColor || 'white';
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.restore();
+
+        if (this.config.onDrawBefore) {
+            this.config.onDrawBefore(this);
+        }
+
+        this.data.series.forEach(function (serie, index) {
+            if (index === 0) {
+                if (this.config.title) {
+                    drawChartTitle.call(this);
+                }
+                if (this.config.writeXAxisLabels || this.config.xAxisGrid) {
+                    drawXAxisLabels.call(this);
+                }
+                if (this.config.writeYAxisLabels || this.config.yAxisGrid) {
+                    drawYAxisLabels.call(this);
+                }
+                if (this.selectedColumnIndex !== null) {
+                    drawSelectedColumnIndex.call(this);
+                }
+                if (this.config.yAxisTitle) {
+                    drawYAxisTitle.call(this);
+                }
+                if (this.config.xAxisTitle) {
+                    drawXAxisTitle.call(this);
+                }
+            }
+            if (!this.selectedSeries[serie.name]) {
+                return;
+            }
             switch (serie.type) {
                 case 'line':
-                    var lineConfig = this._getLineConfig(this.config.line, serie.config);
-                    if (this.config.writeXAxisLabels && serieIndex === 0) {
-                        this._drawXAxisLabels(lineConfig);
-                        this._drawYAxisLabels(lineConfig);
-                    }
-                    this._drawLineChart(serie, lineConfig);
-                    // this._line(serie, Object.assign(config.line, {
-                    //     smoothCurves: true
-                    // }));
+                    drawLineChart.call(this, serie);
                     break;
                 case 'bar':
-                    var barConfig = this._getBarConfig(this.config.bar, serie.config);
-                    console.log(barConfig);
-                    if (this.config.writeXAxisLabels && serieIndex === 0) {
-                        this._drawXAxisLabels(barConfig);
-                        this._drawYAxisLabels(barConfig);
-                    }
-                    this._drawBarChart(serie, barConfig);
+                    drawBarChart.call(this, serie);
                     break;
             }
         }, this);
 
         if (this.config.legend) {
-            this._drawLegend();
+            drawLegend.call(this);
         }
+    };
+
+    function drawChartTitle() {
+        this.context.save();
+        this.context.fillStyle = 'black';
+        this.context.font = "bold 16px arial";
+        this.context.textAlign = "center";
+        this.context.textBaseline = "top";
+        this.context.fillText(this.config.title,
+            this.parentRect.width / 2,
+            this.config.titleTop);
+        this.context.restore();
+    }
+
+    function drawXAxisTitle() {
+        this.context.save();
+        this.context.fillStyle = 'black';
+        this.context.font = "bold 16px arial";
+        this.context.textAlign = "right";
+        this.context.textBaseline = "bottom";
+        this.context.fillText(this.config.xAxisTitle,
+            this.parentRect.width - this.config.padding.end,
+            this.parentRect.height - 10);
+        this.context.restore();
 
     };
 
+    function drawYAxisTitle() {
+        this.context.save();
+        this.context.fillStyle = 'black';
+        this.context.font = "bold 16px arial";
+        this.context.textAlign = "left";
+        this.context.textBaseline = "middle";
+        var textWidth = this.context.measureText(this.config.yAxisTitle).width;
+        this.context.translate(20, this.config.padding.top + textWidth);
+        this.context.rotate(-(Math.PI / 2));
+        this.context.fillText(this.config.yAxisTitle,
+            0,
+            0);
+        this.context.restore();
 
+    };
 
+    window.Chart.prototype.updateSelectedColumnIndex = function (index) {
+        this.selectedColumnIndex = index;
+    }
+
+    function drawSelectedColumnIndex() {
+        this.context.save();
+        this.context.fillStyle = 'rgb(255, 255, 255, 0.6)';
+        var x = this.config.padding.start + (this.computed.columnWidth * this.selectedColumnIndex);
+        this.context.fillRect(x, this.config.padding.top, this.computed.columnWidth, this.chartHeight);
+        this.context.restore();
+    }
+
+    window.Chart.prototype.getIndexForClick = function (pos) {
+        var index = Math.floor((pos - this.config.padding.start) / this.computed.columnWidth);
+        if (index >= 0 && index < this.data.xAxis.columns.length) {
+            return index;
+        }
+        return null;
+    };
 
 
     // ************************************************************************
-    // Private chart draw methods
+    // Chart draw methods
     // ************************************************************************
-    window.Chart.prototype._drawBarChart = function (serie, barConfig) {
+    function drawBarChart(serie) {
         //barConfig = Object.assign(this._getBarConfig(barConfig), serie.config || {});
         this.context.save();
         this.context.fillStyle = serie.color;
         serie.values.forEach(function (value, valueIndex, values) {
             var x = getBarXStart(valueIndex, barConfig, this.config);
+
             var y = value * barConfig.oneSeriesValueHeight;
-            console.log('Bar: ' + this.data.xAxis.columns[valueIndex] + ' = ' + value);
+
             this.context.fillRect(x, this.chartHeight - y + this.config.padding.top, barConfig.barWidth, y);
         }, this);
         this.context.restore();
         return barConfig;
     };
 
-    // https://stackoverflow.com/a/39559854
-    window.Chart.prototype._drawLineChart = function (serie, lineConfig) {
-        //lineConfig = Object.assign(this._getLineConfig(lineConfig), serie.config || {});
+    function drawLineChart(serie) {
         this.context.save();
         this.context.lineJoin = 'round';
         this.context.lineCap = 'round';
-        this.context.lineWidth = lineConfig.lineWidth;
-        // if (lineConfig.smoothCurves) {
-        //     this.context.globalAlpha = 0.4;
-        // }
-        // If f = 0, this will be a straight line
-        var f = 0.3;
-        //var t = 0.6;
-        var t = 0.6;
+        this.context.lineWidth = this.config.lineChart.width;
         this.context.beginPath();
-        this.context.strokeStyle = serie.color;
-        var valueLastIndex = serie.values.length - 1;
-        var m = 0;
-        var dx1 = 0;
-        var dy1 = 0;
-        var dx2 = 0;
-        var dy2 = 0;
+        this.context.strokeStyle = serie.color || 'black';
         var preP = null;
         var points = [];
-        serie.values.forEach(function (value, valueIndex, values) {
+        serie.values.forEach(function (value, index) {
 
-            var x = getLineX(valueIndex, lineConfig, this.config);
-            //var y = this.chartHeight - ((value || 0) * lineConfig.oneSeriesValueHeight) + this.config.padding.top;
-            var y = getY(value, this.chartHeight, lineConfig, this.config);
+            var x = getLineX.call(this, index);
+            var y = getY.call(this, value);
 
             var point = { x: x, y: y, value: value };
 
-            if (!lineConfig.connectNullValues && value === null) {
+            if (!this.config.connectNullValues && value === null) {
                 points.push(point);
-                // TODO: Fill area?
                 preP = null;
                 return;
             }
 
-            console.log('Line: ' + this.data.xAxis.columns[valueIndex] + ' = ' + value);
-            if (valueIndex === 0 || preP === null) {
+            if (index === 0 || preP === null) {
                 this.context.moveTo(x, y);
                 preP = { x: x, y: y };
             } else {
                 var curP = { x: x, y: y };
-                if (lineConfig.smoothCurves) {
-                    if (valueIndex < valueLastIndex) {
-                        var nexP = { x: getLineX(valueIndex + 1, lineConfig, this.config), y: values[valueIndex + 1] * lineConfig.oneSeriesValueHeight };
-                        m = gradient(preP, nexP);
-                        dx2 = (nexP.x - curP.x) * -f;
-                        dy2 = dx2 * m * t;
-                    } else {
-                        dx2 = 0;
-                        dy2 = 0;
-                    }
-                    this.context.bezierCurveTo(preP.x - dx1, preP.y - dy1, curP.x + dx2, curP.y + dy2, curP.x, curP.y);
-                    point.bezier = {
-                        cp1x: preP.x - dx1,
-                        cp1y: preP.y - dy1,
-                        cp2x: curP.x + dx2,
-                        cp2y: curP.y + dy2,
-                        x: curP.x,
-                        y: curP.y
-                    };
-                    dx1 = dx2;
-                    dy1 = dy2;
-                } else {
-                    this.context.lineTo(x, y);
-                }
+                this.context.lineTo(x, y);
                 preP = curP;
             }
 
@@ -232,126 +370,133 @@
 
         }, this);
         this.context.stroke();
-        //this.context.fillStyle = 'rgba(255, 255, 130, 200)';
-        //this.context.fill();
 
-        if (lineConfig.points) {
+        if (this.config.lineChart.showPoints) {
             this.context.beginPath();
-            this.context.fillStyle = serie.color;
+            this.context.fillStyle = serie.color || 'black';
             points.forEach(function (point) {
                 if (point.value === null) {
                     return;
                 }
                 this.context.moveTo(point.x, point.y);
-                this.context.arc(point.x, point.y, lineConfig.pointWidth || (lineConfig.lineWidth * 2), 0, Math.PI * 2);
+                this.context.arc(point.x, point.y, this.config.lineChart.pointWidth || (this.config.lineChart.width * 2), 0, Math.PI * 2);
             }, this);
             this.context.fill();
         }
 
-        if (lineConfig.fillArea) {
-            //this.context.fillStyle = serie.color;
-            //this.context.fillStyle = 'rgba(245, 40, 145, 0.4)';
+        if (this.config.lineChart.fillArea) {
             this.context.fillStyle = updateRgbAlpha(serie.color, 0.2);
             points.forEach(function (point, index) {
 
                 if (index + 1 < points.length) {
 
-                    if (!lineConfig.connectNullValues && (point.value === null || points[index + 1].value === null)) {
+                    if (!this.config.lineChart.connectNullValues && (point.value === null || points[index + 1].value === null)) {
                         return;
                     }
 
                     var nextPoint = points[index + 1];
 
-                    console.log('Area voor ' + index + ' en value ' + point.value + ' en x = ' + point.x);
+
                     this.context.beginPath();
-                    this.context.moveTo(point.x, getY(0, this.chartHeight, lineConfig, this.config));
+                    this.context.moveTo(point.x, getY.call(this, 0));
 
                     this.context.lineTo(point.x, point.y);
-
-                    if (lineConfig.smoothCurves) {
-                        this.context.bezierCurveTo(nextPoint.bezier.cp1x, nextPoint.bezier.cp1y, nextPoint.bezier.cp2x, nextPoint.bezier.cp2y, nextPoint.bezier.x, nextPoint.bezier.y);
-                    } else {
-                        this.context.lineTo(nextPoint.x, nextPoint.y);
-                    }
-                    this.context.lineTo(nextPoint.x, getY(0, this.chartHeight, lineConfig, this.config));
+                    this.context.lineTo(nextPoint.x, nextPoint.y);
+                    this.context.lineTo(nextPoint.x, getY.call(this, 0));
                     this.context.fill();
                 }
             }, this);
-            //this.context.fill();
         }
 
         this.context.restore();
-        return lineConfig;
     };
 
 
     // TODO: placement, for now end top
-    window.Chart.prototype._drawLegend = function () {
+    function drawLegend() {
         this.context.save();
         this.context.textAlign = 'start';
         this.context.textBaseline = 'top';
         var maxTextWidth = 0;
         var textHeight = 20;
         this.data.series.forEach(function (serie) {
-            var width = this.context.measureText(serie.title).width;
+            var mt = this.context.measureText(serie.title);
+            var width = mt.width;
             if (width > maxTextWidth) {
                 maxTextWidth = width;
             }
         }, this);
-        var x = this.parentWidth - maxTextWidth - 10;
+        var x = this.config.padding.start + this.chartWidth + 10;
         this.data.series.forEach(function (serie, index) {
             var y = this.config.padding.top + (index * textHeight);
-            this.context.fillStyle = serie.color;
-            this.context.fillRect(x - 20, y, 10, 10);
-            this.context.fillStyle = 'black';
-            this.context.fillText(serie.title, x, y);
+            this.context.fillStyle = this.selectedSeries[serie.name] ? serie.color : (colorIsHex(serie.color) ? hexToRGB(serie.color, 0.2) : updateRgbAlpha(serie.color, 0.2));
+            this.context.fillRect(x, y, 10, 10);
+            this.context.fillStyle = 'rgb(0, 0, 0, ' + (this.selectedSeries[serie.name] ? 1 : 0.2) + ')';
+            this.context.fillText(serie.title || serie.name, x + 20, y);
+            var mt = this.context.measureText(serie.title || serie.name);
+            this.hittableItems[serie.name] = { x: x, y: y, w: mt.width + 20, h: 10 };
         }, this);
         this.context.restore();
     };
 
 
     // ************************************************************************
-    // Draw axis labels
+    // Draw axis labels and grids
     // ************************************************************************
-    window.Chart.prototype._drawXAxisLabels = function (lineOrBarConfig) {
+    function drawXAxisLabels() {
         this.context.save();
         this.context.textAlign = 'center';
-        this.context.textBaseline = 'middle';
-        this.context.strokeStyle = 'rgba(175, 177, 194, 0.54)';
+        this.context.textBaseline = 'top';
+        this.context.fillStyle = 'black';
+        this.context.strokeStyle = this.config.xAxisGridColor || 'rgba(0, 0, 0, 0.2)';
+        if (this.config.xAxisGridDashed) {
+            this.context.setLineDash([2, 2]);
+        }
         this.context.lineWidth = 1;
-        this.context.setLineDash([2, 2]);
         this.context.beginPath();
         for (var index = 0; index < this.data.xAxis.columns.length; index += this.config.xAxisStep) {
-            var x = getLineX(index, lineOrBarConfig, this.config);
-            this.context.fillText(this.data.xAxis.columns[index], x, this.chartHeight + this.config.padding.top + (this.config.padding.bottom / 2));
-            var lineX = Math.round(x) + 0.5;
+            var x = getLineX.call(this, index);
+            var gridX = x;
+            if (this.config.xAxisGridLineHalf) {
+                gridX -= (this.computed.columnWidth / 2);
+            }
+            if (this.selectedColumnIndex === index) {
+                this.context.save();
+                this.context.font = "bold 12px sans-serif"; // TODO: make font in config...
+            }
+            
+                this.context.fillText(this.data.xAxis.columns[index], x, this.chartHeight + this.config.padding.top + 10);
+            
+            if (this.selectedColumnIndex === index) {
+                this.context.restore();
+            }
+            var lineX = Math.round(gridX) + 0.5; // needed so lines with width of 1 look clear and not blurred.
             this.context.moveTo(lineX, this.chartHeight + this.config.padding.top);
             this.context.lineTo(lineX, this.config.padding.top);
         }
-        // this.data.xAxis.columns.forEach(function(value, index) {
-        //     var x = getLineX(index, lineOrBarConfig, this.config);
-        //     this.context.fillText(value, x, this.chartHeight + this.config.padding.top + (this.config.padding.bottom / 2));
-        //     var lineX = Math.round(x) + 0.5;
-        //     this.context.moveTo(lineX, this.chartHeight + this.config.padding.top);
-        //     this.context.lineTo(lineX, this.config.padding.top);
-        // }, this);
-        this.context.stroke();
+        if (this.config.xAxisGrid) {
+            this.context.stroke();
+        }
         this.context.restore();
     };
 
-    window.Chart.prototype._drawYAxisLabels = function (lineOrBarConfig) {
+    // TODO: reuse from drawXAxisLabels!
+    function drawYAxisLabels() {
         this.context.save();
         this.context.textAlign = 'end';
         this.context.textBaseline = 'middle';
-        this.context.strokeStyle = 'rgba(175, 177, 194, 0.54)';
+        this.context.strokeStyle = this.config.yAxisGridColor || 'rgba(0, 0, 0, 0.2)';
         this.context.lineWidth = 1;
-        this.context.setLineDash([2, 2]);
-        var curValue = this.minSeriesValue;
+        if (this.config.yAxisGridDashed) {
+            this.context.setLineDash([2, 2]);
+        }
+        var curValue = this.config.yAxisMin;
         this.context.beginPath();
-        while (curValue <= this.maxSeriesValue) {
-            var y = this.chartHeight - (curValue * lineOrBarConfig.oneSeriesValueHeight) + this.config.padding.top;
-            this.context.fillText(curValue, this.config.padding.start / 2, y);
-            // Write line?
+        while (curValue <= this.config.yAxisMax) {
+            var y = this.chartHeight - (curValue * this.computed.valueToHeight) + this.config.padding.top;
+            if (this.config.writeYAxisLabels) {
+                this.context.fillText(curValue, this.config.padding.start - 10, y);
+            }
             // Make sure y.5 if we have line width of 1!
             // see: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Applying_styles_and_colors#a_linewidth_example
             var lineY = Math.round(y) + 0.5;
@@ -359,7 +504,9 @@
             this.context.lineTo(this.chartWidth + this.config.padding.start, lineY);
             curValue += this.config.yAxisStep;
         }
-        this.context.stroke();
+        if (this.config.yAxisGrid) {
+            this.context.stroke();
+        }
         this.context.restore();
     };
 
@@ -370,24 +517,6 @@
     // ************************************************************************
     // Private config methods
     // ************************************************************************
-    window.Chart.prototype._getConfig = function (config) {
-        if (!config) config = {};
-        return Object.assign({
-            padding: {
-                start: 10,
-                end: 10,
-                top: 10,
-                bottom: 10
-            },
-            writeXAxisLabels: true,
-            yAxisStep: 1,
-            yAxisGrid: true,
-            xAxisGrid: false,
-            xAxisStep: 1,
-            legend: false,
-        }, config);
-    };
-
     window.Chart.prototype._getBarConfig = function (barConfig, serieConfig) {
         if (!barConfig) barConfig = {};
         if (!serieConfig) serieConfig = {};
@@ -398,11 +527,9 @@
             (('spaceBetweenBars' in barConfig)
                 ? barConfig.spaceBetweenBars
                 : this.chartWidth / this.data.xAxis.columns.length / 2);
-        var columnWidth = this.chartWidth / this.data.xAxis.columns.length;
         return Object.assign({
             oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
-            columnWidth: columnWidth,
-            barWidth: columnWidth - spaceBetweenBars,
+            barWidth: this.computed.columnWidth - spaceBetweenBars,
             spaceBetweenBars: spaceBetweenBars
         }, barConfig, serieConfig);
     };
@@ -410,11 +537,9 @@
     window.Chart.prototype._getLineConfig = function (lineConfig, serieConfig) {
         if (!lineConfig) lineConfig = {};
         if (!serieConfig) serieConfig = {};
-        var columnWidth = this.chartWidth / this.data.xAxis.columns.length;
         return Object.assign({
             smoothCurves: false,
             oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
-            columnWidth: columnWidth,
             lineWidth: 1,
             points: false,
             connectNullValues: false,

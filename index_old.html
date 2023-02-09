@@ -1,0 +1,295 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graph</title>
+<style>
+textarea {
+  padding:1em;
+  border:1px solid #c0c0c0;
+  background-color:#f0f0f0;
+  display:block;
+  position:relative;
+  margin-top:1em;
+  height:30em;
+  width:calc(100% - 2em - 2px);
+  font-family:monospace;
+  font-size:12px;
+}
+
+canvas, a.graphCanvas img {
+  border:1px solid black;
+}
+.graphContainer {
+  padding:1em;
+}
+</style>
+
+</head>
+<body>
+
+<main>
+
+  <h1>Graph</h1>
+  <div id="homelink"><a href="http://www.michielvaneerd.nl">Michiel van Eerd</a></div>
+  
+  <p>A bar and pie graph implementation with canvas.</p>
+  <p><em>You can edit the code below and execute the changes in real time.</em></p>
+  
+  <h2>Usage</h2>
+  
+  <p>Include <a href="./charts_old.js">graph.js</a> and call the <code class="js">draw</code> method with some data and configuration.</p>
+  
+  <h3>Bar</h3>
+  
+  <h4>Bar graph with one serie</h4>
+  
+  <div class="pure-g">
+        <div class="pure-u-1 graphContainer">
+          <canvas id="graphBarOneSerie" width="400" height="300"></canvas>
+        </div>
+    </div>
+  
+  <div><button onclick="executeGraph('graphBarOneSerie')">Execute</button></div>
+  <textarea data-id="graphBarOneSerie" class="js">var data = [
+  {values : [22], label : &quot;jan&quot;, legendLabel : &quot;january&quot;, fillStyle : &quot;#55B473&quot;},
+  {values : [25], label : &quot;feb&quot;, legendLabel : &quot;february&quot;, fillStyle : &quot;#4FB0C1&quot;},
+  {values : [16], label : &quot;mar&quot;, legendLabel : &quot;march&quot;, fillStyle : &quot;#3B69C1&quot;},
+  {values : [25], label : &quot;apr&quot;, legendLabel : &quot;april&quot;, fillStyle : &quot;#6766C1&quot;},
+  {values : [10], label : &quot;may&quot;, legendLabel : &quot;may&quot;, fillStyle : &quot;#9157C1&quot;},
+  {values : [4], label : &quot;jun&quot;, legendLabel : &quot;june&quot;, fillStyle : &quot;#B44D8B&quot;},
+  {values : [17], label : &quot;jul&quot;, legendLabel : &quot;july&quot;, fillStyle : &quot;#C13B48&quot;}
+];
+
+var config = {
+  legend : true,
+  title : &quot;Simple bar&quot;,
+  maxValue : undefined,
+  gridValue : 6,
+  barWidth : undefined,
+  barSpacing : 20,
+  paddingRight : 100,
+  paddingLeft : 60,
+  paddingTop : 60,
+  paddingBottom : 60,
+  fillStyle : &quot;white&quot;,
+  gridStrokeStyle : &quot;black&quot;,
+  labelColor : &quot;black&quot;,
+  xLabel : &quot;Months&quot;,
+  yLabel : &quot;Unique pageviews&quot;,
+  xLabelFillStyle : &quot;#404040&quot;,
+  yLabelFillStyle : &quot;#404040&quot;,
+  showValues : &quot;above&quot;,
+  fileName : &quot;simple_bar.png&quot; // makes the graph downloadable as PNG
+};
+
+var graph = new Graph(&quot;Bar&quot;,
+  document.getElementById(&quot;graphBarOneSerie&quot;), data, config);
+graph.draw();</textarea>
+
+    
+    
+    <h4>Bar graph with more series</h4>
+    
+    <div class="pure-g">
+    <div class="pure-u-1 graphContainer">
+      <canvas id="graphBarSeries" width="400" height="300"></canvas>
+    </div>
+  </div>
+  
+  <div><button onclick="executeGraph('graphBarSeries')">Execute</button></div>
+    
+    <textarea data-id="graphBarSeries" class="js">var data2 = [
+  {values : [20, 30, 10], label : &quot;jan&quot;},
+  {values : [25, 15, 0], label : &quot;feb&quot;},
+  {values : [30, 20, 10], label : &quot;mar&quot;},
+  {values : [25, 25, 5], label : &quot;apr&quot;},
+  {values : [15, 65, 25], label : &quot;may&quot;},
+  {values : [45, 40, 30], label : &quot;jun&quot;},
+  {values : [25, 25, 15], label : &quot;jul&quot;},
+  {values : [15, 5, 10], label : &quot;aug&quot;},
+  {values : [5, 15, 10], label : &quot;sep&quot;}
+];
+var config2 = {
+  series : [
+    {label : &quot;male&quot;, fillStyle : &quot;#66D9EF&quot;},
+    {label : &quot;female&quot;, fillStyle : &quot;#F92672&quot;},
+    {label : &quot;unknown&quot;, fillStyle : &quot;#E6DB74&quot;}
+  ],
+  legend : true,
+  title : &quot;Mulitple series&quot;,
+  maxValue : undefined,
+  gridValue : undefined,
+  barWidth : undefined,
+  barSpacing : 10,
+  seriesSpacing : 4,
+  paddingRight : 90,
+  paddingLeft : 40,
+  paddingTop : 60,
+  paddingBottom : 40,
+  showValues : false
+};
+var graph2 = new Graph(&quot;Bar&quot;,
+  document.getElementById(&quot;graphBarSeries&quot;), data2, config2);
+graph2.draw();</textarea>
+
+  
+  
+  <h4>Stacked bar</h4>
+  
+  <div class="pure-g">
+    <div class="pure-u-1 graphContainer">
+      <canvas id="graphStacked" width="400" height="300"></canvas>
+    </div>
+  </div>
+  
+  <div><button onclick="executeGraph('graphStacked')">Execute</button></div>
+  
+  <textarea data-id="graphStacked" class="js">var data3 = [
+  {values : [20, 30, 10], label : &quot;jan&quot;},
+  {values : [25, 15, 0], label : &quot;feb&quot;},
+  {values : [30, 20, 10], label : &quot;mar&quot;},
+  {values : [25, 25, 5], label : &quot;apr&quot;},
+  {values : [15, 65, 20], label : &quot;may&quot;},
+  {values : [40, 40, 30], label : &quot;jun&quot;},
+  {values : [25, 25, 15], label : &quot;jul&quot;},
+  {values : [10, 10, 10], label : &quot;aug&quot;},
+  {values : [5, 15, 10], label : &quot;sep&quot;}
+];
+var config3 = {
+  series : [
+    {label : &quot;male&quot;, fillStyle : &quot;#66D9EF&quot;},
+    {label : &quot;female&quot;, fillStyle : &quot;#F92672&quot;},
+    {label : &quot;unknown&quot;, fillStyle : &quot;#E6DB74&quot;}
+  ],
+  legend : true,
+  stacked : true,
+  title : &quot;Stacked&quot;,
+  maxValue : undefined,
+  gridValue : 10,
+  barWidth : undefined,
+  barSpacing : 10,
+  seriesSpacing : 4,
+  paddingRight : 90,
+  paddingLeft : 40,
+  paddingTop : 60,
+  paddingBottom : 40,
+  showValues : &quot;inside&quot;,
+  fileName : &quot;stacked_bar.png&quot;
+};
+var graph3 = new Graph(&quot;Bar&quot;,
+  document.getElementById(&quot;graphStacked&quot;), data3, config3);
+graph3.draw();</textarea>
+
+  <h3>Pie</h3>
+  
+  <h4>Simple pie</h4>
+  
+  <div class="pure-g">
+    <div class="pure-u-1 graphContainer">
+      <canvas id="graphPie" width="400" height="300"></canvas>
+    </div>
+  </div>
+  
+  <div><button onclick="executeGraph('graphPie')">Execute</button></div>
+  
+  <textarea data-id="graphPie" class="js">var data4 = [
+  {values : [5], label : &quot;jan&quot;, legendLabel : &quot;january&quot;, fillStyle : &quot;#55B473&quot;},
+  {values : [25], label : &quot;feb&quot;, legendLabel : &quot;february&quot;, fillStyle : &quot;#4FB0C1&quot;},
+  {values : [10], label : &quot;mar&quot;, legendLabel : &quot;march&quot;, fillStyle : &quot;#3B69C1&quot;},
+  {values : [25], label : &quot;apr&quot;, legendLabel : &quot;april&quot;, fillStyle : &quot;#6766C1&quot;},
+  {values : [20], label : &quot;may&quot;, legendLabel : &quot;may&quot;, fillStyle : &quot;#9157C1&quot;},
+  {values : [40], label : &quot;jun&quot;, legendLabel : &quot;june&quot;, fillStyle : &quot;#B44D8B&quot;},
+  {values : [20], label : &quot;jul&quot;, legendLabel : &quot;july&quot;, fillStyle : &quot;#C13B48&quot;}
+];
+
+var config4 = {
+  legend : true,
+  title : &quot;Simple pie&quot;,
+  maxValue : undefined,
+  gridValue : 6,
+  paddingRight : 60,
+  paddingLeft : 40,
+  paddingTop : 60,
+  paddingBottom : 40,
+  fillStyle : &quot;white&quot;,
+  gridStrokeStyle : &quot;black&quot;,
+  labelColor : &quot;black&quot;,
+  fileName : &quot;simple_pie.png&quot;
+};
+
+var graph4 = new Graph(&quot;Pie&quot;,
+  document.getElementById(&quot;graphPie&quot;), data4, config4);
+graph4.draw();</textarea>
+
+
+
+
+<h3>Line</h3>
+  
+  <h4>Line graph with two series</h4>
+  
+  <div class="pure-g">
+        <div class="pure-u-1 graphContainer">
+          <canvas id="graphLineOneSerie" width="400" height="300"></canvas>
+        </div>
+    </div>
+  
+  <div><button onclick="executeGraph('graphLineOneSerie')">Execute</button></div>
+  <textarea data-id="graphLineOneSerie" class="js">var data5 = [
+  {values : [22, 16], label : &quot;jan&quot;},
+  {values : [25, 30], label : &quot;feb&quot;},
+  {values : [16, 10], label : &quot;mar&quot;},
+  {values : [25, 10], label : &quot;apr&quot;},
+  {values : [10, 15], label : &quot;may&quot;},
+  {values : [4, 8], label : &quot;jun&quot;},
+  {values : [17, 25], label : &quot;jul&quot;}
+];
+
+var config5 = {
+  series : [
+    {label : &quot;male&quot;, fillStyle : &quot;#66D9EF&quot;},
+    {label : &quot;female&quot;, fillStyle : &quot;#F92672&quot;}
+  ],
+  legend : true,
+  title : &quot;Two lines&quot;,
+  maxValue : 50,
+  gridValue : 5,
+  barWidth : undefined,
+  barSpacing : 20,
+  paddingRight : 100,
+  paddingLeft : 60,
+  paddingTop : 60,
+  paddingBottom : 60,
+  fillStyle : &quot;white&quot;,
+  strokeStyle : &quot;purple&quot;,
+  gridStrokeStyle : &quot;#C0C0C0&quot;,
+  labelColor : &quot;black&quot;,
+  xLabel : &quot;Months&quot;,
+  yLabel : &quot;Unique pageviews&quot;,
+  xLabelFillStyle : &quot;#404040&quot;,
+  yLabelFillStyle : &quot;#404040&quot;,
+  showValues : &quot;above&quot;,
+  lineWidth : 6
+  //fileName : &quot;simple_line.png&quot;
+};
+
+var graph5 = new Graph(&quot;Line&quot;,
+  document.getElementById(&quot;graphLineOneSerie&quot;), data5, config5);
+graph5.draw();</textarea>
+
+
+
+
+<footer id="sitefooter">
+  &copy; 2015, <a href="http://www.michielvaneerd.nl">Michiel van Eerd</a>
+</footer>
+
+</main>
+
+<script src="./charts_old.js"></script>
+<script src="./app_old.js"></script>
+
+</body>
+</html>
