@@ -384,10 +384,14 @@
         return barConfig;
     }
 
+    function _drawCurves(pointsLists, ctx) {
+        pointsLists.forEach(function (pointList) {
+            drawCurves(pointList, ctx);
+        });
+    }
+
     // https://stackoverflow.com/questions/7054272/how-to-draw-smooth-curve-through-n-points-using-javascript-html5-canvas
     function drawCurves(points, ctx) {
-        ctx.save();
-        ctx.strokeStyle = 'black';
         ctx.moveTo((points[0].x), points[0].y);
         for (var i = 0; i < points.length - 1; i++) {
             var x_mid = (points[i].x + points[i + 1].x) / 2;
@@ -398,7 +402,6 @@
             ctx.quadraticCurveTo(cp_x2, points[i + 1].y, points[i + 1].x, points[i + 1].y);
         }
         ctx.stroke();
-        ctx.restore();
     }
 
 
@@ -410,8 +413,8 @@
         this.context.beginPath();
         this.context.strokeStyle = serie.color || 'black';
         var previousPoint = null;
-        var previousNonNullPoint = null;
         var points = [];
+        var tmpPoints = [];
         var pointsLists = []; // array within array, when null value, new array starts, we can draw curved line still and NOT connect null values.
 
         serie.values.forEach(function (value, index) {
@@ -423,28 +426,44 @@
 
             if (value !== null) {
                 if (index === 0 || (!this.config.lineChart.connectNullValues && previousPoint.value === null)) {
-                    this.context.moveTo(x, y);
+                    if (index > 0) {
+                        pointsLists.push(tmpPoints.slice(0));
+                        tmpPoints = [];
+                    }
+                    if (!this.config.lineChart.smooth) {
+                        this.context.moveTo(x, y);
+                    }
                 } else {
-                    this.context.lineTo(point.x, point.y);
+                    if (!this.config.lineChart.smooth) {
+                        this.context.lineTo(point.x, point.y);
+                    }
                 }
+                tmpPoints.push(point);
                 points.push(point);
             }
 
             previousPoint = point;
 
         }, this);
-        this.context.stroke();
+        if (!this.config.lineChart.smooth) {
+            this.context.stroke();
+        }
 
-        //drawCurves(points, this.context);
+        pointsLists.push(tmpPoints);
+
+        if (this.config.lineChart.smooth) {
+            if (this.config.lineChart.connectNullValues) {
+                drawCurves(points, this.context);
+            } else {
+                _drawCurves(pointsLists, this.context);
+            }
+        }
 
         if (this.config.lineChart.showPoints) {
             this.context.beginPath();
             this.context.fillStyle = serie.color || 'black';
             var pointWidth = this.config.lineChart.pointWidth || (this.config.lineChart.width * 2);
             points.forEach(function (point) {
-                if (point.value === null) {
-                    return;
-                }
                 this.context.moveTo(point.x, point.y);
                 this.context.arc(point.x, point.y, pointWidth, 0, Math.PI * 2);
                 if (this.config.lineChart.showClickedPointValue) {
@@ -465,29 +484,29 @@
             this.context.fill();
         }
 
-        if (this.config.lineChart.fillArea) {
-            this.context.fillStyle = updateRgbAlpha(serie.color, 0.2);
-            points.forEach(function (point, index) {
+        // if (this.config.lineChart.fillArea) {
+        //     this.context.fillStyle = updateRgbAlpha(serie.color, 0.2);
+        //     points.forEach(function (point, index) {
 
-                if (index + 1 < points.length) {
+        //         if (index + 1 < points.length) {
 
-                    if (!this.config.lineChart.connectNullValues && (point.value === null || points[index + 1].value === null)) {
-                        return;
-                    }
+        //             if (!this.config.lineChart.connectNullValues && (point.value === null || points[index + 1].value === null)) {
+        //                 return;
+        //             }
 
-                    var nextPoint = points[index + 1];
+        //             var nextPoint = points[index + 1];
 
 
-                    this.context.beginPath();
-                    this.context.moveTo(point.x, getY.call(this, 0));
+        //             this.context.beginPath();
+        //             this.context.moveTo(point.x, getY.call(this, 0));
 
-                    this.context.lineTo(point.x, point.y);
-                    this.context.lineTo(nextPoint.x, nextPoint.y);
-                    this.context.lineTo(nextPoint.x, getY.call(this, 0));
-                    this.context.fill();
-                }
-            }, this);
-        }
+        //             this.context.lineTo(point.x, point.y);
+        //             this.context.lineTo(nextPoint.x, nextPoint.y);
+        //             this.context.lineTo(nextPoint.x, getY.call(this, 0));
+        //             this.context.fill();
+        //         }
+        //     }, this);
+        // }
 
         this.context.restore();
     }
