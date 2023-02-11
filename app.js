@@ -22,7 +22,7 @@
             width: 2,
             showPoints: true,
             showClickedPointValue: true,
-            pointWidth: 10
+            //pointWidth: 10
         }
     };
 

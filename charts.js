@@ -45,6 +45,7 @@
             connectNullValues: false,
             fillArea: false,
             showClickedPointValue: false,
+            smooth: false
         }
     };
 
@@ -115,7 +116,12 @@
         this.selectedSeries = null; // For (de)selecting the series by clicking the legend items.
         this.selectedColumnIndex = null; // The index of the currently selected column.
 
+        var lineChartConfig = Object.assign(defaultConfig.lineChart, config.lineChart || {});
+        var paddingConfig = Object.assign(defaultConfig.padding, config.padding || {});
         this.config = Object.assign(defaultConfig, config);
+        this.config.lineChart = lineChartConfig;
+        this.config.padding = paddingConfig;
+        console.log(this.config);
 
         // Create the canvas and add it to the DOM.
         var parentRect = parent.getBoundingClientRect();
@@ -204,13 +210,13 @@
         this.chartHeight = parentRect.height - this.config.padding.top - this.config.padding.bottom;
         this.chartWidth = parentRect.width - this.config.padding.start - this.config.padding.end;
         this.parentRect = parentRect;
-        this.canvasRect = this.canvas.getBoundingClientRect();
     };
 
     function getMousePos(e) {
+        var canvasRect = this.canvas.getBoundingClientRect();
         return {
-            x: e.clientX - this.canvasRect.left,
-            y: e.clientY - this.canvasRect.top
+            x: e.clientX - canvasRect.left,
+            y: e.clientY - canvasRect.top
         };
     }
 
@@ -296,6 +302,8 @@
         if (this.config.legend) {
             drawLegend.call(this);
         }
+
+        drawCurves(this.context);
     };
 
     function drawChartTitle() {
@@ -376,7 +384,25 @@
         }, this);
         this.context.restore();
         return barConfig;
-    };
+    }
+
+    // https://stackoverflow.com/questions/7054272/how-to-draw-smooth-curve-through-n-points-using-javascript-html5-canvas
+    function drawCurves(points, ctx) {
+        ctx.save();
+        ctx.strokeStyle = 'black';
+        ctx.moveTo((points[0].x), points[0].y);
+        for (var i = 0; i < points.length - 1; i++) {
+            var x_mid = (points[i].x + points[i + 1].x) / 2;
+            var y_mid = (points[i].y + points[i + 1].y) / 2;
+            var cp_x1 = (x_mid + points[i].x) / 2;
+            var cp_x2 = (x_mid + points[i + 1].x) / 2;
+            ctx.quadraticCurveTo(cp_x1, points[i].y, x_mid, y_mid);
+            ctx.quadraticCurveTo(cp_x2, points[i + 1].y, points[i + 1].x, points[i + 1].y);
+        }
+        ctx.stroke();
+        ctx.restore();
+    }
+
 
     function drawLineChart(serie) {
         this.context.save();
@@ -413,6 +439,8 @@
 
         }, this);
         this.context.stroke();
+
+        drawCurves(points, this.context);
 
         if (this.config.lineChart.showPoints) {
             this.context.beginPath();
@@ -467,7 +495,7 @@
         }
 
         this.context.restore();
-    };
+    }
 
     function drawLegend() {
         this.context.save();
@@ -493,7 +521,7 @@
             this.hittableItems.push({ x: x, y: y, w: mt.width + 20, h: 10, type: 'legend', name: serie.name });
         }, this);
         this.context.restore();
-    };
+    }
 
 
     // ************************************************************************
@@ -543,7 +571,7 @@
             this.context.stroke();
         }
         this.context.restore();
-    };
+    }
 
     // TODO: reuse from drawXAxisLabels!
     function drawYAxisLabels() {
@@ -573,7 +601,7 @@
             this.context.stroke();
         }
         this.context.restore();
-    };
+    }
 
 
 
