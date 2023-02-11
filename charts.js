@@ -302,8 +302,6 @@
         if (this.config.legend) {
             drawLegend.call(this);
         }
-
-        drawCurves(this.context);
     };
 
     function drawChartTitle() {
@@ -411,8 +409,11 @@
         this.context.lineWidth = this.config.lineChart.width;
         this.context.beginPath();
         this.context.strokeStyle = serie.color || 'black';
-        var preP = null;
+        var previousPoint = null;
+        var previousNonNullPoint = null;
         var points = [];
+        var pointsLists = []; // array within array, when null value, new array starts, we can draw curved line still and NOT connect null values.
+
         serie.values.forEach(function (value, index) {
 
             var x = getLineX.call(this, index);
@@ -420,27 +421,21 @@
 
             var point = { x: x, y: y, value: value, serie: serie };
 
-            if (!this.config.connectNullValues && value === null) {
+            if (value !== null) {
+                if (index === 0 || (!this.config.lineChart.connectNullValues && previousPoint.value === null)) {
+                    this.context.moveTo(x, y);
+                } else {
+                    this.context.lineTo(point.x, point.y);
+                }
                 points.push(point);
-                preP = null;
-                return;
             }
 
-            if (index === 0 || preP === null) {
-                this.context.moveTo(x, y);
-                preP = { x: x, y: y };
-            } else {
-                var curP = { x: x, y: y };
-                this.context.lineTo(x, y);
-                preP = curP;
-            }
-
-            points.push(point);
+            previousPoint = point;
 
         }, this);
         this.context.stroke();
 
-        drawCurves(points, this.context);
+        //drawCurves(points, this.context);
 
         if (this.config.lineChart.showPoints) {
             this.context.beginPath();

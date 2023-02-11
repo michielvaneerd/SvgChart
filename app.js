@@ -22,6 +22,7 @@
             width: 2,
             showPoints: true,
             showClickedPointValue: true,
+            connectNullValues: true
             //pointWidth: 10
         }
     };
@@ -33,15 +34,15 @@
                 title: 'Nose',
                 type: 'line',
                 color: '#CCAA00',
-                values: [20, 0, 60, 70, 56, 23, 100]
+                values: [10, 0, 60, null, 56, 23, 100]
             },
-            {
-                name: 'eye',
-                title: 'Eye',
-                type: 'line',
-                color: '#ABABAB',
-                values: [10, 35, 60, 23, 26, 45, 89]
-            }
+            // {
+            //     name: 'eye',
+            //     title: 'Eye',
+            //     type: 'line',
+            //     color: '#ABABAB',
+            //     values: [10, 35, 60, 23, 26, 45, 89]
+            // }
         ],
         xAxis: {
             columns: ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo']
