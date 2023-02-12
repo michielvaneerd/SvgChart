@@ -11,7 +11,7 @@
         legend: true,
         highlightClickedColumn: false,
         backgroundColor: '#E0E0E0',
-        xAxisGridLineHalf: true,
+        xAxisGridLineHalf: false,
         xAxisGridDashed: true,
         yAxisGridDashed: true,
         yAxisMax: 100,
@@ -32,6 +32,9 @@
             connectNullValues: false,
             smooth: false,
             pointWidth: 4
+        },
+        barChart: {
+            spaceBetweenBars: 20
         }
     };
 
@@ -42,6 +45,13 @@
                 title: 'Nose',
                 type: 'line',
                 color: '#CCAA00',
+                values: Array(20).fill(10).map((value, index) => getRandomIntInclusive(0, 100))
+            },
+            {
+                name: 'ear',
+                title: 'Ear',
+                type: 'line',
+                color: 'rgba(255, 0, 0, 0.8)',
                 values: Array(20).fill(10).map((value, index) => getRandomIntInclusive(0, 100))
             },
             {

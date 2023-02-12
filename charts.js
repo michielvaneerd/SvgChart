@@ -75,6 +75,10 @@
         return (b.y - a.y) / (b.x - a.x);
     }
 
+    function getHitItemString(item) {
+        return `${item.x}-${item.y}-${item.w}-${item.h}`;
+    }
+
     // https://stackoverflow.com/a/28056903
     function hexToRGB(hex, alpha) {
         alpha = alpha || 1;
@@ -122,9 +126,11 @@
         this.hittableActiveItems = {};
 
         var lineChartConfig = Object.assign(defaultConfig.lineChart, config.lineChart || {});
+        var barChartConfig = Object.assign(defaultConfig.barChart, config.barChart || {});
         var paddingConfig = Object.assign(defaultConfig.padding, config.padding || {});
         this.config = Object.assign(defaultConfig, config);
         this.config.lineChart = lineChartConfig;
+        this.config.barChart = barChartConfig;
         this.config.padding = paddingConfig;
         console.log(this.config);
 
@@ -154,7 +160,7 @@
             for (var i = 0; i < me.hittableItems.length; i++) {
                 var item = me.hittableItems[i];
                 if (pos.x > item.x && pos.x < (item.x + item.w) && pos.y > item.y && pos.y < (item.y + item.h)) {
-                    me.hittableActiveItems[`${item.x}-${item.y}-${item.w}-${item.h}`] = true;
+                    me.hittableActiveItems[getHitItemString(item)] = true;
                 }
             }
             me.canvas.style.cursor = Object.keys(me.hittableActiveItems).length === 0 ? 'default' : 'pointer';
@@ -402,7 +408,7 @@
             };
             this.hittableItems.push(hitItem);
             // Kan denk ik ook met indexes, dat is denk ik ook iets meer performanr...
-            this.context.fillStyle = this.hittableActiveItems[`${hitItem.x}-${hitItem.y}-${hitItem.w}-${hitItem.h}`] ? 'black' : serie.color;
+            this.context.fillStyle = this.hittableActiveItems[getHitItemString(hitItem)] ? updateRgbAlpha(serie.color, 0.2) : serie.color;
             this.context.fillRect(x, this.chartHeight - y + this.config.padding.top, this.computed.barWidth, y);
         }, this);
         this.context.restore();
@@ -489,11 +495,10 @@
             var pointWidth = this.config.lineChart.pointWidth || (this.config.lineChart.width * 2);
             points.forEach(function (point) {
                 this.context.moveTo(point.x, point.y);
-                this.context.arc(point.x, point.y, pointWidth, 0, Math.PI * 2);
                 if (this.config.lineChart.showClickedPointValue) {
                     // TODO: work with real circle detection (distance <= radius)
                     // https://stackoverflow.com/questions/60367198/how-to-detect-when-mouse-is-outside-of-a-certain-circle
-                    this.hittableItems.push({
+                    var hitItem = {
                         x: point.x - pointWidth,
                         y: point.y - pointWidth,
                         w: pointWidth * 2,
@@ -501,9 +506,10 @@
                         type: 'point',
                         serie: point.serie,
                         value: point.value
-
-                    });
+                    };
+                    this.hittableItems.push(hitItem);
                 }
+                this.context.arc(point.x, point.y, this.hittableActiveItems[getHitItemString(hitItem)] ? (pointWidth + (pointWidth / 2)) : pointWidth, 0, Math.PI * 2);
             }, this);
             this.context.fill();
         }
@@ -554,9 +560,12 @@
             this.context.fillStyle = this.selectedSeries[serie.name] ? serie.color : (colorIsHex(serie.color) ? hexToRGB(serie.color, 0.2) : updateRgbAlpha(serie.color, 0.2));
             this.context.fillRect(x, y, 10, 10);
             this.context.fillStyle = 'rgb(0, 0, 0, ' + (this.selectedSeries[serie.name] ? 1 : 0.2) + ')';
-            this.context.fillText(serie.title || serie.name, x + 20, y);
+
             var mt = this.context.measureText(serie.title || serie.name);
-            this.hittableItems.push({ x: x, y: y, w: mt.width + 20, h: 10, type: 'legend', name: serie.name });
+            var hitItem = { x: x, y: y, w: mt.width + 20, h: 10, type: 'legend', name: serie.name };
+            this.hittableItems.push(hitItem);
+            this.context.font = this.hittableActiveItems[getHitItemString(hitItem)] ? 'bold 12px sans-serif' : '12px sans-serif';
+            this.context.fillText(serie.title || serie.name, x + 20, y);
         }, this);
         this.context.restore();
     }
@@ -582,16 +591,8 @@
             if (this.config.xAxisGridLineHalf) {
                 gridX -= (this.computed.columnWidth / 2);
             }
-            if (this.selectedColumnIndex === index) {
-                this.context.save();
-                this.context.font = "bold 12px sans-serif"; // TODO: make font in config...
-            }
-
+            this.context.font = this.selectedColumnIndex === index ? "bold 12px sans-serif" : "12px sans-serif"; // TODO: make font in config...
             this.context.fillText(this.data.xAxis.columns[index], x, this.chartHeight + this.config.padding.top + 10);
-
-            if (this.selectedColumnIndex === index) {
-                this.context.restore();
-            }
             var lineX = Math.round(gridX) + 0.5; // needed so lines with width of 1 look clear and not blurred.
             this.context.moveTo(lineX, this.chartHeight + this.config.padding.top);
             this.context.lineTo(lineX, this.config.padding.top);
