@@ -1,5 +1,11 @@
 (function (window) {
 
+    function getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
     var config = {
         title: 'Chart title',
         legend: true,
@@ -9,6 +15,7 @@
         xAxisGridDashed: true,
         yAxisGridDashed: true,
         yAxisMax: 100,
+        xAxisStep: 1,
         yAxisMin: 0,
         yAxisTitle: 'Dit is een test!',
         xAxisTitle: 'Dit is een test!',
@@ -23,8 +30,8 @@
             showPoints: true,
             showClickedPointValue: true,
             connectNullValues: false,
-            smooth: true,
-            pointWidth: 6
+            smooth: false,
+            pointWidth: 4
         }
     };
 
@@ -35,18 +42,18 @@
                 title: 'Nose',
                 type: 'line',
                 color: '#CCAA00',
-                values: [10, 0, 60, null, 99, 1, 100]
+                values: Array(20).fill(10).map((value, index) => getRandomIntInclusive(0, 100))
             },
             {
                 name: 'eye',
                 title: 'Eye',
-                type: 'line',
-                color: '#ABABAB',
-                values: [10, 35, 60, 23, 26, 45, 89]
+                type: 'bar',
+                color: 'rgba(12, 123, 255, 0.5)',
+                values: Array(20).fill(20).map((value, index) => getRandomIntInclusive(0, 100))
             }
         ],
         xAxis: {
-            columns: ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo']
+            columns: Array(20).fill(1).map((value, index) => value + index)
         }
     };
 

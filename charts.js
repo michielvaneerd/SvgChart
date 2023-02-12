@@ -46,6 +46,9 @@
             fillArea: false,
             showClickedPointValue: false,
             smooth: false
+        },
+        barChart: {
+            spaceBetweenBars: 10
         }
     };
 
@@ -65,7 +68,7 @@
     }
 
     function getBarXStart(index) {
-        return (index * this.computed.columnWidth) + (this.config.spaceBetweenBars / 2) + this.config.padding.start;
+        return (index * this.computed.columnWidth) + (this.config.barChart.spaceBetweenBars / 2) + this.config.padding.start;
     }
 
     function gradient(a, b) {
@@ -115,6 +118,8 @@
         this.computed = {}; // For computed values, like the height of a bar for 1 value, etc.
         this.selectedSeries = null; // For (de)selecting the series by clicking the legend items.
         this.selectedColumnIndex = null; // The index of the currently selected column.
+        this.hittableItems = [];
+        this.hittableActiveItems = {};
 
         var lineChartConfig = Object.assign(defaultConfig.lineChart, config.lineChart || {});
         var paddingConfig = Object.assign(defaultConfig.padding, config.padding || {});
@@ -146,13 +151,14 @@
 
         canvas.addEventListener('mousemove', function (e) {
             var pos = getMousePos.call(me, e);
-            for (var item of me.hittableItems) {
+            for (var i = 0; i < me.hittableItems.length; i++) {
+                var item = me.hittableItems[i];
                 if (pos.x > item.x && pos.x < (item.x + item.w) && pos.y > item.y && pos.y < (item.y + item.h)) {
-                    me.canvas.style.cursor = 'pointer';
-                    return;
+                    me.hittableActiveItems[`${item.x}-${item.y}-${item.w}-${item.h}`] = true;
                 }
             }
-            me.canvas.style.cursor = 'default';
+            me.canvas.style.cursor = Object.keys(me.hittableActiveItems).length === 0 ? 'default' : 'pointer';
+            me.draw();
         });
 
         canvas.addEventListener('click', function (e) {
@@ -182,8 +188,12 @@
                             me.valueDiv.style.top = (pos.y + 20) + "px";
                             me.valueDiv.innerHTML += '<div>' + (item.serie.title + ': ' + item.value) + '</div>';
                             break;
+                        case 'bar':
+                            me.valueDiv.style.left = (pos.x + 2) + "px";
+                            me.valueDiv.style.top = (pos.y + 20) + "px";
+                            me.valueDiv.innerHTML += '<div>' + (item.serie.title + ': ' + item.value) + '</div>';
+                            break;
                     }
-                    //return;
                 }
             }
             if (mustDraw) {
@@ -236,6 +246,10 @@
         }
 
         this.computed.columnWidth = this.chartWidth / this.data.xAxis.columns.length;
+        if (this.config.barChart.spaceBetweenBars === null || typeof this.config.barChart.spaceBetweenBars === 'undefined') {
+            this.config.barChart.spaceBetweenBars = this.chartWidth / this.data.xAxis.columns.length / 2;
+        }
+        this.computed.barWidth = this.computed.columnWidth - this.config.barChart.spaceBetweenBars;
 
         this.config.yAxisMin = this.config.yAxisMin || 0;
         var yAxisMax = this.config.yAxisMax;
@@ -302,6 +316,8 @@
         if (this.config.legend) {
             drawLegend.call(this);
         }
+
+        this.hittableActiveItems = {};
     };
 
     function drawChartTitle() {
@@ -370,18 +386,26 @@
     // Chart draw methods
     // ************************************************************************
     function drawBarChart(serie) {
-        //barConfig = Object.assign(this._getBarConfig(barConfig), serie.config || {});
         this.context.save();
-        this.context.fillStyle = serie.color;
-        serie.values.forEach(function (value, valueIndex, values) {
-            var x = getBarXStart(valueIndex, barConfig, this.config);
-
-            var y = value * barConfig.oneSeriesValueHeight;
-
-            this.context.fillRect(x, this.chartHeight - y + this.config.padding.top, barConfig.barWidth, y);
+        //this.context.fillStyle = serie.color;
+        serie.values.forEach(function (value, index) {
+            var x = getBarXStart.call(this, index);
+            var y = value * this.computed.valueToHeight;
+            var hitItem = {
+                x: x,
+                y: this.chartHeight - y + this.config.padding.top,
+                w: this.computed.barWidth,
+                h: y,
+                type: 'bar',
+                serie: serie,
+                value: value
+            };
+            this.hittableItems.push(hitItem);
+            // Kan denk ik ook met indexes, dat is denk ik ook iets meer performanr...
+            this.context.fillStyle = this.hittableActiveItems[`${hitItem.x}-${hitItem.y}-${hitItem.w}-${hitItem.h}`] ? 'black' : serie.color;
+            this.context.fillRect(x, this.chartHeight - y + this.config.padding.top, this.computed.barWidth, y);
         }, this);
         this.context.restore();
-        return barConfig;
     }
 
     function _drawCurves(pointsLists, ctx) {
@@ -415,7 +439,7 @@
         var previousPoint = null;
         var points = [];
         var tmpPoints = [];
-        var pointsLists = []; // array within array, when null value, new array starts, we can draw curved line still and NOT connect null values.
+        var pointsLists = [];
 
         serie.values.forEach(function (value, index) {
 
@@ -616,43 +640,5 @@
         }
         this.context.restore();
     }
-
-
-
-
-
-    // ************************************************************************
-    // Private config methods
-    // ************************************************************************
-    window.Chart.prototype._getBarConfig = function (barConfig, serieConfig) {
-        if (!barConfig) barConfig = {};
-        if (!serieConfig) serieConfig = {};
-
-        var spaceBetweenBars = ('spaceBetweenBars' in serieConfig)
-            ? serieConfig.spaceBetweenBars
-            :
-            (('spaceBetweenBars' in barConfig)
-                ? barConfig.spaceBetweenBars
-                : this.chartWidth / this.data.xAxis.columns.length / 2);
-        return Object.assign({
-            oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
-            barWidth: this.computed.columnWidth - spaceBetweenBars,
-            spaceBetweenBars: spaceBetweenBars
-        }, barConfig, serieConfig);
-    };
-
-    window.Chart.prototype._getLineConfig = function (lineConfig, serieConfig) {
-        if (!lineConfig) lineConfig = {};
-        if (!serieConfig) serieConfig = {};
-        return Object.assign({
-            smoothCurves: false,
-            oneSeriesValueHeight: this.chartHeight / (this.maxSeriesValue - this.minSeriesValue),
-            lineWidth: 1,
-            points: false,
-            connectNullValues: false,
-            pointWidth: null,
-            fillArea: false
-        }, lineConfig, serieConfig);
-    };
 
 }(this));
