@@ -17,8 +17,8 @@
 
         this.width = parentRect.width;
         this.height = parentRect.height;
-        this.chartWidth = this.width - this.config.padding.left - this.config.padding.right;
-        this.chartHeight = this.height - this.config.padding.top - this.config.padding.bottom;
+        this.chartWidth = this.width - this.config.padding.left - this.config.padding.right - (this.config.xAxisGridPadding * 2);
+        this.chartHeight = this.height - this.config.padding.top - this.config.padding.bottom - (this.config.yAxisGridPadding * 2);
 
         // Add SVG element to parent
         this.svg = el('svg', {
@@ -42,12 +42,12 @@
         var gYAxis = el('g');
         var currentYAxisValue = this.config.minValue;
         while (currentYAxisValue <= this.config.maxValue) {
-            var y = this.config.padding.top + this.chartHeight - (currentYAxisValue * this.valueHeight);
+            var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (currentYAxisValue * this.valueHeight);
             if (this.config.yAxisGrid) {
                 gYAxis.appendChild(el('line', {
                     x1: this.config.padding.left,
                     y1: y,
-                    x2: this.config.padding.left + this.chartWidth,
+                    x2: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2),
                     y2: y,
                     stroke: '#C0C0C0',
                     strokeWidth: 1
@@ -86,15 +86,15 @@
                     dataSerie: serie.id
                 });
                 gSerie.appendChild(el('rect', {
-                    x: this.config.padding.left + this.chartWidth + 10,
-                    y: this.config.padding.top + (serieIndex * 20),
+                    x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 10,
+                    y: this.config.padding.top + this.config.xAxisGridPadding + (serieIndex * 20),
                     width: 10,
                     height: 10,
                     fill: serie.color
                 }));
                 gSerie.appendChild(el('text', {
-                    x: this.config.padding.left + this.chartWidth + 30,
-                    y: this.config.padding.top + (serieIndex * 20) + 5,
+                    x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 30,
+                    y: this.config.padding.top + this.config.xAxisGridPadding + (serieIndex * 20) + 5,
                     textAnchor: 'start',
                     dominantBaseline: 'middle'
                 }, document.createTextNode(serie.title)));
@@ -106,8 +106,6 @@
     };
 
     window.SvgChart.prototype.drawData = function (data = null) {
-
-        // var me = this;
 
         if (data !== null) {
             this.data = data;
@@ -129,18 +127,18 @@
         this.data.xAxis.columns.forEach(function (colValue, colIndex) {
             if (this.config.xAxisGrid) {
                 this.xAxisLineGroupElement.appendChild(el('line', {
-                    x1: this.config.padding.left + (colIndex * columnWidth),
+                    x1: this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth),
                     y1: this.config.padding.top,
-                    x2: this.config.padding.left + (colIndex * columnWidth),
-                    y2: this.chartHeight + this.config.padding.top,
+                    x2: this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth),
+                    y2: this.chartHeight + this.config.padding.top + (this.config.xAxisGridPadding * 2),
                     stroke: '#C0C0C0',
                     strokeWidth: 1
                 }));
             }
             if (this.config.xAxisLabels) {
                 this.xAxisLineGroupElement.appendChild(el('text', {
-                    x: this.config.padding.left + (colIndex * columnWidth),
-                    y: this.chartHeight + this.config.padding.top + 10,
+                    x: this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth),
+                    y: this.chartHeight + this.config.padding.top + (this.config.xAxisGridPadding * 2)+ 10,
                     textAnchor: 'middle',
                     dominantBaseline: 'hanging'
                 }, document.createTextNode(colValue)));
@@ -156,8 +154,8 @@
             }
             var path = [];
             this.data.series[serie.id].forEach(function (value, valueIndex) {
-                var x = this.config.padding.left + (valueIndex * columnWidth);
-                var y = this.config.padding.top + this.chartHeight - (value * this.valueHeight);
+                var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth);
+                var y = this.config.padding.top + this.config.xAxisGridPadding + this.chartHeight - (value * this.valueHeight);
                 if (valueIndex === 0) {
                     path.push(`M ${x} ${y}`);
                 } else {
@@ -172,8 +170,6 @@
             }));
         }, this);
         this.svg.appendChild(this.serieLineGroupElement);
-
-
 
     };
 

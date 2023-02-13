@@ -10,7 +10,10 @@
         yAxisGrid: true,
         yAxisLabels: true,
         xAxisGrid: true,
+        xAxisGridPadding: 10,
+        yAxisGridPadding: 10,
         xAxisLabels: true,
+        xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts
         padding: {
             top: 60,
             left: 60,
@@ -33,8 +36,8 @@
     // Data will change between each draw
     var data = {
         series: {
-            nose: [11, 45, 66, 66, 78, 99],
-            eye: [12, 34, 56, 23, 45, 67]
+            nose: [0, 45, 66, 66, 78, 100],
+            eye: [10, 34, 56, 23, 45, 90]
         },
         xAxis: {
             columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun']
