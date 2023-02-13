@@ -1,5 +1,11 @@
 (function () {
 
+    function getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
     // This will stay the same between each draw
     var config = {
         maxValue: 100,
@@ -33,18 +39,28 @@
             }
         ]
     };
+
+    function getNewData() {
+        var data = {
+            series: {
+                nose: Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)),
+                eye: Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)),
+            },
+            xAxis: {
+                columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun']
+            }
+        };
+        console.log(data);
+        return data;
+    }
     // Data will change between each draw
-    var data = {
-        series: {
-            nose: [0, 45, 66, 66, 78, 100],
-            eye: [10, 34, 56, 23, 45, 90]
-        },
-        xAxis: {
-            columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun']
-        }
-    };
+    
     var chart = new window.SvgChart(document.getElementById('svgWrapper'), config);
     chart.drawConfig();
-    chart.drawData(data);
+    chart.drawData(getNewData());
+
+    document.getElementById('button').addEventListener('click', function() {
+        chart.drawData(getNewData());
+    });
 
 }());
