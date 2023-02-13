@@ -132,7 +132,6 @@
         this.config.lineChart = lineChartConfig;
         this.config.barChart = barChartConfig;
         this.config.padding = paddingConfig;
-        console.log(this.config);
 
         // Create the canvas and add it to the DOM.
         var parentRect = parent.getBoundingClientRect();
