@@ -8,6 +8,7 @@
 
     // This will stay the same between each draw
     var config = {
+        backgroundColor: '#FFFFFF',
         maxValue: 100,
         minValue: 0,
         yAxisStep: 20,
@@ -16,19 +17,22 @@
         yAxisGrid: true,
         yAxisLabels: true,
         xAxisGrid: true,
-        xAxisGridPadding: 6,
-        yAxisGridPadding: 6,
+        xAxisGridColor: '#D0D0D0',
+        yAxisGridColor: '#A0A0A0',
+        xAxisGridPadding: 0,
+        yAxisGridPadding: 0,
         xAxisGridDash: '2,2', // stroke-dasharray
         yAxisGridDash: '2,2', // stroke-dasharray
         xAxisLabels: true,
-        xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts
-        xAxisGridColumnsSelectable: true,
+        xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
+        xAxisGridColumnsSelectable: false,
         title: 'De titel',
         yAxisTitle: 'Dit is de Y-as',
         xAxisTitle: 'Dit is de X-as',
         connectNullValues: false,
-        lineWidth: 3,
-        pointRadius: 6,
+        curved: true,
+        lineWidth: 1,
+        pointRadius: 3,
         points: true,
         padding: {
             top: 80,
@@ -58,8 +62,8 @@
     function getNewData(random) {
         var data = {
             series: {
-                nose: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [10, 100, null, 45, null, 2],
-                eye: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [45, 56, 23, 67, 87, 3],
+                nose: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2],
+                eye: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 0, 0, 67, 87, 3],
                 ear: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [4, 5, 2, 16, 17, 33],
             },
             xAxis: {

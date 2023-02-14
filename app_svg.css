@@ -1,10 +1,4 @@
-svg {
-    background-color: lightcyan;
-}
 
-line {
-    pointer-events: all;
-}
 
 /* path:hover {
     stroke: red;
@@ -19,8 +13,16 @@ text.text-title {
     font-size: large;
 }
 
+#serie-group g {
+    transition: opacity 0.6s;
+}
+
 g.unselected {
     opacity: 0.4;
+}
+
+#serie-group g.unselected {
+    opacity: 0;
 }
 
 .x-axis-grid-columns-selectable {
@@ -41,4 +43,8 @@ g.unselected {
 
 g[data-serie] circle:hover {
     stroke-width: 4;
+}
+
+g[data-serie]:hover {
+    cursor: pointer;
 }

@@ -28,6 +28,9 @@
             width: this.width,
             height: this.height
         })
+        if (this.config.backgroundColor) {
+            this.svg.style.backgroundColor = this.config.backgroundColor;
+        }
         this.parent.appendChild(this.svg);
 
         this.valueHeight = this.chartHeight / this.config.maxValue;
@@ -51,7 +54,7 @@
                     y1: y,
                     x2: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2),
                     y2: y,
-                    stroke: '#C0C0C0',
+                    stroke: this.config.yAxisGridColor,
                     strokeWidth: 1,
                     strokeDasharray: this.config.xAxisGridDash || ''
                 }));
@@ -108,14 +111,15 @@
                     e.preventDefault();
                     var g = parent(e.target, 'g');
                     if (g && g.dataset.serie) {
+                        var sg = me.serieLineGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
                         if (me.unselectedSeries[g.dataset.serie]) {
                             g.classList.remove('unselected');
-                            me.serieLineGroupElement.appendChild(me.unselectedSeries[g.dataset.serie]);
+                            sg.classList.remove('unselected');
                             delete me.unselectedSeries[g.dataset.serie];
                         } else {
                             g.classList.add('unselected');
-                            me.unselectedSeries[g.dataset.serie] = me.serieLineGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
-                            me.serieLineGroupElement.removeChild(me.unselectedSeries[g.dataset.serie]);
+                            sg.classList.add('unselected');
+                            me.unselectedSeries[g.dataset.serie] = true;
                         }
                     }
                 });
@@ -144,7 +148,24 @@
 
     };
 
-    window.SvgChart.prototype.onSerieGroupClick = function(e) {
+    // Volgens mij kan ik deze ook gebruiken in de pad, want daar heb je : Q x1 y1, x y
+    // // https://stackoverflow.com/questions/7054272/how-to-draw-smooth-curve-through-n-points-using-javascript-html5-canvas
+    function getCurvedPathFromPoints(points) {
+        var path = ['M ' + points[0].x + ' ' + points[0].y];
+        for (var i = 0; i < points.length - 1; i++) {
+            var x_mid = (points[i].x + points[i + 1].x) / 2;
+            var y_mid = (points[i].y + points[i + 1].y) / 2;
+            var cp_x1 = (x_mid + points[i].x) / 2;
+            var cp_x2 = (x_mid + points[i + 1].x) / 2;
+            //ctx.quadraticCurveTo(cp_x1, points[i].y, x_mid, y_mid);
+            //ctx.quadraticCurveTo(cp_x2, points[i + 1].y, points[i + 1].x, points[i + 1].y);
+            path.push(`Q ${cp_x1} ${points[i].y}, ${x_mid} ${y_mid}`);
+            path.push(`Q ${cp_x2} ${points[i + 1].y} ${points[i + 1].x} ${points[i + 1].y}`);
+        }
+        return path;
+    }
+
+    window.SvgChart.prototype.onSerieGroupClick = function (e) {
         var circle = e.target;
         var g = parent(circle, 'g');
         var serie = g.dataset.serie;
@@ -208,7 +229,7 @@
                     y1: this.config.padding.top,
                     x2: x,
                     y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
-                    stroke: '#C0C0C0',
+                    stroke: this.config.xAxisGridColor,
                     strokeWidth: 1,
                     strokeDasharray: this.config.yAxisGridDash || ''
                 }));
@@ -250,14 +271,14 @@
         this.svg.appendChild(this.xAxisLabelsGroupElement);
 
         // Draw serie lines
-        this.serieLineGroupElement = el('g');
+        this.serieLineGroupElement = el('g', {
+            id: 'serie-group'
+        });
         this.serieLineGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
-        this.config.series.forEach(function (serie, serieIndex) {
-            if (this.unselectedSeries[serie.id]) {
-                return;
-            }
+        this.config.series.forEach(function (serie) {
             var serieGroup = el('g', {
-                dataSerie: serie.id
+                dataSerie: serie.id,
+                className: this.unselectedSeries[serie.id] ? 'unselected' : ''
             });
             var path = [];
             var points = [];
@@ -272,28 +293,39 @@
                         path.push(`L ${x} ${y}`);
                     }
                 }
-                if (value !== null && this.config.points) {
+                if (value !== null) {
                     points.push({ x: x, y: y, value: value });
                 }
                 previousValue = value;
             }, this);
-            serieGroup.appendChild(el('path', {
-                d: path.join(' '),
-                fill: 'none',
-                stroke: serie.color,
-                strokeWidth: this.config.lineWidth
-            }));
-            points.forEach(function (point) {
-                serieGroup.appendChild(el('circle', {
-                    cx: point.x,
-                    cy: point.y,
-                    r: this.config.pointRadius,
-                    zIndex: 1,
-                    fill: serie.color,
+            if (this.config.curved) {
+                serieGroup.appendChild(el('path', {
+                    d: getCurvedPathFromPoints(points).join(' '),
+                    fill: 'none',
                     stroke: serie.color,
-                    dataValue: point.value
+                    strokeWidth: this.config.lineWidth
                 }));
-            }, this);
+            } else {
+                serieGroup.appendChild(el('path', {
+                    d: path.join(' '),
+                    fill: 'none',
+                    stroke: serie.color,
+                    strokeWidth: this.config.lineWidth
+                }));
+            }
+            if (this.config.points) {
+                points.forEach(function (point) {
+                    serieGroup.appendChild(el('circle', {
+                        cx: point.x,
+                        cy: point.y,
+                        r: this.config.pointRadius,
+                        zIndex: 1,
+                        fill: serie.color,
+                        stroke: serie.color,
+                        dataValue: point.value
+                    }));
+                }, this);
+            }
             this.serieLineGroupElement.appendChild(serieGroup);
         }, this);
         this.svg.appendChild(this.serieLineGroupElement);
