@@ -8,10 +8,13 @@
         // Initialize variables
         this.parent = parent;
         this.config = config;
-        this.data = null;
-        this.selectedSeries = {};
+        this._data = null;
+        this.unselectedSeries = {};
+        this.selectedColumnIndex = null;
         this.xAxisLineGroupElement = null; // g element
         this.serieLineGroupElement = null; // g element
+        this.xAxisGridColumnsSelectableGroupElement = null; // g element
+        this.xAxisLabelsGroupElement = null;
 
         const parentRect = parent.getBoundingClientRect();
 
@@ -29,13 +32,12 @@
 
         this.valueHeight = this.chartHeight / this.config.maxValue;
 
-        this.config.series.forEach(function (serie, serieIndex) {
-            this.selectedSeries[serie.id] = true;
-        }, this);
+        this.onXAxisLabelGroupClickScoped = scopedFunction(this, this.onXAxisLabelGroupClick);
+        this.onSerieGroupClickScoped = scopedFunction(this, this.onSerieGroupClick);
 
     };
 
-    window.SvgChart.prototype.drawConfig = function () {
+    window.SvgChart.prototype.init = function () {
 
         var me = this;
 
@@ -50,7 +52,8 @@
                     x2: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2),
                     y2: y,
                     stroke: '#C0C0C0',
-                    strokeWidth: 1
+                    strokeWidth: 1,
+                    strokeDasharray: this.config.xAxisGridDash || ''
                 }));
             }
             if (this.config.yAxisLabels) {
@@ -65,19 +68,55 @@
         }
         this.svg.appendChild(gYAxis);
 
+        if (this.config.title) {
+            this.svg.appendChild(el('text', {
+                x: this.width / 2,
+                y: 20,
+                textAnchor: 'middle',
+                dominantBaseline: 'hanging',
+                className: 'text-title'
+            }, document.createTextNode(this.config.title)));
+        }
+
+        if (this.config.xAxisTitle) {
+            this.svg.appendChild(el('text', {
+                x: this.width - this.config.padding.right - this.config.xAxisGridPadding,
+                y: this.height - 20,
+                textAnchor: 'end',
+                dominantBaseline: 'auto',
+                className: 'text-title'
+            }, document.createTextNode(this.config.xAxisTitle)));
+        }
+
+        if (this.config.yAxisTitle) {
+            var yAxisTitleG = el('g');
+            yAxisTitleG.setAttribute('transform', 'translate(20, ' + (this.config.padding.top + this.config.yAxisGridPadding) + ')');
+            var yAxisTitleEl = el('text', {
+                textAnchor: 'end',
+                dominantBaseline: 'hanging',
+                className: 'text-title'
+            }, document.createTextNode(this.config.yAxisTitle));
+            yAxisTitleEl.setAttribute('transform', 'rotate(-90)');
+            yAxisTitleG.appendChild(yAxisTitleEl);
+            this.svg.appendChild(yAxisTitleG);
+        }
+
         if (this.config.legend) {
             var gLegend = el('g');
             if (this.config.legendSelect) {
                 gLegend.addEventListener('click', function (e) {
+                    e.preventDefault();
                     var g = parent(e.target, 'g');
                     if (g && g.dataset.serie) {
-                        me.selectedSeries[g.dataset.serie] = !me.selectedSeries[g.dataset.serie];
-                        if (me.selectedSeries[g.dataset.serie]) {
+                        if (me.unselectedSeries[g.dataset.serie]) {
                             g.classList.remove('unselected');
+                            me.serieLineGroupElement.appendChild(me.unselectedSeries[g.dataset.serie]);
+                            delete me.unselectedSeries[g.dataset.serie];
                         } else {
                             g.classList.add('unselected');
+                            me.unselectedSeries[g.dataset.serie] = me.serieLineGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
+                            me.serieLineGroupElement.removeChild(me.unselectedSeries[g.dataset.serie]);
                         }
-                        me.drawData();
                     }
                 });
             }
@@ -86,15 +125,15 @@
                     dataSerie: serie.id
                 });
                 gSerie.appendChild(el('rect', {
-                    x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 10,
-                    y: this.config.padding.top + this.config.xAxisGridPadding + (serieIndex * 20),
+                    x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20,
+                    y: this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20),
                     width: 10,
                     height: 10,
                     fill: serie.color
                 }));
                 gSerie.appendChild(el('text', {
-                    x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 30,
-                    y: this.config.padding.top + this.config.xAxisGridPadding + (serieIndex * 20) + 5,
+                    x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 40,
+                    y: this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20) + 5,
                     textAnchor: 'start',
                     dominantBaseline: 'middle'
                 }, document.createTextNode(serie.title)));
@@ -105,10 +144,32 @@
 
     };
 
-    window.SvgChart.prototype.drawData = function (data = null) {
+    window.SvgChart.prototype.onSerieGroupClick = function(e) {
+        var circle = e.target;
+        var g = parent(circle, 'g');
+        var serie = g.dataset.serie;
+        console.log(circle.dataset.value + ' for ' + serie);
+    };
+
+    window.SvgChart.prototype.onXAxisLabelGroupClick = function (e) {
+        var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.x-axis-grid-columns-selectable-label');
+        var rects = this.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.x-axis-grid-columns-selectable');
+        for (var i = 0; i < textNodes.length; i++) {
+            if (textNodes[i] === e.target) {
+                this.selectedColumnIndex = i;
+                textNodes[i].classList.add('selected');
+                rects[i].classList.add('selected');
+            } else {
+                textNodes[i].classList.remove('selected');
+                rects[i].classList.remove('selected');
+            }
+        }
+    };
+
+    window.SvgChart.prototype.data = function (data = null) {
 
         if (data !== null) {
-            this.data = data;
+            this._data = data;
         }
 
         if (this.xAxisLineGroupElement && this.xAxisLineGroupElement.parentNode) {
@@ -116,62 +177,133 @@
             this.xAxisLineGroupElement = null;
         }
         if (this.serieLineGroupElement && this.serieLineGroupElement.parentNode) {
+            this.serieLineGroupElement.removeEventListener('click', this.onSerieGroupClickScoped);
             this.serieLineGroupElement.parentNode.removeChild(this.serieLineGroupElement);
             this.serieLineGroupElement = null;
         }
+        if (this.xAxisGridColumnsSelectableGroupElement && this.xAxisGridColumnsSelectableGroupElement.parentNode) {
+            this.xAxisGridColumnsSelectableGroupElement.parentNode.removeChild(this.xAxisGridColumnsSelectableGroupElement);
+            this.xAxisGridColumnsSelectableGroupElement = null;
+        }
+        if (this.xAxisLabelsGroupElement && this.xAxisLabelsGroupElement.parentNode) {
+            this.xAxisLabelsGroupElement.removeEventListener('click', this.onXAxisLabelGroupClickScoped);
+            this.xAxisLabelsGroupElement.parentNode.removeChild(this.xAxisLabelsGroupElement);
+            this.xAxisLabelsGroupElement = null;
+        }
 
-        const columnWidth = this.chartWidth / (this.data.xAxis.columns.length - 1);
+        const columnWidth = this.config.xAxisGridColumns
+            ? (this.chartWidth / (this._data.xAxis.columns.length))
+            : (this.chartWidth / (this._data.xAxis.columns.length - 1));
 
         // Draw xAxis lines
         this.xAxisLineGroupElement = el('g');
-        this.data.xAxis.columns.forEach(function (colValue, colIndex) {
+        this.xAxisLabelsGroupElement = el('g');
+        this.xAxisLabelsGroupElement.addEventListener('click', this.onXAxisLabelGroupClickScoped);
+        this.xAxisGridColumnsSelectableGroupElement = el('g');
+        this._data.xAxis.columns.forEach(function (colValue, colIndex) {
             if (this.config.xAxisGrid) {
+                const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
                 this.xAxisLineGroupElement.appendChild(el('line', {
-                    x1: this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth),
+                    x1: x,
                     y1: this.config.padding.top,
-                    x2: this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth),
-                    y2: this.chartHeight + this.config.padding.top + (this.config.xAxisGridPadding * 2),
+                    x2: x,
+                    y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
                     stroke: '#C0C0C0',
-                    strokeWidth: 1
+                    strokeWidth: 1,
+                    strokeDasharray: this.config.yAxisGridDash || ''
                 }));
+                if (this.config.xAxisGridColumnsSelectable) {
+                    this.xAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
+                        x: x,
+                        y: this.config.padding.top + this.config.yAxisGridPadding,
+                        width: columnWidth,
+                        height: this.chartHeight,
+                        fill: 'red',
+                        strokeWidth: 1,
+                        className: 'x-axis-grid-columns-selectable'
+                    }));
+                }
             }
             if (this.config.xAxisLabels) {
-                this.xAxisLineGroupElement.appendChild(el('text', {
-                    x: this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth),
-                    y: this.chartHeight + this.config.padding.top + (this.config.xAxisGridPadding * 2)+ 10,
+                this.xAxisLabelsGroupElement.appendChild(el('text', {
+                    x: this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0),
+                    y: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + 10,
                     textAnchor: 'middle',
-                    dominantBaseline: 'hanging'
+                    dominantBaseline: 'hanging',
+                    className: this.config.xAxisGridColumnsSelectable ? 'x-axis-grid-columns-selectable-label' : ''
                 }, document.createTextNode(colValue)));
             }
         }, this);
+        if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
+            this.xAxisLineGroupElement.appendChild(el('line', {
+                x1: this.config.padding.left + this.config.xAxisGridPadding + (this._data.xAxis.columns.length * columnWidth),
+                y1: this.config.padding.top,
+                x2: this.config.padding.left + this.config.xAxisGridPadding + (this._data.xAxis.columns.length * columnWidth),
+                y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
+                stroke: '#C0C0C0',
+                strokeWidth: 1,
+                strokeDasharray: this.config.yAxisGridDash || ''
+            }));
+        }
         this.svg.appendChild(this.xAxisLineGroupElement);
+        this.svg.appendChild(this.xAxisGridColumnsSelectableGroupElement);
+        this.svg.appendChild(this.xAxisLabelsGroupElement);
 
         // Draw serie lines
         this.serieLineGroupElement = el('g');
+        this.serieLineGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
         this.config.series.forEach(function (serie, serieIndex) {
-            if (!this.selectedSeries[serie.id]) {
+            if (this.unselectedSeries[serie.id]) {
                 return;
             }
+            var serieGroup = el('g', {
+                dataSerie: serie.id
+            });
             var path = [];
-            this.data.series[serie.id].forEach(function (value, valueIndex) {
-                var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth);
-                var y = this.config.padding.top + this.config.xAxisGridPadding + this.chartHeight - (value * this.valueHeight);
-                if (valueIndex === 0) {
+            var points = [];
+            var previousValue = null;
+            this._data.series[serie.id].forEach(function (value, valueIndex) {
+                var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
+                var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
+                if (valueIndex === 0 || (!this.config.connectNullValues && (value === null || previousValue === null))) {
                     path.push(`M ${x} ${y}`);
                 } else {
-                    path.push(`L ${x} ${y}`);
+                    if (value !== null) {
+                        path.push(`L ${x} ${y}`);
+                    }
                 }
+                if (value !== null && this.config.points) {
+                    points.push({ x: x, y: y, value: value });
+                }
+                previousValue = value;
             }, this);
-            this.serieLineGroupElement.appendChild(el('path', {
+            serieGroup.appendChild(el('path', {
                 d: path.join(' '),
                 fill: 'none',
                 stroke: serie.color,
-                strokeWidth: 2
+                strokeWidth: this.config.lineWidth
             }));
+            points.forEach(function (point) {
+                serieGroup.appendChild(el('circle', {
+                    cx: point.x,
+                    cy: point.y,
+                    r: this.config.pointRadius,
+                    zIndex: 1,
+                    fill: serie.color,
+                    stroke: serie.color,
+                    dataValue: point.value
+                }));
+            }, this);
+            this.serieLineGroupElement.appendChild(serieGroup);
         }, this);
         this.svg.appendChild(this.serieLineGroupElement);
-
     };
+
+    function scopedFunction(me, func) {
+        return (function (arg) {
+            func.call(me, arg);
+        });
+    }
 
     function parent(currentElement, parentName) {
         var el = currentElement;
@@ -184,7 +316,16 @@
     function el(name, attributes = {}, child = null) {
         var el = document.createElementNS(ns, name);
         Object.keys(attributes).forEach(function (key) {
-            el.setAttribute(key.replaceAll(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
+            switch (key) {
+                case 'className':
+                    if (attributes[key]) {
+                        el.classList.add(...attributes[key].split(' '));
+                    }
+                    break;
+                default:
+                    el.setAttribute(key.replaceAll(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
+                    break;
+            }
         });
         if (child) {
             el.appendChild(child);
