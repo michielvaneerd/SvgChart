@@ -26,11 +26,9 @@
         // Add SVG element to parent
         this.svg = el('svg', {
             width: this.width,
-            height: this.height
+            height: this.height,
+            className: 'my-svg'
         })
-        if (this.config.backgroundColor) {
-            this.svg.style.backgroundColor = this.config.backgroundColor;
-        }
         this.parent.appendChild(this.svg);
 
         this.valueHeight = this.chartHeight / this.config.maxValue;
@@ -44,7 +42,9 @@
 
         var me = this;
 
-        var gYAxis = el('g');
+        var gYAxis = el('g', {
+            className: 'my-y-axis-group'
+        });
         var currentYAxisValue = this.config.minValue;
         while (currentYAxisValue <= this.config.maxValue) {
             var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (currentYAxisValue * this.valueHeight);
@@ -54,9 +54,7 @@
                     y1: y,
                     x2: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2),
                     y2: y,
-                    stroke: this.config.yAxisGridColor,
-                    strokeWidth: 1,
-                    strokeDasharray: this.config.xAxisGridDash || ''
+                    className: 'my-y-axis-grid-line'
                 }));
             }
             if (this.config.yAxisLabels) {
@@ -65,7 +63,7 @@
                     y: y,
                     textAnchor: 'end',
                     dominantBaseline: 'middle',
-                    fill: this.config.yAxisGridColor
+                    className: 'my-y-axis-label'
                 }, document.createTextNode(currentYAxisValue)));
             }
             currentYAxisValue += this.config.yAxisStep;
@@ -78,7 +76,7 @@
                 y: 20,
                 textAnchor: 'middle',
                 dominantBaseline: 'hanging',
-                className: 'text-title'
+                className: 'my-text-title'
             }, document.createTextNode(this.config.title)));
         }
 
@@ -88,7 +86,7 @@
                 y: this.height - 20,
                 textAnchor: 'end',
                 dominantBaseline: 'auto',
-                className: 'text-title'
+                className: 'my-text-x-axis-title'
             }, document.createTextNode(this.config.xAxisTitle)));
         }
 
@@ -98,7 +96,7 @@
             var yAxisTitleEl = el('text', {
                 textAnchor: 'end',
                 dominantBaseline: 'hanging',
-                className: 'text-title'
+                className: 'my-text-y-axis-title'
             }, document.createTextNode(this.config.yAxisTitle));
             yAxisTitleEl.setAttribute('transform', 'rotate(-90)');
             yAxisTitleG.appendChild(yAxisTitleEl);
@@ -106,7 +104,9 @@
         }
 
         if (this.config.legend) {
-            var gLegend = el('g');
+            var gLegend = el('g', {
+                className: 'my-legend-group'
+            });
             if (this.config.legendSelect) {
                 gLegend.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -190,8 +190,8 @@
     };
 
     window.SvgChart.prototype.onXAxisLabelGroupClick = function (e) {
-        var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.x-axis-grid-columns-selectable-label');
-        var rects = this.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.x-axis-grid-columns-selectable');
+        var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.my-x-axis-grid-column-selectable-label');
+        var rects = this.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.my-x-axis-grid-column-selectable');
         for (var i = 0; i < textNodes.length; i++) {
             if (textNodes[i] === e.target) {
                 this.selectedColumnIndex = i;
@@ -234,8 +234,12 @@
             : (this.chartWidth / (this._data.xAxis.columns.length - 1));
 
         // Draw xAxis lines
-        this.xAxisLineGroupElement = el('g');
-        this.xAxisLabelsGroupElement = el('g');
+        this.xAxisLineGroupElement = el('g', {
+            className: 'my-x-axis-group'
+        });
+        this.xAxisLabelsGroupElement = el('g', {
+            className: 'my-x-axis-label-group'
+        });
         this.xAxisLabelsGroupElement.addEventListener('click', this.onXAxisLabelGroupClickScoped);
         this.xAxisGridColumnsSelectableGroupElement = el('g');
         this._data.xAxis.columns.forEach(function (colValue, colIndex) {
@@ -246,9 +250,7 @@
                     y1: this.config.padding.top,
                     x2: x,
                     y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
-                    stroke: this.config.xAxisGridColor,
-                    strokeWidth: 1,
-                    strokeDasharray: this.config.yAxisGridDash || ''
+                    className: 'my-x-axis-grid-line'
                 }));
                 if (this.config.xAxisGridColumnsSelectable) {
                     this.xAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
@@ -256,9 +258,7 @@
                         y: this.config.padding.top + this.config.yAxisGridPadding,
                         width: columnWidth,
                         height: this.chartHeight,
-                        fill: 'red',
-                        strokeWidth: 1,
-                        className: 'x-axis-grid-columns-selectable'
+                        className: 'my-x-axis-grid-column-selectable'
                     }));
                 }
             }
@@ -268,8 +268,7 @@
                     y: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + 10,
                     textAnchor: 'middle',
                     dominantBaseline: 'hanging',
-                    fill: this.config.xAxisGridColor,
-                    className: this.config.xAxisGridColumnsSelectable ? 'x-axis-grid-columns-selectable-label' : ''
+                    className: 'my-x-axis-label ' + (this.config.xAxisGridColumnsSelectable ? 'my-x-axis-grid-column-selectable-label' : '')
                 }, document.createTextNode(colValue)));
             }
         }, this);
@@ -279,9 +278,7 @@
                 y1: this.config.padding.top,
                 x2: this.config.padding.left + this.config.xAxisGridPadding + (this._data.xAxis.columns.length * columnWidth),
                 y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
-                stroke: '#C0C0C0',
-                strokeWidth: 1,
-                strokeDasharray: this.config.yAxisGridDash || ''
+                className: 'my-x-axis-grid-line'
             }));
         }
         this.svg.appendChild(this.xAxisLineGroupElement);
@@ -290,7 +287,7 @@
 
         // Draw serie lines
         this.serieLineGroupElement = el('g', {
-            id: 'serie-group'
+            id: 'my-serie-group'
         });
         this.serieLineGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
         this.config.series.forEach(function (serie) {
@@ -328,15 +325,15 @@
                 serieGroup.appendChild(el('path', {
                     d: getCurvedPathFromPoints.call(this, points, flatPoints).join(' '),
                     fill: 'none',
-                    stroke: serie.color,
-                    strokeWidth: this.config.lineWidth
+                    className: 'my-line',
+                    stroke: serie.color
                 }));
             } else {
                 serieGroup.appendChild(el('path', {
                     d: path.join(' '),
                     fill: 'none',
                     stroke: serie.color,
-                    strokeWidth: this.config.lineWidth
+                    className: 'my-line'
                 }));
             }
             if (this.config.points) {
@@ -348,7 +345,8 @@
                         zIndex: 1,
                         fill: serie.color,
                         stroke: serie.color,
-                        dataValue: point.value
+                        dataValue: point.value,
+                        className: 'my-line-point'
                     }));
                 }, this);
             }
@@ -377,7 +375,7 @@
             switch (key) {
                 case 'className':
                     if (attributes[key]) {
-                        el.classList.add(...attributes[key].split(' '));
+                        el.classList.add(...attributes[key].trim().split(' '));
                     }
                     break;
                 default:

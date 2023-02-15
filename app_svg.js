@@ -8,7 +8,6 @@
 
     // This will stay the same between each draw
     var config = {
-        backgroundColor: '#FFFFFF',
         maxValue: 100,
         minValue: 0,
         yAxisStep: 20,
@@ -17,15 +16,11 @@
         yAxisGrid: true,
         yAxisLabels: true,
         xAxisGrid: true,
-        xAxisGridColor: '#D0D0D0',
-        yAxisGridColor: '#A0A0A0',
         xAxisGridPadding: 0,
-        yAxisGridPadding: 0,
-        xAxisGridDash: '2,2', // stroke-dasharray
-        yAxisGridDash: '2,2', // stroke-dasharray
+        yAxisGridPadding: 10,
         xAxisLabels: true,
         xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
-        xAxisGridColumnsSelectable: false,
+        xAxisGridColumnsSelectable: true,
         title: 'De titel',
         yAxisTitle: 'Dit is de Y-as',
         xAxisTitle: 'Dit is de X-as',
@@ -37,7 +32,7 @@
         padding: {
             top: 80,
             left: 100,
-            right: 160,
+            right: 120,
             bottom: 80
         },
         series: [
