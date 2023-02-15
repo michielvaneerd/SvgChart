@@ -8,6 +8,27 @@
 
     // This will stay the same between each draw
     var config = {
+        // Optional style values, only required when you want to save it to a PNG (because then CSS won't be used)
+        backgroundColor: 'bisque',
+        fontFamily: 'sans-serif',
+        fontSizeAxisLabel: 'small',
+        fontSizeTitle: 'normal',
+        fontSizeAxisTitle: 'smaller',
+        fontSizeLegend: 'smaller',
+        barFillOpacity: 0.5,
+        lineWidth: 3,
+        xAxisGridLineWidth: 1,
+        xAxisGridLineColor: '#C0C0C0',
+        xAxisGridLineDashArray: '1,1',
+        yAxisGridLineWidth: 1,
+        yAxisGridLineColor: '#C0C0C0',
+        yAxisGridLineDashArray: '1,1',
+        xAxisLabelColor: 'red',
+        yAxisLabelColor: 'green',
+        titleColor: 'purple',
+        xAxisTitleColor: 'orange',
+        yAxisTitleColor: 'pink',
+        // Required values
         maxValue: 100,
         minValue: 0,
         yAxisStep: 20,
@@ -26,7 +47,6 @@
         xAxisTitle: 'Dit is de X-as',
         connectNullValues: false,
         curved: true,
-        lineWidth: 1,
         pointRadius: 3,
         points: true,
         padding: {
@@ -39,17 +59,20 @@
             {
                 title: 'Nose',
                 id: 'nose',
-                color: 'orange'
+                color: 'orange',
+                type: 'line'
             },
             {
                 title: 'Eye',
                 id: 'eye',
-                color: 'blue'
+                color: 'blue',
+                type: 'line'
             },
             {
                 title: 'Ear',
                 id: 'ear',
-                color: 'green'
+                color: 'green',
+                type: 'bar'
             }
         ]
     };
@@ -68,13 +91,45 @@
         return data;
     }
     // Data will change between each draw
-    
+
     var chart = new window.SvgChart(document.getElementById('svgWrapper'), config);
     chart.init();
-    chart.data(getNewData(false));
+    chart.data(getNewData(true));
 
-    document.getElementById('button').addEventListener('click', function() {
+    document.getElementById('button').addEventListener('click', function () {
         chart.data(getNewData(true));
+    });
+
+    document.getElementById('saveButton').addEventListener('click', function () {
+        var canvas = document.getElementById('canvas');
+        canvas.style.backgroundColor = chart.config.backgroundColor;
+        var rect = chart.svg.getBoundingClientRect();
+        canvas.setAttribute('width', rect.width);
+        canvas.setAttribute('height', rect.height);
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = chart.config.backgroundColor;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        var img = new Image();
+        var data = '<svg xmlns="http://www.w3.org/2000/svg">' + chart.svg.innerHTML + '</svg>';
+        var svg = new Blob([data], { type: 'image/svg+xml' });
+        var url = window.URL.createObjectURL(svg);
+        img.onload = function () {
+            ctx.drawImage(img, 0, 0);
+            window.URL.revokeObjectURL(url);
+            // var png_img = canvas.toDataURL("image/png");
+            // Now do something with this...
+            // const createEl = document.createElement('a');
+            // createEl.href = png_img;
+            // // This is the name of our downloaded file
+            // createEl.download = "download-this-canvas";
+
+            // // Click the download button, causing a download, and then remove it
+            // createEl.click();
+            // createEl.remove();
+        }
+
+        img.src = url;
     });
 
 }());

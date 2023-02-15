@@ -1,5 +1,10 @@
 (function () {
 
+    // Note:
+    // 1) If you want to save the SVG to a PNG (by writing it to a CANVAS element), we have to set the styling by attributes
+    // instead of using CSS! So we accept these properties and only set them when available. But users can also use CSS. So
+    // it's up to the user.
+
     const ns = 'http://www.w3.org/2000/svg';
     const attributesCamelCaseToDashRegex = /[A-Z]/g;
 
@@ -12,7 +17,7 @@
         this.unselectedSeries = {};
         this.selectedColumnIndex = null;
         this.xAxisLineGroupElement = null; // g element
-        this.serieLineGroupElement = null; // g element
+        this.serieGroupElement = null; // g element
         this.xAxisGridColumnsSelectableGroupElement = null; // g element
         this.xAxisLabelsGroupElement = null;
 
@@ -29,6 +34,9 @@
             height: this.height,
             className: 'my-svg'
         })
+        if (this.config.backgroundColor) {
+            this.svg.style.backgroundColor = this.config.backgroundColor;
+        }
         this.parent.appendChild(this.svg);
 
         this.valueHeight = this.chartHeight / this.config.maxValue;
@@ -54,7 +62,10 @@
                     y1: y,
                     x2: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2),
                     y2: y,
-                    className: 'my-y-axis-grid-line'
+                    className: 'my-y-axis-grid-line',
+                    stroke: this.config.yAxisGridLineColor || '',
+                    strokeWidth: this.config.yAxisGridLineWidth || '',
+                    strokeDasharray: this.config.yAxisGridLineDashArray || '',
                 }));
             }
             if (this.config.yAxisLabels) {
@@ -63,7 +74,10 @@
                     y: y,
                     textAnchor: 'end',
                     dominantBaseline: 'middle',
-                    className: 'my-y-axis-label'
+                    fontFamily: this.config.fontFamily || '',
+                    fontSize: this.config.fontSizeAxisLabel || '',
+                    className: 'my-y-axis-label',
+                    fill: this.config.yAxisLabelColor || ''
                 }, document.createTextNode(currentYAxisValue)));
             }
             currentYAxisValue += this.config.yAxisStep;
@@ -76,7 +90,10 @@
                 y: 20,
                 textAnchor: 'middle',
                 dominantBaseline: 'hanging',
-                className: 'my-text-title'
+                fontFamily: this.config.fontFamily || '',
+                fontSize: this.config.fontSizeTitle || '',
+                fill: this.config.titleColor || '',
+                className: 'my-text-title',
             }, document.createTextNode(this.config.title)));
         }
 
@@ -86,6 +103,9 @@
                 y: this.height - 20,
                 textAnchor: 'end',
                 dominantBaseline: 'auto',
+                fontFamily: this.config.fontFamily || '',
+                fontSize: this.config.fontSizeAxisTitle || '',
+                fill: this.config.xAxisTitleColor || '',
                 className: 'my-text-x-axis-title'
             }, document.createTextNode(this.config.xAxisTitle)));
         }
@@ -96,6 +116,9 @@
             var yAxisTitleEl = el('text', {
                 textAnchor: 'end',
                 dominantBaseline: 'hanging',
+                fontFamily: this.config.fontFamily || '',
+                fontSize: this.config.fontSizeAxisTitle || '',
+                fill: this.config.yAxisTitleColor || '',
                 className: 'my-text-y-axis-title'
             }, document.createTextNode(this.config.yAxisTitle));
             yAxisTitleEl.setAttribute('transform', 'rotate(-90)');
@@ -112,7 +135,7 @@
                     e.preventDefault();
                     var g = parent(e.target, 'g');
                     if (g && g.dataset.serie) {
-                        var sg = me.serieLineGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
+                        var sg = me.serieGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
                         if (me.unselectedSeries[g.dataset.serie]) {
                             g.classList.remove('unselected');
                             sg.classList.remove('unselected');
@@ -140,7 +163,9 @@
                     x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 40,
                     y: this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20) + 5,
                     textAnchor: 'start',
-                    dominantBaseline: 'middle'
+                    dominantBaseline: 'middle',
+                    fontFamily: this.config.fontFamily || '',
+                    fontSize: this.config.fontSizeLegend || '',
                 }, document.createTextNode(serie.title)));
                 gLegend.appendChild(gSerie);
             }, this);
@@ -214,10 +239,10 @@
             this.xAxisLineGroupElement.parentNode.removeChild(this.xAxisLineGroupElement);
             this.xAxisLineGroupElement = null;
         }
-        if (this.serieLineGroupElement && this.serieLineGroupElement.parentNode) {
-            this.serieLineGroupElement.removeEventListener('click', this.onSerieGroupClickScoped);
-            this.serieLineGroupElement.parentNode.removeChild(this.serieLineGroupElement);
-            this.serieLineGroupElement = null;
+        if (this.serieGroupElement && this.serieGroupElement.parentNode) {
+            this.serieGroupElement.removeEventListener('click', this.onSerieGroupClickScoped);
+            this.serieGroupElement.parentNode.removeChild(this.serieGroupElement);
+            this.serieGroupElement = null;
         }
         if (this.xAxisGridColumnsSelectableGroupElement && this.xAxisGridColumnsSelectableGroupElement.parentNode) {
             this.xAxisGridColumnsSelectableGroupElement.parentNode.removeChild(this.xAxisGridColumnsSelectableGroupElement);
@@ -229,6 +254,7 @@
             this.xAxisLabelsGroupElement = null;
         }
 
+        // Note that for bar charts to display correctly, this.config.xAxisGridColumns MUST be true!
         const columnWidth = this.config.xAxisGridColumns
             ? (this.chartWidth / (this._data.xAxis.columns.length))
             : (this.chartWidth / (this._data.xAxis.columns.length - 1));
@@ -250,7 +276,10 @@
                     y1: this.config.padding.top,
                     x2: x,
                     y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
-                    className: 'my-x-axis-grid-line'
+                    className: 'my-x-axis-grid-line',
+                    stroke: this.config.xAxisGridLineColor || '',
+                    strokeWidth: this.config.xAxisGridLineWidth || '',
+                    strokeDasharray: this.config.xAxisGridLineDashArray || '',
                 }));
                 if (this.config.xAxisGridColumnsSelectable) {
                     this.xAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
@@ -258,7 +287,8 @@
                         y: this.config.padding.top + this.config.yAxisGridPadding,
                         width: columnWidth,
                         height: this.chartHeight,
-                        className: 'my-x-axis-grid-column-selectable'
+                        className: 'my-x-axis-grid-column-selectable',
+                        fillOpacity: 0 // We need to set this here, otherwise this will show when drawn to canvas
                     }));
                 }
             }
@@ -268,6 +298,9 @@
                     y: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + 10,
                     textAnchor: 'middle',
                     dominantBaseline: 'hanging',
+                    fontFamily: this.config.fontFamily || '',
+                    fontSize: this.config.fontSizeAxisLabel || '',
+                    fill: this.config.xAxisLabelColor || '',
                     className: 'my-x-axis-label ' + (this.config.xAxisGridColumnsSelectable ? 'my-x-axis-grid-column-selectable-label' : '')
                 }, document.createTextNode(colValue)));
             }
@@ -285,74 +318,105 @@
         this.svg.appendChild(this.xAxisGridColumnsSelectableGroupElement);
         this.svg.appendChild(this.xAxisLabelsGroupElement);
 
-        // Draw serie lines
-        this.serieLineGroupElement = el('g', {
+        // Draw serie lines or bars
+        this.serieGroupElement = el('g', {
             id: 'my-serie-group'
         });
-        this.serieLineGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
+        this.serieGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
         this.config.series.forEach(function (serie) {
             var serieGroup = el('g', {
                 dataSerie: serie.id,
                 className: this.unselectedSeries[serie.id] ? 'unselected' : ''
             });
-            var path = [];
-            var flatPoints = []; // Array of all points in one array.
-            var points = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values
-            var weHaveSeenNonNullPoint = false;
-            var previousValue = null;
-            this._data.series[serie.id].forEach(function (value, valueIndex) {
-                var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
-                var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
-                if (valueIndex === 0 || (!this.config.connectNullValues && (value === null || previousValue === null)) || !weHaveSeenNonNullPoint) {
-                    path.push(`M ${x} ${y}`);
-                } else {
-                    if (value !== null) {
-                        path.push(`L ${x} ${y}`);
+
+            switch (serie.type) {
+                case 'line':
+                    {
+                        var path = [];
+                        var flatPoints = []; // Array of all points in one array.
+                        var points = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values
+                        var weHaveSeenNonNullPoint = false;
+                        var previousValue = null;
+                        this._data.series[serie.id].forEach(function (value, valueIndex) {
+                            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
+                            var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
+
+
+                            if (valueIndex === 0 || (!this.config.connectNullValues && (value === null || previousValue === null)) || !weHaveSeenNonNullPoint) {
+                                path.push(`M ${x} ${y}`);
+                            } else {
+                                if (value !== null) {
+                                    path.push(`L ${x} ${y}`);
+                                }
+                            }
+                            if (value === null) {
+                                if (points[points.length - 1].length > 0) {
+                                    points.push([]);
+                                }
+                            } else {
+                                weHaveSeenNonNullPoint = true;
+                                points[points.length - 1].push({ x: x, y: y, value: value });
+                                flatPoints.push({ x: x, y: y, value: value });
+                            }
+                            previousValue = value;
+                        }, this);
+                        if (this.config.curved) {
+                            serieGroup.appendChild(el('path', {
+                                d: getCurvedPathFromPoints.call(this, points, flatPoints).join(' '),
+                                fill: 'none',
+                                className: 'my-line',
+                                stroke: serie.color,
+                                strokeWidth: this.config.lineWidth || ''
+                            }));
+                        } else {
+                            serieGroup.appendChild(el('path', {
+                                d: path.join(' '),
+                                fill: 'none',
+                                stroke: serie.color,
+                                className: 'my-line'
+                            }));
+                        }
+                        if (this.config.points) {
+                            flatPoints.forEach(function (point) {
+                                serieGroup.appendChild(el('circle', {
+                                    cx: point.x,
+                                    cy: point.y,
+                                    r: this.config.pointRadius,
+                                    zIndex: 1,
+                                    fill: serie.color,
+                                    stroke: serie.color,
+                                    dataValue: point.value,
+                                    className: 'my-line-point'
+                                }));
+                            }, this);
+                        }
                     }
-                }
-                if (value === null) {
-                    if (points[points.length - 1].length > 0) {
-                        points.push([]);
+                    break;
+                case 'bar':
+                    {
+                        this._data.series[serie.id].forEach(function (value, valueIndex) {
+                            
+                            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
+                            var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
+
+                            serieGroup.appendChild(el('rect', {
+                                x: x - (columnWidth / 2) + (columnWidth / 4),
+                                y: y,
+                                width: columnWidth / 2,
+                                height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - y,
+                                fill: serie.color,
+                                className: 'my-bar',
+                                fillOpacity: this.config.barFillOpacity || ''
+                            }));
+
+                        }, this);
                     }
-                } else {
-                    weHaveSeenNonNullPoint = true;
-                    points[points.length - 1].push({ x: x, y: y, value: value });
-                    flatPoints.push({ x: x, y: y, value: value });
-                }
-                previousValue = value;
-            }, this);
-            if (this.config.curved) {
-                serieGroup.appendChild(el('path', {
-                    d: getCurvedPathFromPoints.call(this, points, flatPoints).join(' '),
-                    fill: 'none',
-                    className: 'my-line',
-                    stroke: serie.color
-                }));
-            } else {
-                serieGroup.appendChild(el('path', {
-                    d: path.join(' '),
-                    fill: 'none',
-                    stroke: serie.color,
-                    className: 'my-line'
-                }));
+                    break;
             }
-            if (this.config.points) {
-                flatPoints.forEach(function (point) {
-                    serieGroup.appendChild(el('circle', {
-                        cx: point.x,
-                        cy: point.y,
-                        r: this.config.pointRadius,
-                        zIndex: 1,
-                        fill: serie.color,
-                        stroke: serie.color,
-                        dataValue: point.value,
-                        className: 'my-line-point'
-                    }));
-                }, this);
-            }
-            this.serieLineGroupElement.appendChild(serieGroup);
+
+            this.serieGroupElement.appendChild(serieGroup);
         }, this);
-        this.svg.appendChild(this.serieLineGroupElement);
+        this.svg.appendChild(this.serieGroupElement);
     };
 
     function scopedFunction(me, func) {
