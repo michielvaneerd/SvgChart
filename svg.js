@@ -64,7 +64,8 @@
                     x: this.config.padding.left - 10,
                     y: y,
                     textAnchor: 'end',
-                    dominantBaseline: 'middle'
+                    dominantBaseline: 'middle',
+                    fill: this.config.yAxisGridColor
                 }, document.createTextNode(currentYAxisValue)));
             }
             currentYAxisValue += this.config.yAxisStep;
@@ -150,23 +151,17 @@
 
     // Volgens mij kan ik deze ook gebruiken in de pad, want daar heb je : Q x1 y1, x y
     // // https://stackoverflow.com/questions/7054272/how-to-draw-smooth-curve-through-n-points-using-javascript-html5-canvas
-    function getCurvedPathFromPoints(points) {
+    function getCurvedPathFromPoints(points, flatPoints) {
         var path = [];
         if (this.config.connectNullValues) {
-            var allPoints = [];
-            points.forEach(function (nonNullPoints) {
-                nonNullPoints.forEach(function (point) {
-                    allPoints.push(point);
-                });
-            });
-            path.push('M ' + allPoints[0].x + ' ' + allPoints[0].y);
-            for (var i = 0; i < allPoints.length - 1; i++) {
-                var x_mid = (allPoints[i].x + allPoints[i + 1].x) / 2;
-                var y_mid = (allPoints[i].y + allPoints[i + 1].y) / 2;
-                var cp_x1 = (x_mid + allPoints[i].x) / 2;
-                var cp_x2 = (x_mid + allPoints[i + 1].x) / 2;
-                path.push(`Q ${cp_x1} ${allPoints[i].y}, ${x_mid} ${y_mid}`);
-                path.push(`Q ${cp_x2} ${allPoints[i + 1].y} ${allPoints[i + 1].x} ${allPoints[i + 1].y}`);
+            path.push('M ' + flatPoints[0].x + ' ' + flatPoints[0].y);
+            for (var i = 0; i < flatPoints.length - 1; i++) {
+                var x_mid = (flatPoints[i].x + flatPoints[i + 1].x) / 2;
+                var y_mid = (flatPoints[i].y + flatPoints[i + 1].y) / 2;
+                var cp_x1 = (x_mid + flatPoints[i].x) / 2;
+                var cp_x2 = (x_mid + flatPoints[i + 1].x) / 2;
+                path.push(`Q ${cp_x1} ${flatPoints[i].y}, ${x_mid} ${y_mid}`);
+                path.push(`Q ${cp_x2} ${flatPoints[i + 1].y} ${flatPoints[i + 1].x} ${flatPoints[i + 1].y}`);
             }
         } else {
             points.forEach(function (nonNullPoints) {
@@ -273,6 +268,7 @@
                     y: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + 10,
                     textAnchor: 'middle',
                     dominantBaseline: 'hanging',
+                    fill: this.config.xAxisGridColor,
                     className: this.config.xAxisGridColumnsSelectable ? 'x-axis-grid-columns-selectable-label' : ''
                 }, document.createTextNode(colValue)));
             }
@@ -303,7 +299,8 @@
                 className: this.unselectedSeries[serie.id] ? 'unselected' : ''
             });
             var path = [];
-            var points = [[]]; // Array of arrays, each array consists only of NON NULL points
+            var flatPoints = []; // Array of all points in one array.
+            var points = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values
             var weHaveSeenNonNullPoint = false;
             var previousValue = null;
             this._data.series[serie.id].forEach(function (value, valueIndex) {
@@ -323,12 +320,13 @@
                 } else {
                     weHaveSeenNonNullPoint = true;
                     points[points.length - 1].push({ x: x, y: y, value: value });
+                    flatPoints.push({ x: x, y: y, value: value });
                 }
                 previousValue = value;
             }, this);
             if (this.config.curved) {
                 serieGroup.appendChild(el('path', {
-                    d: getCurvedPathFromPoints.call(this, points).join(' '),
+                    d: getCurvedPathFromPoints.call(this, points, flatPoints).join(' '),
                     fill: 'none',
                     stroke: serie.color,
                     strokeWidth: this.config.lineWidth
@@ -342,18 +340,16 @@
                 }));
             }
             if (this.config.points) {
-                points.forEach(function (nonNullPoints) {
-                    nonNullPoints.forEach(function (point) {
-                        serieGroup.appendChild(el('circle', {
-                            cx: point.x,
-                            cy: point.y,
-                            r: this.config.pointRadius,
-                            zIndex: 1,
-                            fill: serie.color,
-                            stroke: serie.color,
-                            dataValue: point.value
-                        }));
-                    }, this);
+                flatPoints.forEach(function (point) {
+                    serieGroup.appendChild(el('circle', {
+                        cx: point.x,
+                        cy: point.y,
+                        r: this.config.pointRadius,
+                        zIndex: 1,
+                        fill: serie.color,
+                        stroke: serie.color,
+                        dataValue: point.value
+                    }));
                 }, this);
             }
             this.serieLineGroupElement.appendChild(serieGroup);
