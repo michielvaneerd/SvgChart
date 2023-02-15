@@ -46,6 +46,43 @@
 
     };
 
+    // longstanding bug in Firefox - we MUST use the DOMParser() method: https://bugzilla.mozilla.org/show_bug.cgi?id=700533
+    window.SvgChart.prototype.saveAsPng = function() {
+        var rect = this.svg.getBoundingClientRect();
+        var canvas = document.createElement('canvas');
+        canvas.setAttribute('width', rect.width);
+        canvas.setAttribute('height', rect.height);
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = this.config.backgroundColor;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        var img = new Image();
+        var data = '<svg xmlns="http://www.w3.org/2000/svg">' + this.svg.innerHTML + '</svg>';
+        var parser = new DOMParser();
+        var result = parser.parseFromString(data, 'text/xml');
+        var inlineSVG = result.getElementsByTagName("svg")[0];
+        inlineSVG.setAttribute('width', rect.width);
+        inlineSVG.setAttribute('height', rect.height);
+        var svg64 = btoa(new XMLSerializer().serializeToString(inlineSVG));
+        var image64 = 'data:image/svg+xml;base64,' + svg64;
+        img.onload = function () {
+            ctx.drawImage(img, 0, 0, rect.width, rect.height);
+            window.URL.revokeObjectURL(image64);
+            var png_img = canvas.toDataURL("image/png");
+            // Now do something with this...
+            const createEl = document.createElement('a');
+            createEl.href = png_img;
+            // // This is the name of our downloaded file
+            createEl.download = "download-this-canvas";
+
+            // // Click the download button, causing a download, and then remove it
+            createEl.click();
+            createEl.remove();
+
+        }
+        img.src = image64;
+    };
+
     window.SvgChart.prototype.init = function () {
 
         var me = this;
