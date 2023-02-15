@@ -151,17 +151,39 @@
     // Volgens mij kan ik deze ook gebruiken in de pad, want daar heb je : Q x1 y1, x y
     // // https://stackoverflow.com/questions/7054272/how-to-draw-smooth-curve-through-n-points-using-javascript-html5-canvas
     function getCurvedPathFromPoints(points) {
-        var path = ['M ' + points[0].x + ' ' + points[0].y];
-        for (var i = 0; i < points.length - 1; i++) {
-            var x_mid = (points[i].x + points[i + 1].x) / 2;
-            var y_mid = (points[i].y + points[i + 1].y) / 2;
-            var cp_x1 = (x_mid + points[i].x) / 2;
-            var cp_x2 = (x_mid + points[i + 1].x) / 2;
-            //ctx.quadraticCurveTo(cp_x1, points[i].y, x_mid, y_mid);
-            //ctx.quadraticCurveTo(cp_x2, points[i + 1].y, points[i + 1].x, points[i + 1].y);
-            path.push(`Q ${cp_x1} ${points[i].y}, ${x_mid} ${y_mid}`);
-            path.push(`Q ${cp_x2} ${points[i + 1].y} ${points[i + 1].x} ${points[i + 1].y}`);
+        var path = [];
+        if (this.config.connectNullValues) {
+            var allPoints = [];
+            points.forEach(function (nonNullPoints) {
+                nonNullPoints.forEach(function (point) {
+                    allPoints.push(point);
+                });
+            });
+            path.push('M ' + allPoints[0].x + ' ' + allPoints[0].y);
+            for (var i = 0; i < allPoints.length - 1; i++) {
+                var x_mid = (allPoints[i].x + allPoints[i + 1].x) / 2;
+                var y_mid = (allPoints[i].y + allPoints[i + 1].y) / 2;
+                var cp_x1 = (x_mid + allPoints[i].x) / 2;
+                var cp_x2 = (x_mid + allPoints[i + 1].x) / 2;
+                path.push(`Q ${cp_x1} ${allPoints[i].y}, ${x_mid} ${y_mid}`);
+                path.push(`Q ${cp_x2} ${allPoints[i + 1].y} ${allPoints[i + 1].x} ${allPoints[i + 1].y}`);
+            }
+        } else {
+            points.forEach(function (nonNullPoints) {
+                if (nonNullPoints.length > 0) {
+                    path.push('M ' + nonNullPoints[0].x + ' ' + nonNullPoints[0].y);
+                    for (var i = 0; i < nonNullPoints.length - 1; i++) {
+                        var x_mid = (nonNullPoints[i].x + nonNullPoints[i + 1].x) / 2;
+                        var y_mid = (nonNullPoints[i].y + nonNullPoints[i + 1].y) / 2;
+                        var cp_x1 = (x_mid + nonNullPoints[i].x) / 2;
+                        var cp_x2 = (x_mid + nonNullPoints[i + 1].x) / 2;
+                        path.push(`Q ${cp_x1} ${nonNullPoints[i].y}, ${x_mid} ${y_mid}`);
+                        path.push(`Q ${cp_x2} ${nonNullPoints[i + 1].y} ${nonNullPoints[i + 1].x} ${nonNullPoints[i + 1].y}`);
+                    }
+                }
+            });
         }
+
         return path;
     }
 
@@ -281,26 +303,32 @@
                 className: this.unselectedSeries[serie.id] ? 'unselected' : ''
             });
             var path = [];
-            var points = [];
+            var points = [[]]; // Array of arrays, each array consists only of NON NULL points
+            var weHaveSeenNonNullPoint = false;
             var previousValue = null;
             this._data.series[serie.id].forEach(function (value, valueIndex) {
                 var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
                 var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
-                if (valueIndex === 0 || (!this.config.connectNullValues && (value === null || previousValue === null))) {
+                if (valueIndex === 0 || (!this.config.connectNullValues && (value === null || previousValue === null)) || !weHaveSeenNonNullPoint) {
                     path.push(`M ${x} ${y}`);
                 } else {
                     if (value !== null) {
                         path.push(`L ${x} ${y}`);
                     }
                 }
-                if (value !== null) {
-                    points.push({ x: x, y: y, value: value });
+                if (value === null) {
+                    if (points[points.length - 1].length > 0) {
+                        points.push([]);
+                    }
+                } else {
+                    weHaveSeenNonNullPoint = true;
+                    points[points.length - 1].push({ x: x, y: y, value: value });
                 }
                 previousValue = value;
             }, this);
             if (this.config.curved) {
                 serieGroup.appendChild(el('path', {
-                    d: getCurvedPathFromPoints(points).join(' '),
+                    d: getCurvedPathFromPoints.call(this, points).join(' '),
                     fill: 'none',
                     stroke: serie.color,
                     strokeWidth: this.config.lineWidth
@@ -314,16 +342,18 @@
                 }));
             }
             if (this.config.points) {
-                points.forEach(function (point) {
-                    serieGroup.appendChild(el('circle', {
-                        cx: point.x,
-                        cy: point.y,
-                        r: this.config.pointRadius,
-                        zIndex: 1,
-                        fill: serie.color,
-                        stroke: serie.color,
-                        dataValue: point.value
-                    }));
+                points.forEach(function (nonNullPoints) {
+                    nonNullPoints.forEach(function (point) {
+                        serieGroup.appendChild(el('circle', {
+                            cx: point.x,
+                            cy: point.y,
+                            r: this.config.pointRadius,
+                            zIndex: 1,
+                            fill: serie.color,
+                            stroke: serie.color,
+                            dataValue: point.value
+                        }));
+                    }, this);
                 }, this);
             }
             this.serieLineGroupElement.appendChild(serieGroup);

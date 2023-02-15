@@ -63,14 +63,13 @@
         var data = {
             series: {
                 nose: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2],
-                eye: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 0, 0, 67, 87, 3],
-                ear: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [4, 5, 2, 16, 17, 33],
+                eye: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 0, 0, 67, 87, null],
+                ear: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, null, 2, 16, 17, 33],
             },
             xAxis: {
                 columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun']
             }
         };
-        console.log(data);
         return data;
     }
     // Data will change between each draw
