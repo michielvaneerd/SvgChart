@@ -30,17 +30,18 @@
         yAxisTitleColor: 'pink',
 
         // Other values
+        showValue: true,
         transition: true,
         maxValue: 100,
         minValue: 0,
-        yAxisStep: 20,
+        yAxisStep: 10,
         legend: true,
         legendSelect: true,
         yAxisGrid: true,
         yAxisLabels: true,
         xAxisGrid: true,
         xAxisGridPadding: 0,
-        yAxisGridPadding: 10,
+        yAxisGridPadding: 0,
         xAxisLabels: true,
         xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
         xAxisGridColumnsSelectable: true,
@@ -51,6 +52,8 @@
         curved: true,
         pointRadius: 3,
         points: true,
+        barSpacing: 10,
+        barStrokeWidth: 1,
         padding: {
             top: 80,
             left: 100,
@@ -58,6 +61,18 @@
             bottom: 80
         },
         series: [
+            {
+                title: 'Ear',
+                id: 'ear',
+                color: 'green',
+                type: 'bar'
+            },
+            {
+                title: 'Mouth',
+                id: 'mouth',
+                color: 'indigo',
+                type: 'bar'
+            },
             {
                 title: 'Nose',
                 id: 'nose',
@@ -70,12 +85,6 @@
                 color: 'blue',
                 type: 'line'
             },
-            {
-                title: 'Ear',
-                id: 'ear',
-                color: 'green',
-                type: 'bar'
-            }
         ]
     };
 
@@ -85,6 +94,7 @@
                 nose: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2],
                 eye: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 0, 0, 67, 87, null],
                 ear: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, null, 2, 16, 17, 33],
+                mouth: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, null, 2, 16, 17, 33],
             },
             xAxis: {
                 columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun']

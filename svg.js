@@ -87,6 +87,20 @@
 
         var me = this;
 
+        // Get some things from the series that we only need to do once but for this we need the series
+        this.barCount = 0;
+        this.lineCount = 0;
+        this.config.series.forEach(function(serie) {
+            switch (serie.type) {
+                case 'line':
+                    this.lineCount += 1;
+                    break;
+                case 'bar':
+                    this.barCount += 1;
+                    break;
+            }
+        }, this);
+
         var gYAxis = el('g', {
             className: 'my-y-axis-group'
         });
@@ -266,6 +280,19 @@
         }
     };
 
+    function addXAxisLine(x) {
+        this.xAxisLineGroupElement.appendChild(el('line', {
+            x1: x,
+            y1: this.config.padding.top,
+            x2: x,
+            y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
+            className: 'my-x-axis-grid-line',
+            stroke: this.config.xAxisGridLineColor || '',
+            strokeWidth: this.config.xAxisGridLineWidth || '',
+            strokeDasharray: this.config.xAxisGridLineDashArray || '',
+        }));
+    }
+
     window.SvgChart.prototype.data = function (data = null) {
 
         var me = this;
@@ -297,6 +324,7 @@
         const columnWidth = this.config.xAxisGridColumns
             ? (this.chartWidth / (this._data.xAxis.columns.length))
             : (this.chartWidth / (this._data.xAxis.columns.length - 1));
+        const barWidth = (columnWidth - (this.config.barSpacing * (this.barCount + 1))) / (this.barCount || 1); // TODO: somewhere define 20
 
         // Draw xAxis lines
         this.xAxisLineGroupElement = el('g', {
@@ -310,16 +338,7 @@
         this._data.xAxis.columns.forEach(function (colValue, colIndex) {
             if (this.config.xAxisGrid) {
                 const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
-                this.xAxisLineGroupElement.appendChild(el('line', {
-                    x1: x,
-                    y1: this.config.padding.top,
-                    x2: x,
-                    y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
-                    className: 'my-x-axis-grid-line',
-                    stroke: this.config.xAxisGridLineColor || '',
-                    strokeWidth: this.config.xAxisGridLineWidth || '',
-                    strokeDasharray: this.config.xAxisGridLineDashArray || '',
-                }));
+                addXAxisLine.call(this, x);
                 if (this.config.xAxisGridColumnsSelectable) {
                     this.xAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
                         x: x,
@@ -345,13 +364,7 @@
             }
         }, this);
         if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
-            this.xAxisLineGroupElement.appendChild(el('line', {
-                x1: this.config.padding.left + this.config.xAxisGridPadding + (this._data.xAxis.columns.length * columnWidth),
-                y1: this.config.padding.top,
-                x2: this.config.padding.left + this.config.xAxisGridPadding + (this._data.xAxis.columns.length * columnWidth),
-                y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
-                className: 'my-x-axis-grid-line'
-            }));
+            addXAxisLine.call(this, this.config.padding.left + this.config.xAxisGridPadding + (this._data.xAxis.columns.length * columnWidth));
         }
         this.svg.appendChild(this.xAxisLineGroupElement);
         this.svg.appendChild(this.xAxisGridColumnsSelectableGroupElement);
@@ -363,7 +376,11 @@
             className: this.config.transition ? 'unattached' : ''
         });
         this.serieGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
+        
+        var currentBarIndex = 0;
+
         this.config.series.forEach(function (serie) {
+
             var serieGroup = el('g', {
                 dataSerie: serie.id,
                 className: this.unselectedSeries[serie.id] ? 'unselected' : ''
@@ -436,20 +453,26 @@
                     {
                         this._data.series[serie.id].forEach(function (value, valueIndex) {
                             
-                            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
+                            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
                             var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
 
                             serieGroup.appendChild(el('rect', {
-                                x: x - (columnWidth / 2) + (columnWidth / 4),
+                                x: x,
                                 y: y,
-                                width: columnWidth / 2,
+                                width: barWidth,
                                 height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - y,
                                 fill: serie.color,
                                 className: 'my-bar',
-                                fillOpacity: this.config.barFillOpacity || ''
+                                fillOpacity: this.config.barFillOpacity || '',
+                                strokeWidth: this.config.barStrokeWidth || 0,
+                                stroke: serie.color,
+                                dataValue: value
                             }));
 
                         }, this);
+
+                        currentBarIndex += 1;
+
                     }
                     break;
             }
