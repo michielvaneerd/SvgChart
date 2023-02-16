@@ -47,7 +47,7 @@
     };
 
     // longstanding bug in Firefox - we MUST use the DOMParser() method: https://bugzilla.mozilla.org/show_bug.cgi?id=700533
-    window.SvgChart.prototype.saveAsPng = function(filename) {
+    window.SvgChart.prototype.saveAsPng = function (filename) {
         var rect = this.svg.getBoundingClientRect();
         var canvas = document.createElement('canvas');
         canvas.setAttribute('width', rect.width);
@@ -90,7 +90,7 @@
         // Get some things from the series that we only need to do once but for this we need the series
         this.barCount = 0;
         this.lineCount = 0;
-        this.config.series.forEach(function(serie) {
+        this.config.series.forEach(function (serie) {
             switch (serie.type) {
                 case 'line':
                     this.lineCount += 1;
@@ -376,7 +376,7 @@
             className: this.config.transition ? 'unattached' : ''
         });
         this.serieGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
-        
+
         var currentBarIndex = 0;
 
         this.config.series.forEach(function (serie) {
@@ -430,6 +430,7 @@
                                 d: path.join(' '),
                                 fill: 'none',
                                 stroke: serie.color,
+                                strokeWidth: this.config.lineWidth || '',
                                 className: 'my-line'
                             }));
                         }
@@ -443,7 +444,8 @@
                                     fill: serie.color,
                                     stroke: serie.color,
                                     dataValue: point.value,
-                                    className: 'my-line-point'
+                                    className: 'my-line-point',
+                                    tabindex: 0
                                 }));
                             }, this);
                         }
@@ -452,7 +454,7 @@
                 case 'bar':
                     {
                         this._data.series[serie.id].forEach(function (value, valueIndex) {
-                            
+
                             var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
                             var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
 
@@ -466,7 +468,8 @@
                                 fillOpacity: this.config.barFillOpacity || '',
                                 strokeWidth: this.config.barStrokeWidth || 0,
                                 stroke: serie.color,
-                                dataValue: value
+                                dataValue: value,
+                                tabindex: 0
                             }));
 
                         }, this);
@@ -481,7 +484,7 @@
         }, this);
         this.svg.appendChild(this.serieGroupElement);
         if (this.config.transition) {
-            var timeout = setTimeout(function() {
+            var timeout = setTimeout(function () {
                 clearTimeout(timeout);
                 me.serieGroupElement.classList.remove('unattached');
             }, 0);

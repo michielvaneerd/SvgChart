@@ -30,7 +30,6 @@
         yAxisTitleColor: 'pink',
 
         // Other values
-        showValue: true,
         transition: true,
         maxValue: 100,
         minValue: 0,
@@ -52,7 +51,7 @@
         curved: true,
         pointRadius: 3,
         points: true,
-        barSpacing: 10,
+        barSpacing: 6,
         barStrokeWidth: 1,
         padding: {
             top: 80,
@@ -71,6 +70,12 @@
                 title: 'Mouth',
                 id: 'mouth',
                 color: 'indigo',
+                type: 'bar'
+            },
+            {
+                title: 'Hand',
+                id: 'hand',
+                color: 'lime',
                 type: 'bar'
             },
             {
@@ -95,6 +100,7 @@
                 eye: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 0, 0, 67, 87, null],
                 ear: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, null, 2, 16, 17, 33],
                 mouth: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, null, 2, 16, 17, 33],
+                hand: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, null, 2, 16, 17, 33],
             },
             xAxis: {
                 columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun']
