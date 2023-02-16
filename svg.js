@@ -17,9 +17,6 @@
         this.unselectedSeries = {};
         this.selectedColumnIndex = null;
         this.xAxisLineGroupElement = null; // g element
-        this.serieGroupElement = null; // g element
-        this.xAxisGridColumnsSelectableGroupElement = null; // g element
-        this.xAxisLabelsGroupElement = null;
 
         const parentRect = parent.getBoundingClientRect();
 
@@ -70,16 +67,11 @@
             ctx.drawImage(img, 0, 0, rect.width, rect.height);
             window.URL.revokeObjectURL(image64);
             var png_img = canvas.toDataURL("image/png");
-            // Now do something with this...
             const createEl = document.createElement('a');
             createEl.href = png_img;
-            // // This is the name of our downloaded file
             createEl.download = filename;
-
-            // // Click the download button, causing a download, and then remove it
             createEl.click();
             createEl.remove();
-
         }
         img.src = image64;
     };
@@ -225,6 +217,30 @@
             this.svg.appendChild(gLegend);
         }
 
+        this.xAxisGridColumnsSelectableGroupElement = el('g', {
+            className: 'my-x-axis-columns-selectable-group'
+        });
+        this.svg.appendChild(this.xAxisGridColumnsSelectableGroupElement);
+
+        this.xAxisLineGroupElement = el('g', {
+            className: 'my-x-axis-group'
+        });
+        this.svg.appendChild(this.xAxisLineGroupElement);
+
+        this.xAxisLabelsGroupElement = el('g', {
+            className: 'my-x-axis-label-group'
+        });
+        this.xAxisLabelsGroupElement.addEventListener('click', this.onXAxisLabelGroupClickScoped);
+        this.svg.appendChild(this.xAxisLabelsGroupElement);
+
+        this.serieGroupElement = el('g', {
+            id: 'my-serie-group'
+        });
+        this.serieGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
+        this.serieGroupElement.addEventListener('transitionend', this.onSerieGroupTransitionendScoped);
+        this.svg.appendChild(this.serieGroupElement);
+        
+
     };
 
     // Volgens mij kan ik deze ook gebruiken in de pad, want daar heb je : Q x1 y1, x y
@@ -275,6 +291,7 @@
     };
 
     window.SvgChart.prototype.onXAxisLabelGroupClick = function (e) {
+        console.log(e.target);
         var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.my-x-axis-grid-column-selectable-label');
         var rects = this.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.my-x-axis-grid-column-selectable');
         for (var i = 0; i < textNodes.length; i++) {
@@ -289,8 +306,8 @@
         }
     };
 
-    function addXAxisLine(x) {
-        this.xAxisLineGroupElement.appendChild(el('line', {
+    function addXAxisLine(parent, x) {
+        parent.appendChild(el('line', {
             x1: x,
             y1: this.config.padding.top,
             x2: x,
@@ -310,24 +327,20 @@
             this._data = data;
         }
 
-        if (this.xAxisLineGroupElement && this.xAxisLineGroupElement.parentNode) {
-            this.xAxisLineGroupElement.parentNode.removeChild(this.xAxisLineGroupElement);
-            this.xAxisLineGroupElement = null;
+        if (this.xAxisLineGroupElement.firstChild) {
+            this.xAxisLineGroupElement.removeChild(this.xAxisLineGroupElement.firstChild);
         }
-        if (this.serieGroupElement && this.serieGroupElement.parentNode) {
-            this.serieGroupElement.removeEventListener('click', this.onSerieGroupClickScoped);
-            this.serieGroupElement.removeEventListener('transitionend', this.onSerieGroupTransitionendScoped);
-            this.serieGroupElement.parentNode.removeChild(this.serieGroupElement);
-            this.serieGroupElement = null;
+        
+        if (this.serieGroupElement.firstChild) {
+            this.serieGroupElement.removeChild(this.serieGroupElement.firstChild);
         }
-        if (this.xAxisGridColumnsSelectableGroupElement && this.xAxisGridColumnsSelectableGroupElement.parentNode) {
-            this.xAxisGridColumnsSelectableGroupElement.parentNode.removeChild(this.xAxisGridColumnsSelectableGroupElement);
-            this.xAxisGridColumnsSelectableGroupElement = null;
+
+        if (this.xAxisGridColumnsSelectableGroupElement.firstChild) {
+            this.xAxisGridColumnsSelectableGroupElement.removeChild(this.xAxisGridColumnsSelectableGroupElement.firstChild);
         }
-        if (this.xAxisLabelsGroupElement && this.xAxisLabelsGroupElement.parentNode) {
-            this.xAxisLabelsGroupElement.removeEventListener('click', this.onXAxisLabelGroupClickScoped);
-            this.xAxisLabelsGroupElement.parentNode.removeChild(this.xAxisLabelsGroupElement);
-            this.xAxisLabelsGroupElement = null;
+        
+        if (this.xAxisLabelsGroupElement.firstChild) {
+            this.xAxisLabelsGroupElement.removeChild(this.xAxisLabelsGroupElement.firstChild);
         }
 
         // Note that for bar charts to display correctly, this.config.xAxisGridColumns MUST be true!
@@ -337,20 +350,20 @@
         const barWidth = (columnWidth - (this.config.barSpacing * (this.barCount + 1))) / (this.barCount || 1); // TODO: somewhere define 20
 
         // Draw xAxis lines
-        this.xAxisLineGroupElement = el('g', {
-            className: 'my-x-axis-group'
+        var currentXAxisLineGroupElement = el('g');
+
+        var currentXAxisLabelsGroupElement = el('g', {
+            className: 'my-x-axis-label-group-current'
         });
-        this.xAxisLabelsGroupElement = el('g', {
-            className: 'my-x-axis-label-group'
-        });
-        this.xAxisLabelsGroupElement.addEventListener('click', this.onXAxisLabelGroupClickScoped);
-        this.xAxisGridColumnsSelectableGroupElement = el('g');
+
+        
+        var currentXAxisGridColumnsSelectableGroupElement = el('g');
         this._data.xAxis.columns.forEach(function (colValue, colIndex) {
             if (this.config.xAxisGrid) {
                 const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
-                addXAxisLine.call(this, x);
+                addXAxisLine.call(this, currentXAxisLineGroupElement, x);
                 if (this.config.xAxisGridColumnsSelectable) {
-                    this.xAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
+                    currentXAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
                         x: x,
                         y: this.config.padding.top + this.config.yAxisGridPadding,
                         width: columnWidth,
@@ -361,7 +374,7 @@
                 }
             }
             if (this.config.xAxisLabels) {
-                this.xAxisLabelsGroupElement.appendChild(el('text', {
+                currentXAxisLabelsGroupElement.appendChild(el('text', {
                     x: this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0),
                     y: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + 10,
                     textAnchor: 'middle',
@@ -374,19 +387,16 @@
             }
         }, this);
         if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
-            addXAxisLine.call(this, this.config.padding.left + this.config.xAxisGridPadding + (this._data.xAxis.columns.length * columnWidth));
+            addXAxisLine.call(this, currentXAxisLineGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this._data.xAxis.columns.length * columnWidth));
         }
-        this.svg.appendChild(this.xAxisLineGroupElement);
-        this.svg.appendChild(this.xAxisGridColumnsSelectableGroupElement);
-        this.svg.appendChild(this.xAxisLabelsGroupElement);
+        this.xAxisLineGroupElement.appendChild(currentXAxisLineGroupElement);
+        this.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
+        this.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
 
-        // Draw serie lines or bars
-        this.serieGroupElement = el('g', {
-            id: 'my-serie-group',
+        var currentSerieGroupElement = el('g', {
+            id: 'my-serie-group-current',
             className: this.config.transition ? 'unattached' : ''
         });
-        this.serieGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
-        this.serieGroupElement.addEventListener('transitionend', this.onSerieGroupTransitionendScoped);
 
         var currentBarIndex = 0;
 
@@ -491,13 +501,13 @@
                     break;
             }
 
-            this.serieGroupElement.appendChild(serieGroup);
+            currentSerieGroupElement.appendChild(serieGroup);
         }, this);
-        this.svg.appendChild(this.serieGroupElement);
+        this.serieGroupElement.appendChild(currentSerieGroupElement);
         if (this.config.transition) {
             var timeout = setTimeout(function () {
                 clearTimeout(timeout);
-                me.serieGroupElement.classList.remove('unattached');
+                currentSerieGroupElement.classList.remove('unattached');
             }, 0);
         }
     };

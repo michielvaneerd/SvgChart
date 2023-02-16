@@ -74,15 +74,13 @@ like hovering and selecting something.
     z-index: 0;
 }
 
-#my-serie-group {
+#my-serie-group-current {
     transition: opacity 1s;
     opacity: 1;
-    z-index: 1;
 }
 
-#my-serie-group.unattached {
+#my-serie-group-current.unattached {
     opacity: 0;
-    z-index: 0;
 }
 
 /* svg.my-svg text.my-text-title {
