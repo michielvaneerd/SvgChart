@@ -47,7 +47,7 @@
     };
 
     // longstanding bug in Firefox - we MUST use the DOMParser() method: https://bugzilla.mozilla.org/show_bug.cgi?id=700533
-    window.SvgChart.prototype.saveAsPng = function() {
+    window.SvgChart.prototype.saveAsPng = function(filename) {
         var rect = this.svg.getBoundingClientRect();
         var canvas = document.createElement('canvas');
         canvas.setAttribute('width', rect.width);
@@ -73,7 +73,7 @@
             const createEl = document.createElement('a');
             createEl.href = png_img;
             // // This is the name of our downloaded file
-            createEl.download = "download-this-canvas";
+            createEl.download = filename;
 
             // // Click the download button, causing a download, and then remove it
             createEl.click();
@@ -268,6 +268,8 @@
 
     window.SvgChart.prototype.data = function (data = null) {
 
+        var me = this;
+
         if (data !== null) {
             this._data = data;
         }
@@ -357,7 +359,8 @@
 
         // Draw serie lines or bars
         this.serieGroupElement = el('g', {
-            id: 'my-serie-group'
+            id: 'my-serie-group',
+            className: this.config.transition ? 'unattached' : ''
         });
         this.serieGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
         this.config.series.forEach(function (serie) {
@@ -454,6 +457,12 @@
             this.serieGroupElement.appendChild(serieGroup);
         }, this);
         this.svg.appendChild(this.serieGroupElement);
+        if (this.config.transition) {
+            var timeout = setTimeout(function() {
+                clearTimeout(timeout);
+                me.serieGroupElement.classList.remove('unattached');
+            }, 0);
+        }
     };
 
     function scopedFunction(me, func) {

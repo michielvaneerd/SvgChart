@@ -28,7 +28,9 @@
         titleColor: 'purple',
         xAxisTitleColor: 'orange',
         yAxisTitleColor: 'pink',
-        // Required values
+
+        // Other values
+        transition: true,
         maxValue: 100,
         minValue: 0,
         yAxisStep: 20,
@@ -100,99 +102,8 @@
         chart.data(getNewData(true));
     });
 
-    // longstanding bug in Firefox - we MUST use the DOMParser() method: https://bugzilla.mozilla.org/show_bug.cgi?id=700533
     document.getElementById('saveButton').addEventListener('click', function () {
-
-        chart.saveAsPng();
-        return;
-
-        var testSvg = document.getElementById('test-svg');
-        var rect = testSvg.getBoundingClientRect();
-        //var canvas = document.createElement('canvas'); // Hoeft niets eens toegevoegd te worden aan de DOM (in Chrome)
-        //var canvas = document.getElementById('canvas');
-        var canvas = document.createElement('canvas');
-        //document.body.appendChild(canvas);
-        //canvas.style.backgroundColor = chart.config.backgroundColor;
-        canvas.setAttribute('width', rect.width);
-        canvas.setAttribute('height', rect.height);
-        var ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'yellow';
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        var img = new Image();
-
-        var data = '<svg xmlns="http://www.w3.org/2000/svg">' + testSvg.innerHTML + '</svg>';
-        //var data = testSvg.outerHTML;
-        var parser = new DOMParser();
-        var result = parser.parseFromString(data, 'text/xml');
-        //console.log(data);
-        //console.log(result);
-        var inlineSVG = result.getElementsByTagName("svg")[0];
-        inlineSVG.setAttribute('width', rect.width);
-        inlineSVG.setAttribute('height', rect.height);
-        var svg64 = btoa(new XMLSerializer().serializeToString(inlineSVG));
-        var image64 = 'data:image/svg+xml;base64,' + svg64;
-        img.onload = function () {
-            ctx.drawImage(img, 0, 0, rect.width, rect.height);
-            window.URL.revokeObjectURL(image64);
-            var png_img = canvas.toDataURL("image/png");
-            // Now do something with this...
-            const createEl = document.createElement('a');
-            createEl.href = png_img;
-            // // This is the name of our downloaded file
-            createEl.download = "download-this-canvas";
-
-            // // Click the download button, causing a download, and then remove it
-            createEl.click();
-            createEl.remove();
-
-        }
-        img.src = image64;
-        //var svg = new Blob([data], { type:'image/svg+xml;charset=utf-8' });
-        //var url = window.URL.createObjectURL(svg);
-        
-        //img.src = url;
-
-        var canvas = document.createElement('canvas');
-
-
-
-
-        //var canvas = document.createElement('canvas'); // Hoeft niets eens toegevoegd te worden aan de DOM (in Chrome)
-        var canvas = document.getElementById('canvas');
-        //canvas.style.backgroundColor = chart.config.backgroundColor;
-        var rect = chart.svg.getBoundingClientRect();
-        canvas.setAttribute('width', rect.width);
-        canvas.setAttribute('height', rect.height);
-        var ctx = canvas.getContext('2d');
-        ctx.fillStyle = chart.config.backgroundColor;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        var img = new Image();
-        var data = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 ' + rect.width + ' ' + rect.height + '">' + chart.svg.innerHTML + '</svg>';
-        //var data = chart.svg.outerHTML;
-        ///console.log(data);
-        //console.log(chart.svg.outerHTML);
-        var svg = new Blob([data], { type:'image/svg+xml;charset=utf-8' });
-        var url = window.URL.createObjectURL(svg);
-        console.log(url);
-        img.onload = function () {
-            ctx.drawImage(img, 0, 0, rect.width, rect.height);
-            //window.URL.revokeObjectURL(url);
-            return;
-            var png_img = canvas.toDataURL("image/png");
-            // Now do something with this...
-            const createEl = document.createElement('a');
-            createEl.href = png_img;
-            // // This is the name of our downloaded file
-            createEl.download = "download-this-canvas";
-
-            // // Click the download button, causing a download, and then remove it
-            createEl.click();
-            createEl.remove();
-        }
-
-        img.src = url;
+        chart.saveAsPng('test.png');
     });
 
 }());

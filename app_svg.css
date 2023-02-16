@@ -72,12 +72,25 @@ like hovering and selecting something.
     opacity: 0;
 }
 
+#my-serie-group {
+    transition: opacity 1s;
+    opacity: 1;
+}
+
+#my-serie-group.unattached {
+    opacity: 0;
+}
+
 /* svg.my-svg text.my-text-title {
     font-size: large;
 } */
 
 g.my-legend-group g.unselected {
     opacity: 0.4;
+}
+
+rect.my-bar:hover {
+    fill-opacity: 0.7;
 }
 
 
