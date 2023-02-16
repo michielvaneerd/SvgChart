@@ -43,6 +43,7 @@
 
         this.onXAxisLabelGroupClickScoped = scopedFunction(this, this.onXAxisLabelGroupClick);
         this.onSerieGroupClickScoped = scopedFunction(this, this.onSerieGroupClick);
+        this.onSerieGroupTransitionendScoped = scopedFunction(this, this.onSerieGroupTransitionend);
 
     };
 
@@ -188,6 +189,7 @@
                     if (g && g.dataset.serie) {
                         var sg = me.serieGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
                         if (me.unselectedSeries[g.dataset.serie]) {
+                            sg.setAttribute('display', 'inline'); // This is the default apparently
                             g.classList.remove('unselected');
                             sg.classList.remove('unselected');
                             delete me.unselectedSeries[g.dataset.serie];
@@ -258,6 +260,13 @@
         return path;
     }
 
+    window.SvgChart.prototype.onSerieGroupTransitionend = function(e) {
+        console.log(e.target);
+        if (e.target.classList.contains('unselected')) {
+            e.target.setAttribute('display', 'none');
+        }
+    };
+
     window.SvgChart.prototype.onSerieGroupClick = function (e) {
         var circle = e.target;
         var g = parent(circle, 'g');
@@ -307,6 +316,7 @@
         }
         if (this.serieGroupElement && this.serieGroupElement.parentNode) {
             this.serieGroupElement.removeEventListener('click', this.onSerieGroupClickScoped);
+            this.serieGroupElement.removeEventListener('transitionend', this.onSerieGroupTransitionendScoped);
             this.serieGroupElement.parentNode.removeChild(this.serieGroupElement);
             this.serieGroupElement = null;
         }
@@ -376,6 +386,7 @@
             className: this.config.transition ? 'unattached' : ''
         });
         this.serieGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
+        this.serieGroupElement.addEventListener('transitionend', this.onSerieGroupTransitionendScoped);
 
         var currentBarIndex = 0;
 
