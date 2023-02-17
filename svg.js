@@ -40,10 +40,14 @@
 
         this.valueHeight = this.chartHeight / this.config.maxValue;
 
-        this.onXAxisLabelGroupClickScoped = scopedFunction(this, this.onXAxisLabelGroupClick);
-        this.onSerieGroupFocusScoped = scopedFunction(this, this.onSerieGroupFocus);
-        this.onSerieGroupBlurScoped = scopedFunction(this, this.onSerieGroupBlur);
-        this.onSerieGroupTransitionendScoped = scopedFunction(this, this.onSerieGroupTransitionend);
+        // Create functions that are binded to this, so we can easily add or remove them.
+        this.onXAxisLabelGroupClickScoped = scopedFunction(this, onXAxisLabelGroupClick);
+        this.onXAxisLabelGroupKeypressScoped = scopedFunction(this, onXAxisLabelGroupKeypress);
+        this.onSerieGroupFocusScoped = scopedFunction(this, onSerieGroupFocus);
+        this.onSerieGroupBlurScoped = scopedFunction(this, onSerieGroupBlur);
+        this.onSerieGroupTransitionendScoped = scopedFunction(this, onSerieGroupTransitionend);
+        this.onLegendClickScoped = scopedFunction(this, onLegendClick);
+        this.onLegendKeypressScoped = scopedFunction(this, onLegendKeypress);
 
         this.focusedValueWidth = this.config.focusedValueWidth || valueElWidth;
         this.focusedValueHeight = this.config.focusedValueHeight || valueElHeight;
@@ -81,6 +85,33 @@
         }
         img.src = image64;
     };
+
+    function onLegendToggle(target) {
+        var g = parent(target, 'g');
+        if (g && g.dataset.serie) {
+            var sg = this.serieGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
+            if (this.unselectedSeries[g.dataset.serie]) {
+                sg.setAttribute('display', 'inline'); // This is the default apparently
+                g.classList.remove('unselected');
+                sg.classList.remove('unselected');
+                delete this.unselectedSeries[g.dataset.serie];
+            } else {
+                g.classList.add('unselected');
+                sg.classList.add('unselected');
+                this.unselectedSeries[g.dataset.serie] = true;
+            }
+        }
+    }
+
+    function onLegendKeypress(e) {
+        if (e.keyCode === 13) {
+            onLegendToggle.call(this, e.target);
+        }
+    }
+
+    function onLegendClick(e) {
+        onLegendToggle.call(this, e.target);
+    }
 
     window.SvgChart.prototype.init = function () {
 
@@ -181,23 +212,8 @@
                 className: 'my-legend-group'
             });
             if (this.config.legendSelect) {
-                gLegend.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    var g = parent(e.target, 'g');
-                    if (g && g.dataset.serie) {
-                        var sg = me.serieGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
-                        if (me.unselectedSeries[g.dataset.serie]) {
-                            sg.setAttribute('display', 'inline'); // This is the default apparently
-                            g.classList.remove('unselected');
-                            sg.classList.remove('unselected');
-                            delete me.unselectedSeries[g.dataset.serie];
-                        } else {
-                            g.classList.add('unselected');
-                            sg.classList.add('unselected');
-                            me.unselectedSeries[g.dataset.serie] = true;
-                        }
-                    }
-                });
+                gLegend.addEventListener('keypress', this.onLegendKeypressScoped);
+                gLegend.addEventListener('click', this.onLegendClickScoped);
             }
             this.config.series.forEach(function (serie, serieIndex) {
                 var gSerie = el('g', {
@@ -238,6 +254,7 @@
             className: 'my-x-axis-label-group'
         });
         this.xAxisLabelsGroupElement.addEventListener('click', this.onXAxisLabelGroupClickScoped);
+        this.xAxisLabelsGroupElement.addEventListener('keypress', this.onXAxisLabelGroupKeypressScoped);
         this.svg.appendChild(this.xAxisLabelsGroupElement);
 
         this.serieGroupElement = el('g', {
@@ -302,23 +319,22 @@
         return path;
     }
 
-    window.SvgChart.prototype.onSerieGroupTransitionend = function (e) {
-        console.log(e.target);
+    function onSerieGroupTransitionend(e) {
         if (e.target.classList.contains('unselected')) {
             e.target.setAttribute('display', 'none');
         }
-    };
+    }
 
-    window.SvgChart.prototype.onSerieGroupBlur = function (e) {
+    function onSerieGroupBlur(e) {
         var circle = e.target;
         var g = parent(circle, 'g');
         var serie = g.dataset.serie;
         if (serie) {
             this.serieGroupElement.removeChild(this.valueElGroup);
         }
-    };
+    }
 
-    window.SvgChart.prototype.onSerieGroupFocus = function (e) {
+    function onSerieGroupFocus(e) {
         var circle = e.target;
         var g = parent(circle, 'g');
         var serie = g.dataset.serie;
@@ -329,13 +345,19 @@
             this.valueElText.replaceChild(document.createTextNode(circle.dataset.value), this.valueElText.firstChild);
             this.serieGroupElement.appendChild(this.valueElGroup);
         }
-    };
+    }
 
-    window.SvgChart.prototype.onXAxisLabelGroupClick = function (e) {
+    function onXAxisLabelGroupKeypress(e) {
+        if (e.keyCode === 13) {
+            onXAxisLabelGroupSelect.call(this, e.target);
+        }
+    }
+
+    function onXAxisLabelGroupSelect(target) {
         var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.my-x-axis-grid-column-selectable-label');
         var rects = this.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.my-x-axis-grid-column-selectable');
         for (var i = 0; i < textNodes.length; i++) {
-            if (textNodes[i] === e.target) {
+            if (textNodes[i] === target) {
                 this.selectedColumnIndex = i;
                 textNodes[i].classList.add('selected');
                 rects[i].classList.add('selected');
@@ -344,7 +366,11 @@
                 rects[i].classList.remove('selected');
             }
         }
-    };
+    }
+
+    function onXAxisLabelGroupClick(e) {
+        onXAxisLabelGroupSelect.call(this, e.target);
+    }
 
     function addXAxisLine(parent, x) {
         parent.appendChild(el('line', {
@@ -422,6 +448,7 @@
                     fontFamily: this.config.fontFamily || '',
                     fontSize: this.config.fontSizeAxisLabel || '',
                     fill: this.config.xAxisLabelColor || '',
+                    tabindex: 0,
                     className: 'my-x-axis-label ' + (this.config.xAxisGridColumnsSelectable ? 'my-x-axis-grid-column-selectable-label' : '')
                 }, document.createTextNode(colValue)));
             }
