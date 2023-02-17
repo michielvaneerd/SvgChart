@@ -115,8 +115,6 @@
 
     window.SvgChart.prototype.init = function () {
 
-        var me = this;
-
         // Get some things from the series that we only need to do once but for this we need the series
         this.barCount = 0;
         this.lineCount = 0;
@@ -130,6 +128,10 @@
                     break;
             }
         }, this);
+
+        if (this.config.barStacked) {
+            this.barCount = 1;
+        }
 
         var gYAxis = el('g', {
             className: 'my-y-axis-group'
@@ -413,7 +415,7 @@
         const columnWidth = this.config.xAxisGridColumns
             ? (this.chartWidth / (this._data.xAxis.columns.length))
             : (this.chartWidth / (this._data.xAxis.columns.length - 1));
-        const barWidth = (columnWidth - (this.config.barSpacing * (this.barCount + 1))) / (this.barCount || 1); // TODO: somewhere define 20
+        const barWidth = (columnWidth - (this.config.barSpacing * (this.barCount + 1))) / (this.barCount || 1);
 
         // Draw xAxis lines
         var currentXAxisLineGroupElement = el('g');
@@ -466,6 +468,7 @@
         });
 
         var currentBarIndex = 0;
+        var stackedBarValues = []; // value index => current value (steeds optellen)
 
         this.config.series.forEach(function (serie) {
 
@@ -505,7 +508,7 @@
                             }
                             previousValue = value;
                         }, this);
-                        if (this.config.curved) {
+                        if (this.config.lineCurved) {
                             serieGroup.appendChild(el('path', {
                                 d: getCurvedPathFromPoints.call(this, points, flatPoints).join(' '),
                                 fill: 'none',
@@ -543,14 +546,25 @@
                     {
                         this._data.series[serie.id].forEach(function (value, valueIndex) {
 
-                            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
-                            var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
+                            var x = null;
+                            var y = null;
+                            var height = null;
+                            if (this.config.barStacked) {
+                                if (!stackedBarValues[valueIndex]) stackedBarValues[valueIndex] = this.config.minValue;
+                                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + this.config.barSpacing;
+                                y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight) - (stackedBarValues[valueIndex] * this.valueHeight);
+                                height = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
+                                stackedBarValues[valueIndex] = stackedBarValues[valueIndex] += value;
+                            } else {
+                                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
+                                height = y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
+                            }
 
                             serieGroup.appendChild(el('rect', {
                                 x: x,
                                 y: y,
                                 width: barWidth,
-                                height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - y,
+                                height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
                                 fill: serie.color,
                                 className: 'my-bar',
                                 fillOpacity: this.config.barFillOpacity || '',
@@ -561,6 +575,8 @@
                             }));
 
                         }, this);
+
+                        console.log(stackedBarValues);
 
                         currentBarIndex += 1;
 
