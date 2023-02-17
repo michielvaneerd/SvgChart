@@ -68,8 +68,6 @@ Note that presentational attributes (like <rect fill="red"> has a lower priority
     stroke-width: 6;
 }
 
-
-
 #my-serie-group g {
     transition: opacity 0.6s;
     z-index: 1;

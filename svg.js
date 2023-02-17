@@ -7,8 +7,7 @@
 
     const ns = 'http://www.w3.org/2000/svg';
     const attributesCamelCaseToDashRegex = /[A-Z]/g;
-    const valueElWidth = 60;
-    const valueElHeight = 26;
+    const valueElPadding = 6;
 
     window.SvgChart = function (parent, config) {
 
@@ -48,9 +47,6 @@
         this.onSerieGroupTransitionendScoped = scopedFunction(this, onSerieGroupTransitionend);
         this.onLegendClickScoped = scopedFunction(this, onLegendClick);
         this.onLegendKeypressScoped = scopedFunction(this, onLegendKeypress);
-
-        this.focusedValueWidth = this.config.focusedValueWidth || valueElWidth;
-        this.focusedValueHeight = this.config.focusedValueHeight || valueElHeight;
 
     };
 
@@ -271,15 +267,11 @@
             className: 'my-value-element-group'
         });
         this.valueElRect = el('rect', {
-            fill: this.config.focusedValueFill || 'black',
-            //width: this.focusedValueWidth,
-            height: this.focusedValueHeight
+            fill: this.config.focusedValueFill || 'black'
         });
         this.valueElText = el('text', {
             textAnchor: 'middle',
             dominantBaseline: 'middle',
-            //x: this.focusedValueWidth / 2,
-            y: this.focusedValueHeight / 2,
             fontFamily: this.config.fontFamily,
             fontSize: 'smaller',
             fill: this.config.focusedValueColor || 'white'
@@ -342,14 +334,21 @@
         var serie = g.dataset.serie;
         if (serie) {
             var serieItem = this.config.series.find((item) => item.id === serie);
-            var x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (this.focusedValueWidth / 2);
-            var y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - this.focusedValueHeight;
-            this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
+            
             this.valueElText.replaceChild(document.createTextNode(serieItem.title + ': ' + circle.dataset.value), this.valueElText.firstChild);
             this.serieGroupElement.appendChild(this.valueElGroup);
             var box = this.valueElText.getBBox();
-            this.valueElRect.setAttribute('width', box.width + 20);
-            this.valueElText.setAttribute('x', (box.width + 20) / 2);
+            var width = box.width + (valueElPadding * 2);
+            var height = box.height + (valueElPadding * 2);
+            this.valueElRect.setAttribute('width', width);
+            this.valueElRect.setAttribute('height', height);
+            this.valueElText.setAttribute('x', width / 2);
+            this.valueElText.setAttribute('y', height / 2);
+
+            var x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (width / 2);
+            var y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - height;
+            this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
+            
         }
     }
 
