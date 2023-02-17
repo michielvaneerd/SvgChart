@@ -28,6 +28,8 @@
         titleColor: 'purple',
         xAxisTitleColor: 'orange',
         yAxisTitleColor: 'pink',
+        focusedValueFill: 'pink',
+        focusedValueColor: 'black',
 
         // Other values
         transition: true,
@@ -96,14 +98,14 @@
     function getNewData(random) {
         var data = {
             series: {
-                nose: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2],
-                eye: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 0, 0, 67, 87, null],
-                ear: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, null, 2, 16, 17, 33],
-                mouth: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, null, 2, 16, 17, 33],
-                hand: random ? Array(6).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, null, 2, 16, 17, 33],
+                nose: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2, 34, null, null, null, 12, 34],
+                eye: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2, 34, null, null, null, 12, 34],
+                ear: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2, 34, null, null, null, 12, 34],
+                mouth: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2, 34, null, null, null, 12, 34],
+                hand: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2, 34, null, null, null, 12, 34],
             },
             xAxis: {
-                columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun']
+                columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
             }
         };
         return data;

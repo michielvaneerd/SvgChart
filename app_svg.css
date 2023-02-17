@@ -5,6 +5,8 @@ Otherwise we can set them in here.
 So the only thing we can set here even if we draw to canvas, are the properties that only makes sense when using the SVG,
 like hovering and selecting something.
 
+Note that presentational attributes (like <rect fill="red"> has a lower priority than CSS styling, so you can overrule these properties from within the CSS file!
+
 **/
 
 /* svg.my-svg text {
@@ -48,6 +50,8 @@ like hovering and selecting something.
     font-weight: bold;
 }
 
+
+
 /* .my-line {
     stroke-width: 2;
 } */
@@ -63,6 +67,8 @@ like hovering and selecting something.
 .my-line-point:hover {
     stroke-width: 6;
 }
+
+
 
 #my-serie-group g {
     transition: opacity 0.6s;

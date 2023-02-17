@@ -7,6 +7,8 @@
 
     const ns = 'http://www.w3.org/2000/svg';
     const attributesCamelCaseToDashRegex = /[A-Z]/g;
+    const valueElWidth = 60;
+    const valueElHeight = 26;
 
     window.SvgChart = function (parent, config) {
 
@@ -39,8 +41,12 @@
         this.valueHeight = this.chartHeight / this.config.maxValue;
 
         this.onXAxisLabelGroupClickScoped = scopedFunction(this, this.onXAxisLabelGroupClick);
-        this.onSerieGroupClickScoped = scopedFunction(this, this.onSerieGroupClick);
+        this.onSerieGroupFocusScoped = scopedFunction(this, this.onSerieGroupFocus);
+        this.onSerieGroupBlurScoped = scopedFunction(this, this.onSerieGroupBlur);
         this.onSerieGroupTransitionendScoped = scopedFunction(this, this.onSerieGroupTransitionend);
+
+        this.focusedValueWidth = this.config.focusedValueWidth || valueElWidth;
+        this.focusedValueHeight = this.config.focusedValueHeight || valueElHeight;
 
     };
 
@@ -195,7 +201,8 @@
             }
             this.config.series.forEach(function (serie, serieIndex) {
                 var gSerie = el('g', {
-                    dataSerie: serie.id
+                    dataSerie: serie.id,
+                    tabindex: 0
                 });
                 gSerie.appendChild(el('rect', {
                     x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20,
@@ -236,11 +243,30 @@
         this.serieGroupElement = el('g', {
             id: 'my-serie-group'
         });
-        this.serieGroupElement.addEventListener('click', this.onSerieGroupClickScoped);
+        this.serieGroupElement.addEventListener('focus', this.onSerieGroupFocusScoped, true);
+        this.serieGroupElement.addEventListener('blur', this.onSerieGroupBlurScoped, true);
         this.serieGroupElement.addEventListener('transitionend', this.onSerieGroupTransitionendScoped);
         this.svg.appendChild(this.serieGroupElement);
-        
 
+        this.valueElGroup = el('g', {
+            className: 'my-value-element-group'
+        });
+        this.valueElRect = el('rect', {
+            fill: this.config.focusedValueFill || 'black',
+            width: this.focusedValueWidth,
+            height: this.focusedValueHeight
+        });
+        this.valueElText = el('text', {
+            textAnchor: 'middle',
+            dominantBaseline: 'middle',
+            x: this.focusedValueWidth / 2,
+            y: this.focusedValueHeight / 2,
+            fontFamily: this.config.fontFamily,
+            fontSize: 'smaller',
+            fill: this.config.focusedValueColor || 'white'
+        }, document.createTextNode(''));
+        this.valueElGroup.appendChild(this.valueElRect);
+        this.valueElGroup.appendChild(this.valueElText);
     };
 
     // Volgens mij kan ik deze ook gebruiken in de pad, want daar heb je : Q x1 y1, x y
@@ -276,22 +302,36 @@
         return path;
     }
 
-    window.SvgChart.prototype.onSerieGroupTransitionend = function(e) {
+    window.SvgChart.prototype.onSerieGroupTransitionend = function (e) {
         console.log(e.target);
         if (e.target.classList.contains('unselected')) {
             e.target.setAttribute('display', 'none');
         }
     };
 
-    window.SvgChart.prototype.onSerieGroupClick = function (e) {
+    window.SvgChart.prototype.onSerieGroupBlur = function (e) {
         var circle = e.target;
         var g = parent(circle, 'g');
         var serie = g.dataset.serie;
-        console.log(circle.dataset.value + ' for ' + serie);
+        if (serie) {
+            this.serieGroupElement.removeChild(this.valueElGroup);
+        }
+    };
+
+    window.SvgChart.prototype.onSerieGroupFocus = function (e) {
+        var circle = e.target;
+        var g = parent(circle, 'g');
+        var serie = g.dataset.serie;
+        if (serie) {
+            var x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (this.focusedValueWidth / 2);
+            var y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - this.focusedValueHeight;
+            this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
+            this.valueElText.replaceChild(document.createTextNode(circle.dataset.value), this.valueElText.firstChild);
+            this.serieGroupElement.appendChild(this.valueElGroup);
+        }
     };
 
     window.SvgChart.prototype.onXAxisLabelGroupClick = function (e) {
-        console.log(e.target);
         var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.my-x-axis-grid-column-selectable-label');
         var rects = this.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.my-x-axis-grid-column-selectable');
         for (var i = 0; i < textNodes.length; i++) {
@@ -330,7 +370,7 @@
         if (this.xAxisLineGroupElement.firstChild) {
             this.xAxisLineGroupElement.removeChild(this.xAxisLineGroupElement.firstChild);
         }
-        
+
         if (this.serieGroupElement.firstChild) {
             this.serieGroupElement.removeChild(this.serieGroupElement.firstChild);
         }
@@ -338,7 +378,7 @@
         if (this.xAxisGridColumnsSelectableGroupElement.firstChild) {
             this.xAxisGridColumnsSelectableGroupElement.removeChild(this.xAxisGridColumnsSelectableGroupElement.firstChild);
         }
-        
+
         if (this.xAxisLabelsGroupElement.firstChild) {
             this.xAxisLabelsGroupElement.removeChild(this.xAxisLabelsGroupElement.firstChild);
         }
@@ -356,7 +396,7 @@
             className: 'my-x-axis-label-group-current'
         });
 
-        
+
         var currentXAxisGridColumnsSelectableGroupElement = el('g');
         this._data.xAxis.columns.forEach(function (colValue, colIndex) {
             if (this.config.xAxisGrid) {
@@ -503,12 +543,12 @@
 
             currentSerieGroupElement.appendChild(serieGroup);
         }, this);
-        this.serieGroupElement.appendChild(currentSerieGroupElement);
+        this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect(); // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
         if (this.config.transition) {
-            var timeout = setTimeout(function () {
-                clearTimeout(timeout);
-                currentSerieGroupElement.classList.remove('unattached');
-            }, 0);
+            //var timeout = setTimeout(function () {
+            //    clearTimeout(timeout);
+            currentSerieGroupElement.classList.remove('unattached');
+            //}, 1); // 0 doesn't work on first load, 1 does (Chrome)
         }
     };
 
