@@ -32,6 +32,7 @@
         focusedValueColor: 'black',
 
         // Other values
+        //focusedValueWidth: 120,
         transition: true,
         maxValue: 100,
         minValue: 0,
@@ -49,12 +50,12 @@
         title: 'De titel',
         yAxisTitle: 'Dit is de Y-as',
         xAxisTitle: 'Dit is de X-as',
-        connectNullValues: false,
+        connectNullValues: true,
         lineCurved: true,
         pointRadius: 3,
         points: true,
-        barSpacing: 6,
-        barStrokeWidth: 2,
+        barSpacing: 1,
+        barStrokeWidth: 0,
         barStacked: false,
         padding: {
             top: 80,
@@ -81,18 +82,18 @@
                 color: 'lime',
                 type: 'bar'
             },
-            // {
-            //     title: 'Nose',
-            //     id: 'nose',
-            //     color: 'orange',
-            //     type: 'line'
-            // },
-            // {
-            //     title: 'Eye',
-            //     id: 'eye',
-            //     color: 'blue',
-            //     type: 'line'
-            // },
+            {
+                title: 'Nose',
+                id: 'nose',
+                color: 'orange',
+                type: 'line'
+            },
+            {
+                title: 'Eye',
+                id: 'eye',
+                color: 'blue',
+                type: 'line'
+            },
         ]
     };
 

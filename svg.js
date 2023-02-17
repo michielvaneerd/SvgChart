@@ -272,13 +272,13 @@
         });
         this.valueElRect = el('rect', {
             fill: this.config.focusedValueFill || 'black',
-            width: this.focusedValueWidth,
+            //width: this.focusedValueWidth,
             height: this.focusedValueHeight
         });
         this.valueElText = el('text', {
             textAnchor: 'middle',
             dominantBaseline: 'middle',
-            x: this.focusedValueWidth / 2,
+            //x: this.focusedValueWidth / 2,
             y: this.focusedValueHeight / 2,
             fontFamily: this.config.fontFamily,
             fontSize: 'smaller',
@@ -341,11 +341,15 @@
         var g = parent(circle, 'g');
         var serie = g.dataset.serie;
         if (serie) {
+            var serieItem = this.config.series.find((item) => item.id === serie);
             var x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (this.focusedValueWidth / 2);
             var y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - this.focusedValueHeight;
             this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
-            this.valueElText.replaceChild(document.createTextNode(circle.dataset.value), this.valueElText.firstChild);
+            this.valueElText.replaceChild(document.createTextNode(serieItem.title + ': ' + circle.dataset.value), this.valueElText.firstChild);
             this.serieGroupElement.appendChild(this.valueElGroup);
+            var box = this.valueElText.getBBox();
+            this.valueElRect.setAttribute('width', box.width + 20);
+            this.valueElText.setAttribute('x', (box.width + 20) / 2);
         }
     }
 
@@ -576,8 +580,6 @@
 
                         }, this);
 
-                        console.log(stackedBarValues);
-
                         currentBarIndex += 1;
 
                     }
@@ -588,10 +590,7 @@
         }, this);
         this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect(); // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
         if (this.config.transition) {
-            //var timeout = setTimeout(function () {
-            //    clearTimeout(timeout);
             currentSerieGroupElement.classList.remove('unattached');
-            //}, 1); // 0 doesn't work on first load, 1 does (Chrome)
         }
     };
 
