@@ -58,31 +58,34 @@
         barSpacing: 4,
         barStrokeWidth: 1,
         barStacked: false,
+        xAxisLabelRotation: 45,
+        xAxisLabelTop: 30,
+        //pieChart: true, // dan kun je dus GEEN lines en bars tonen in deze chart.
         padding: {
             top: 80,
             left: 100,
             right: 120,
-            bottom: 80
+            bottom: 140
         },
         series: [
-            {
-                title: 'Ear',
-                id: 'ear',
-                //color: 'green',
-                type: 'bar'
-            },
-            {
-                title: 'Mouth',
-                id: 'mouth',
-                //color: 'indigo',
-                type: 'bar'
-            },
-            {
-                title: 'Hand',
-                id: 'hand',
-                //color: 'lime',
-                type: 'bar'
-            },
+            // {
+            //     title: 'Ear',
+            //     id: 'ear',
+            //     //color: 'green',
+            //     type: 'bar'
+            // },
+            // {
+            //     title: 'Mouth',
+            //     id: 'mouth',
+            //     //color: 'indigo',
+            //     type: 'bar'
+            // },
+            // {
+            //     title: 'Hand',
+            //     id: 'hand',
+            //     //color: 'lime',
+            //     type: 'bar'
+            // },
             {
                 title: 'Nose',
                 id: 'nose',
@@ -108,7 +111,9 @@
                 hand: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [10, 60, null, 10, null, 70, 50, null, null, null, 70, 40],
             },
             xAxis: {
-                columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
+                //columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
+                columns: ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']
+                //columns: ['jan']
             }
         };
         return data;

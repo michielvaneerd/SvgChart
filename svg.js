@@ -452,17 +452,20 @@
                 }
             }
             if (this.config.xAxisLabels) {
-                currentXAxisLabelsGroupElement.appendChild(el('text', {
-                    x: this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0),
-                    y: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + 10,
+                var xlg = el('g', {
+                    transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
+                });
+                xlg.appendChild(el('text', {
                     textAnchor: 'middle',
                     dominantBaseline: 'hanging',
                     fontFamily: this.config.fontFamily || '',
                     fontSize: this.config.fontSizeAxisLabel || '',
                     fill: this.config.xAxisLabelColor || '',
                     tabindex: 0,
-                    className: 'my-x-axis-label ' + (this.config.xAxisGridColumnsSelectable ? 'my-x-axis-grid-column-selectable-label' : '')
+                    className: 'my-x-axis-label ' + (this.config.xAxisGridColumnsSelectable ? 'my-x-axis-grid-column-selectable-label' : ''),
+                    transform: this.config.xAxisLabelRotation ? `rotate(${this.config.xAxisLabelRotation})` : ''
                 }, document.createTextNode(colValue)));
+                currentXAxisLabelsGroupElement.appendChild(xlg);
             }
         }, this);
         if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
