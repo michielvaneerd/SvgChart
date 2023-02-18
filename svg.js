@@ -9,6 +9,13 @@
     const attributesCamelCaseToDashRegex = /[A-Z]/g;
     const valueElPadding = 6;
 
+    //const retroMetroColorPalette = ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"];
+    const dutchFieldColorPalette = ["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"];
+    //const riverNightsColorPalette = ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e", "#ebdc78"];
+    const springPastelsColorPalette = ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"];
+
+    const defaultColorPalette = dutchFieldColorPalette;
+
     window.SvgChart = function (parent, config) {
 
         // Initialize variables
@@ -223,7 +230,7 @@
                     y: this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20),
                     width: 10,
                     height: 10,
-                    fill: serie.color
+                    fill: serie.color || defaultColorPalette[serieIndex]
                 }));
                 gSerie.appendChild(el('text', {
                     x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 40,
@@ -473,7 +480,7 @@
         var currentBarIndex = 0;
         var stackedBarValues = []; // value index => current value (steeds optellen)
 
-        this.config.series.forEach(function (serie) {
+        this.config.series.forEach(function (serie, serieIndex) {
 
             var serieGroup = el('g', {
                 dataSerie: serie.id,
@@ -531,23 +538,13 @@
                         paths.forEach(function (path) {
                             serieGroup.appendChild(el('path', {
                                 d: path.join(' '),
-                                fill: this.config.lineChartFilled ? serie.color : 'none',
+                                fill: this.config.lineChartFilled ? (serie.color || defaultColorPalette[serieIndex]) : 'none',
                                 fillOpacity: 0.4,
-                                stroke: serie.color,
+                                stroke: (serie.color || defaultColorPalette[serieIndex]),
                                 strokeWidth: this.config.lineWidth || '',
                                 className: 'my-line'
                             }));
                         }, this);
-
-                        // End new
-
-                        // var thisPath = this.config.lineCurved ? getCurvedPathFromPoints.call(this, points, flatPoints) : path;
-
-                        // if (this.config.lineChartFilled) {
-                        //     thisPath.push(`L ${flatPoints[flatPoints.length - 1].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
-                        //     thisPath.push(`L ${flatPoints[0].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
-                        //     thisPath.push(`L ${flatPoints[0].x} ${flatPoints[0].y}`);
-                        // }
 
                         if (this.config.points) {
                             flatNonNullPoints.forEach(function (point) {
@@ -556,8 +553,8 @@
                                     cy: point.y,
                                     r: this.config.pointRadius,
                                     zIndex: 1,
-                                    fill: serie.color,
-                                    stroke: serie.color,
+                                    fill: (serie.color || defaultColorPalette[serieIndex]),
+                                    stroke: (serie.color || defaultColorPalette[serieIndex]),
                                     dataValue: point.value,
                                     className: 'my-line-point',
                                     tabindex: 0
@@ -589,11 +586,11 @@
                                 y: y,
                                 width: barWidth,
                                 height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
-                                fill: serie.color,
+                                fill: (serie.color || defaultColorPalette[serieIndex]),
                                 className: 'my-bar',
                                 fillOpacity: this.config.barFillOpacity || '',
                                 strokeWidth: this.config.barStrokeWidth || 0,
-                                stroke: serie.color,
+                                stroke: (serie.color || defaultColorPalette[serieIndex]),
                                 dataValue: value,
                                 tabindex: 0
                             }));

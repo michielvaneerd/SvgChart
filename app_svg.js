@@ -52,11 +52,11 @@
         xAxisTitle: 'Dit is de X-as',
         connectNullValues: false,
         lineCurved: true,
-        lineChartFilled: true,
+        lineChartFilled: false,
         pointRadius: 3,
         points: true,
-        barSpacing: 1,
-        barStrokeWidth: 0,
+        barSpacing: 4,
+        barStrokeWidth: 1,
         barStacked: false,
         padding: {
             top: 80,
@@ -65,36 +65,36 @@
             bottom: 80
         },
         series: [
-            // {
-            //     title: 'Ear',
-            //     id: 'ear',
-            //     color: 'green',
-            //     type: 'bar'
-            // },
-            // {
-            //     title: 'Mouth',
-            //     id: 'mouth',
-            //     color: 'indigo',
-            //     type: 'bar'
-            // },
-            // {
-            //     title: 'Hand',
-            //     id: 'hand',
-            //     color: 'lime',
-            //     type: 'bar'
-            // },
+            {
+                title: 'Ear',
+                id: 'ear',
+                //color: 'green',
+                type: 'bar'
+            },
+            {
+                title: 'Mouth',
+                id: 'mouth',
+                //color: 'indigo',
+                type: 'bar'
+            },
+            {
+                title: 'Hand',
+                id: 'hand',
+                //color: 'lime',
+                type: 'bar'
+            },
             {
                 title: 'Nose',
                 id: 'nose',
-                color: 'orange',
+                //color: 'orange',
                 type: 'line'
             },
-            // {
-            //     title: 'Eye',
-            //     id: 'eye',
-            //     color: 'blue',
-            //     type: 'line'
-            // },
+            {
+                title: 'Eye',
+                id: 'eye',
+                //color: 'blue',
+                type: 'line'
+            },
         ]
     };
 
