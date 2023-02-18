@@ -50,8 +50,9 @@
         title: 'De titel',
         yAxisTitle: 'Dit is de Y-as',
         xAxisTitle: 'Dit is de X-as',
-        connectNullValues: true,
+        connectNullValues: false,
         lineCurved: true,
+        lineChartFilled: true,
         pointRadius: 3,
         points: true,
         barSpacing: 1,
@@ -64,43 +65,43 @@
             bottom: 80
         },
         series: [
-            {
-                title: 'Ear',
-                id: 'ear',
-                color: 'green',
-                type: 'bar'
-            },
-            {
-                title: 'Mouth',
-                id: 'mouth',
-                color: 'indigo',
-                type: 'bar'
-            },
-            {
-                title: 'Hand',
-                id: 'hand',
-                color: 'lime',
-                type: 'bar'
-            },
+            // {
+            //     title: 'Ear',
+            //     id: 'ear',
+            //     color: 'green',
+            //     type: 'bar'
+            // },
+            // {
+            //     title: 'Mouth',
+            //     id: 'mouth',
+            //     color: 'indigo',
+            //     type: 'bar'
+            // },
+            // {
+            //     title: 'Hand',
+            //     id: 'hand',
+            //     color: 'lime',
+            //     type: 'bar'
+            // },
             {
                 title: 'Nose',
                 id: 'nose',
                 color: 'orange',
                 type: 'line'
             },
-            {
-                title: 'Eye',
-                id: 'eye',
-                color: 'blue',
-                type: 'line'
-            },
+            // {
+            //     title: 'Eye',
+            //     id: 'eye',
+            //     color: 'blue',
+            //     type: 'line'
+            // },
         ]
     };
 
     function getNewData(random) {
         var data = {
             series: {
-                nose: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2, 34, null, null, null, 12, 34],
+                nose: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, 100, null, 45, null, 2, 34, 24, null, 15, 12, null],
                 eye: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2, 34, null, null, null, 12, 34],
                 ear: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [10, 20, null, 45, null, 2, 30, null, null, null, 10, 20],
                 mouth: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [80, 20, null, 45, null, 28, 20, null, null, null, 20, 40],

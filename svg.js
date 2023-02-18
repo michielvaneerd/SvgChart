@@ -334,7 +334,7 @@
         var serie = g.dataset.serie;
         if (serie) {
             var serieItem = this.config.series.find((item) => item.id === serie);
-            
+
             this.valueElText.replaceChild(document.createTextNode(serieItem.title + ': ' + circle.dataset.value), this.valueElText.firstChild);
             this.serieGroupElement.appendChild(this.valueElGroup);
             var box = this.valueElText.getBBox();
@@ -348,7 +348,7 @@
             var x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (width / 2);
             var y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - height;
             this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
-            
+
         }
     }
 
@@ -483,53 +483,74 @@
             switch (serie.type) {
                 case 'line':
                     {
-                        var path = [];
-                        var flatPoints = []; // Array of all points in one array.
-                        var points = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values
-                        var weHaveSeenNonNullPoint = false;
-                        var previousValue = null;
-                        this._data.series[serie.id].forEach(function (value, valueIndex) {
+                        var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
+                        var flatNonNullPoints = [];
+                        this._data.series[serie.id].forEach(function (value, valueIndex, values) {
                             var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
                             var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.valueHeight);
 
-
-                            if (valueIndex === 0 || (!this.config.connectNullValues && (value === null || previousValue === null)) || !weHaveSeenNonNullPoint) {
-                                path.push(`M ${x} ${y}`);
-                            } else {
-                                if (value !== null) {
-                                    path.push(`L ${x} ${y}`);
-                                }
-                            }
                             if (value === null) {
-                                if (points[points.length - 1].length > 0) {
-                                    points.push([]);
+                                if (nonNullPoints[nonNullPoints.length - 1].length > 0 && valueIndex + 1 < values.length) {
+                                    nonNullPoints.push([]);
                                 }
                             } else {
-                                weHaveSeenNonNullPoint = true;
-                                points[points.length - 1].push({ x: x, y: y, value: value });
-                                flatPoints.push({ x: x, y: y, value: value });
+                                nonNullPoints[nonNullPoints.length - 1].push({ x: x, y: y, value: value });
+                                flatNonNullPoints.push({ x: x, y: y, value: value });
                             }
-                            previousValue = value;
                         }, this);
-                        if (this.config.lineCurved) {
-                            serieGroup.appendChild(el('path', {
-                                d: getCurvedPathFromPoints.call(this, points, flatPoints).join(' '),
-                                fill: 'none',
-                                className: 'my-line',
-                                stroke: serie.color,
-                                strokeWidth: this.config.lineWidth || ''
-                            }));
+
+                        console.log(nonNullPoints);
+
+                        var paths = [];
+
+                        if (this.config.connectNullValues) {
+
+                            // Loop through flatNonNullPoints
+                            let path = this.config.lineCurved ? getCurvedPathFromPoints.call(this, flatNonNullPoints) : getStraightPathFromPoints.call(this, flatNonNullPoints);
+                            if (path.length > 0) {
+                                paths.push(path);
+                            }
+
                         } else {
+
+                            // Loop through nonNullPoints
+
+                            nonNullPoints.forEach(function (currentNonNullPoints) {
+                                if (currentNonNullPoints.length > 0) {
+                                    let path = this.config.lineCurved ? getCurvedPathFromPoints.call(this, currentNonNullPoints) : getStraightPathFromPoints.call(this, currentNonNullPoints);
+                                    if (path.length > 0) {
+                                        paths.push(path);
+                                    }
+                                }
+                            }, this);
+
+                        }
+
+                        console.log(paths);
+
+                        paths.forEach(function (path) {
                             serieGroup.appendChild(el('path', {
                                 d: path.join(' '),
-                                fill: 'none',
+                                fill: this.config.lineChartFilled ? serie.color : 'none',
+                                fillOpacity: 0.4,
                                 stroke: serie.color,
                                 strokeWidth: this.config.lineWidth || '',
                                 className: 'my-line'
                             }));
-                        }
+                        }, this);
+
+                        // End new
+
+                        // var thisPath = this.config.lineCurved ? getCurvedPathFromPoints.call(this, points, flatPoints) : path;
+
+                        // if (this.config.lineChartFilled) {
+                        //     thisPath.push(`L ${flatPoints[flatPoints.length - 1].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
+                        //     thisPath.push(`L ${flatPoints[0].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
+                        //     thisPath.push(`L ${flatPoints[0].x} ${flatPoints[0].y}`);
+                        // }
+
                         if (this.config.points) {
-                            flatPoints.forEach(function (point) {
+                            flatNonNullPoints.forEach(function (point) {
                                 serieGroup.appendChild(el('circle', {
                                     cx: point.x,
                                     cy: point.y,
@@ -592,6 +613,41 @@
             currentSerieGroupElement.classList.remove('unattached');
         }
     };
+
+    function getCurvedPathFromPoints(points) {
+        path = ['M ' + points[0].x + ' ' + points[0].y];
+        for (var i = 0; i < points.length - 1; i++) {
+            var x_mid = (points[i].x + points[i + 1].x) / 2;
+            var y_mid = (points[i].y + points[i + 1].y) / 2;
+            var cp_x1 = (x_mid + points[i].x) / 2;
+            var cp_x2 = (x_mid + points[i + 1].x) / 2;
+            path.push(`Q ${cp_x1} ${points[i].y}, ${x_mid} ${y_mid}`);
+            path.push(`Q ${cp_x2} ${points[i + 1].y} ${points[i + 1].x} ${points[i + 1].y}`);
+        }
+        closePath.call(this, path, points);
+        return path;
+    }
+
+    function closePath(path, points) {
+        if (this.config.lineChartFilled && points.length > 1) {
+            path.push(`L ${points[points.length - 1].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
+            path.push(`L ${points[0].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
+            path.push(`L ${points[0].x} ${points[0].y}`);
+        }
+    }
+
+    function getStraightPathFromPoints(points) {
+        path = [];
+        points.forEach(function (point, pointIndex) {
+            if (pointIndex === 0) {
+                path.push(`M ${point.x} ${point.y}`);
+            } else {
+                path.push(`L ${point.x} ${point.y}`);
+            }
+        });
+        closePath.call(this, path, points);
+        return path;
+    }
 
     function scopedFunction(me, func) {
         return (function (arg) {
