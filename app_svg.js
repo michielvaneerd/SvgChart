@@ -33,34 +33,37 @@
 
         // Other values
         //focusedValueWidth: 120,
-        transition: true,
-        maxValue: 100,
-        minValue: 0,
-        yAxisStep: 10,
-        legend: true,
-        legendSelect: true,
-        yAxisGrid: true,
-        yAxisLabels: true,
-        xAxisGrid: true,
-        xAxisGridPadding: 0,
-        yAxisGridPadding: 0,
-        xAxisLabels: true,
-        xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
-        xAxisGridColumnsSelectable: true,
+        // transition: true,
+        // maxValue: 100,
+        // minValue: 0,
+        // yAxisStep: 10,
+        // legend: true,
+        // legendSelect: true,
+        // yAxis: true,
+        // yAxisGrid: true,
+        // yAxisLabels: true,
+        // xAxisGrid: true,
+        // xAxisGridPadding: 0,
+        // yAxisGridPadding: 0,
+        // xAxisLabels: true,
+        // xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
+        // xAxisGridColumnsSelectable: true,
         title: 'De titel',
         yAxisTitle: 'Dit is de Y-as',
         xAxisTitle: 'Dit is de X-as',
-        connectNullValues: false,
-        lineCurved: true,
-        lineChartFilled: false,
-        pointRadius: 3,
-        points: true,
-        barSpacing: 4,
-        barStrokeWidth: 1,
-        barStacked: false,
         xAxisLabelRotation: 45,
-        xAxisLabelTop: 30,
-        //pieChart: true, // dan kun je dus GEEN lines en bars tonen in deze chart.
+        // connectNullValues: false,
+        // lineCurved: true,
+        // lineChartFilled: false,
+        // pointRadius: 3,
+        // points: true,
+        // barSpacing: 4,
+        // barStrokeWidth: 1,
+        // barStacked: false,
+        // xAxisLabelRotation: 45,
+        // xAxisLabelTop: 30,
+        // showValueOnFocus: true,
+        chartType: SvgChart.types.lineAndBar,
         padding: {
             top: 80,
             left: 100,
@@ -68,24 +71,24 @@
             bottom: 140
         },
         series: [
-            // {
-            //     title: 'Ear',
-            //     id: 'ear',
-            //     //color: 'green',
-            //     type: 'bar'
-            // },
-            // {
-            //     title: 'Mouth',
-            //     id: 'mouth',
-            //     //color: 'indigo',
-            //     type: 'bar'
-            // },
-            // {
-            //     title: 'Hand',
-            //     id: 'hand',
-            //     //color: 'lime',
-            //     type: 'bar'
-            // },
+            {
+                title: 'Ear',
+                id: 'ear',
+                //color: 'green',
+                type: 'bar'
+            },
+            {
+                title: 'Mouth',
+                id: 'mouth',
+                //color: 'indigo',
+                type: 'bar'
+            },
+            {
+                title: 'Hand',
+                id: 'hand',
+                //color: 'lime',
+                type: 'line'
+            },
             {
                 title: 'Nose',
                 id: 'nose',
@@ -120,8 +123,17 @@
     }
     // Data will change between each draw
 
-    var chart = new window.SvgChart(document.getElementById('svgWrapper'), config);
-    chart.init();
+    function getNewData2() {
+        return {
+            series: {
+                nose: getRandomIntInclusive(0, 10),
+                eye: getRandomIntInclusive(0, 10),
+                ear: getRandomIntInclusive(0, 10)
+            }
+        };
+    }
+
+    var chart = new SvgChart(document.getElementById('svgWrapper'), config);
     chart.data(getNewData(false));
 
     document.getElementById('button').addEventListener('click', function () {
@@ -131,5 +143,24 @@
     document.getElementById('saveButton').addEventListener('click', function () {
         chart.saveAsPng('test.png');
     });
+
+    var chart2 = new SvgChart(document.getElementById('svgWrapper2'), {
+        chartType: SvgChart.types.pie,
+        backgroundColor: 'bisque',
+        padding: {
+            right: 140
+        },
+        title: 'Pie chart',
+        legend: true,
+        series: [
+            {
+                title: 'Ear',
+                id: 'ear',
+                type: 'pie'
+            }
+        ]
+    });
+    console.log(chart2.config);
+    chart2.data(getNewData2());
 
 }());
