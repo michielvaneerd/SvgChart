@@ -95,10 +95,15 @@ g.my-legend-group g.unselected {
     opacity: 0.4;
 }
 
-rect.my-bar:hover {
+rect.my-bar:hover, path.my-pie-piece:hover {
     fill-opacity: 0.7;
 }
 
+path.my-pie-piece:focus, rect.my-bar:focus, circle.my-line-point:focus {
+    outline: none;
+    stroke:white;
+    stroke-width:2;
+}
 
 /* svg.my-svg {
     background-color: yellow;

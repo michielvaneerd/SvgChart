@@ -83,8 +83,8 @@
 
         this.width = parentRect.width;
         this.height = parentRect.height;
-        this.chartWidth = this.width - this.config.padding.left - this.config.padding.right - (this.config.xAxisGridPadding * 2); // todo: yAxisGridPadding alleen voor line and bar charts
-        this.chartHeight = this.height - this.config.padding.top - this.config.padding.bottom - (this.config.yAxisGridPadding * 2); // todo: yAxisGridPadding alleen voor line and bar charts
+        this.chartWidth = this.width - this.config.padding.left - this.config.padding.right - ((this.config.xAxisGridPadding || 0) * 2); // todo: yAxisGridPadding alleen voor line and bar charts
+        this.chartHeight = this.height - this.config.padding.top - this.config.padding.bottom - ((this.config.yAxisGridPadding || 0) * 2); // todo: yAxisGridPadding alleen voor line and bar charts
 
         // Add SVG element to parent
         this.svg = el('svg', {
@@ -407,7 +407,6 @@
         var serie = g.dataset.serie;
         if (serie) {
             var serieItem = this.config.series.find((item) => item.id === serie);
-
             this.valueElText.replaceChild(document.createTextNode(serieItem.title + ': ' + circle.dataset.value), this.valueElText.firstChild);
             this.serieGroupElement.appendChild(this.valueElGroup);
             var box = this.valueElText.getBBox();
@@ -418,10 +417,23 @@
             this.valueElText.setAttribute('x', width / 2);
             this.valueElText.setAttribute('y', height / 2);
 
-            var x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (width / 2);
-            var y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - height;
+            var type = serieItem.type || this.config.chartType;
+            var x, y = null;
+            switch (type) {
+                case 'line':
+                case 'bar':
+                case 'lineAndBar':
+                    x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (width / 2);
+                    y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - height;
+                    break;
+                case 'pie':
+                case 'donut':
+                    var d = circle.getAttribute('d').split(' ');
+                    x = d[1].trim();
+                    y = d[2].trim();
+                    break;
+            }            
             this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
-
         }
     }
 
@@ -510,35 +522,86 @@
 
     function dataPie() {
 
-        var radius = 100;
-        var centerX = this.config.padding.left + ((this.chartWidth - this.config.padding.right) / 2);
-        var centerY = this.config.padding.top + ((this.chartHeight - this.config.padding.bottom) / 2);
+        var radius = this.chartHeight / 2;
+        var centerX = this.width / 2;
+        var centerY = this.height / 2;
 
-        var c1 = el('circle', {
-            cx: centerX,
-            cy: centerY,
-            r: radius,
-            fill: 'red',
-            fillOpacity: 0.1
+        if (this.serieGroupElement.firstChild) {
+            this.serieGroupElement.firstChild.remove();
+        }
+
+        var currentSerieGroupElement = el('g', {
+            id: 'my-serie-group-current',
+            className: this.config.transition ? 'unattached' : ''
         });
-        this.serieGroupElement.appendChild(c1);
 
-        this.serieGroupElement.appendChild(el('path', {
-            d: describeArcPie(centerX, centerY, radius, 0, 90).join(' '),
-            fill: 'green'
-        }));
-        this.serieGroupElement.appendChild(el('path', {
-            d: describeArcPie(centerX, centerY, radius, 90, 200).join(' '),
-            fill: 'red'
-        }));
-        this.serieGroupElement.appendChild(el('path', {
-            d: describeArcPie(centerX, centerY, radius, 200, 310).join(' '),
-            fill: 'pink'
-        }));
-        this.serieGroupElement.appendChild(el('path', {
-            d: describeArcPie(centerX, centerY, radius, 310, 360).join(' '),
-            fill: 'olive'
-        }));
+        var total = 0;
+        for (let key in this._data.series) {
+            total += this._data.series[key];
+        }
+
+        
+        
+        var totalToDegree = 360 / total;
+        var currentTotal = 0;
+        
+        this.config.series.forEach(function (serie, serieIndex) {
+            var serieGroup = el('g', {
+                dataSerie: serie.id,
+                className: this.unselectedSeries[serie.id] ? 'unselected' : ''
+            });
+
+            const value = this._data.series[serie.id];
+            
+            var startAngle = currentTotal * totalToDegree;
+            currentTotal += value;
+            var endAngle = currentTotal * totalToDegree;
+            //var path = describeArcPie(centerX, centerY, radius, startAngle, endAngle);
+            var path = describeArcDonut(centerX, centerY, radius - 40, 40, startAngle, endAngle);
+            serieGroup.appendChild(el('path', {
+                d: path.join(' '),
+                fill: serie.color || defaultColorPalette[serieIndex],
+                className: 'my-pie-piece',
+                tabindex: 0,
+                dataValue: value
+            }));
+
+            currentSerieGroupElement.appendChild(serieGroup);
+
+        }, this);
+
+        this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect(); // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
+        if (this.config.transition) {
+            currentSerieGroupElement.classList.remove('unattached');
+        }
+
+        
+
+        // var c1 = el('circle', {
+        //     cx: centerX,
+        //     cy: centerY,
+        //     r: radius,
+        //     fill: 'red',
+        //     fillOpacity: 0.1
+        // });
+        // this.serieGroupElement.appendChild(c1);
+
+        // this.serieGroupElement.appendChild(el('path', {
+        //     d: describeArcPie(centerX, centerY, radius, 0, 90).join(' '),
+        //     fill: 'green'
+        // }));
+        // this.serieGroupElement.appendChild(el('path', {
+        //     d: describeArcPie(centerX, centerY, radius, 90, 200).join(' '),
+        //     fill: 'red'
+        // }));
+        // this.serieGroupElement.appendChild(el('path', {
+        //     d: describeArcPie(centerX, centerY, radius, 200, 310).join(' '),
+        //     fill: 'pink'
+        // }));
+        // this.serieGroupElement.appendChild(el('path', {
+        //     d: describeArcPie(centerX, centerY, radius, 310, 360).join(' '),
+        //     fill: 'olive'
+        // }));
 
         // this.serieGroupElement.appendChild(el('path', {
         //     d: describeArcDonut(centerX, centerY, radius - 40, 40, 0, 90).join(' '),
@@ -745,7 +808,7 @@
                                 strokeWidth: this.config.barStrokeWidth || 0,
                                 stroke: (serie.color || defaultColorPalette[serieIndex]),
                                 dataValue: value,
-                                tabindex: 0
+                                tabindex: this.config.showValueOnFocus ? 0 : null
                             }));
 
                         }, this);

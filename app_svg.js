@@ -128,7 +128,9 @@
             series: {
                 nose: getRandomIntInclusive(0, 10),
                 eye: getRandomIntInclusive(0, 10),
-                ear: getRandomIntInclusive(0, 10)
+                ear: getRandomIntInclusive(0, 10),
+                mouth: getRandomIntInclusive(0, 10),
+                hand: getRandomIntInclusive(0, 10),
             }
         };
     }
@@ -145,10 +147,13 @@
     });
 
     var chart2 = new SvgChart(document.getElementById('svgWrapper2'), {
-        chartType: SvgChart.types.pie,
+        chartType: 'pie',
         backgroundColor: 'bisque',
         padding: {
-            right: 140
+            right: 120,
+            left: 0,
+            top: 80,
+            bottom: 0
         },
         title: 'Pie chart',
         legend: true,
@@ -156,8 +161,23 @@
             {
                 title: 'Ear',
                 id: 'ear',
-                type: 'pie'
-            }
+            },
+            {
+                title: 'Nose',
+                id: 'nose',
+            },
+            {
+                title: 'Eye',
+                id: 'eye',
+            },
+            {
+                title: 'Mouth',
+                id: 'mouth',
+            },
+            {
+                title: 'Hand',
+                id: 'hand',
+            },
         ]
     });
     console.log(chart2.config);
