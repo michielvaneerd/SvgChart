@@ -7,6 +7,7 @@
             top: 20,
             bottom: 20
         },
+        fontFamily: 'sans-serif',
         transition: true,
         maxValue: 100,
         minValue: 0,
@@ -227,18 +228,26 @@
         this.config.series.forEach(function (serie, serieIndex) {
             var gSerie = el('g', {
                 dataSerie: serie.id,
-                tabindex: 0
+                tabindex: this.config.legendSelect ? 0 : null
             });
+            var x, y = null;
+            if (this.config.legendPosition === 'top') {
+                x = this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
+                y = this.config.padding.top / 2;
+            } else {
+                x = this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
+                y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);
+            }
             gSerie.appendChild(el('rect', {
-                x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20,
-                y: this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20),
+                x: x,
+                y: y,
                 width: 10,
                 height: 10,
                 fill: serie.color || defaultColorPalette[serieIndex]
             }));
             gSerie.appendChild(el('text', {
-                x: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 40,
-                y: this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20) + 5,
+                x: x + 20,
+                y: y + 5,
                 textAnchor: 'start',
                 dominantBaseline: 'middle',
                 fontFamily: this.config.fontFamily || '',
@@ -247,6 +256,18 @@
             gLegend.appendChild(gSerie);
         }, this);
         this.svg.appendChild(gLegend);
+        if (this.config.legendPosition === 'top') {
+            var curX = 0;
+            gLegend.querySelectorAll('g').forEach(function(g) {
+                const box = g.getBBox();
+                g.querySelector('rect').setAttribute('x', curX);
+                g.querySelector('text').setAttribute('x', curX + 20);
+                curX += (box.width + 10);
+            });
+            curX -= 10;
+            gLegend.setAttribute('transform', 'translate(' + ((this.width / 2) - (curX / 2)) + ', 0)');
+        }
+
     };
 
     window.SvgChart.prototype.addYAxisTitle = function () {
@@ -524,7 +545,7 @@
 
         var radius = this.chartHeight / 2;
         var centerX = this.width / 2;
-        var centerY = this.height / 2;
+        var centerY = this.chartHeight / 2 + this.config.padding.top;
 
         if (this.serieGroupElement.firstChild) {
             this.serieGroupElement.firstChild.remove();

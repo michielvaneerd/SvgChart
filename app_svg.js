@@ -30,6 +30,7 @@
         yAxisTitleColor: 'pink',
         focusedValueFill: 'pink',
         focusedValueColor: 'black',
+        legendPosition: 'top', // right, left, bottom
 
         // Other values
         //focusedValueWidth: 120,
@@ -65,7 +66,7 @@
         // showValueOnFocus: true,
         chartType: SvgChart.types.lineAndBar,
         padding: {
-            top: 80,
+            top: 120,
             left: 100,
             right: 120,
             bottom: 140
@@ -149,11 +150,12 @@
     var chart2 = new SvgChart(document.getElementById('svgWrapper2'), {
         chartType: 'pie',
         backgroundColor: 'bisque',
+        legendPosition: 'top', // right, left, bottom
         padding: {
-            right: 120,
-            left: 0,
-            top: 80,
-            bottom: 0
+            right: 180,
+            left: 180,
+            top: 120,
+            bottom: 80
         },
         title: 'Pie chart',
         legend: true,
