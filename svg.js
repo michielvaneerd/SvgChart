@@ -96,6 +96,8 @@
         if (this.config.backgroundColor) {
             this.svg.style.backgroundColor = this.config.backgroundColor;
         }
+        this.defsElement = el('defs');
+        this.svg.appendChild(this.defsElement);
         this.parent.appendChild(this.svg);
 
         switch (this.config.chartType) {
@@ -120,7 +122,7 @@
             this.addLegend();
         }
 
-
+        initSeries.call(this);
 
         this.serieGroupElement = el('g', {
             id: 'my-serie-group'
@@ -155,8 +157,48 @@
 
     };
 
-    function initPie() {
+    function getSerieStrokeColor(serie, serieIndex) {
+        if (serie.strokeColor) {
+            return serie.strokeColor;
+        }
+        if (serie.color) {
+            return serie.color;
+        }
+        return defaultColorPalette[serieIndex];
+    }
 
+    function getSerieFill(serie, serieIndex) {
+        if (serie.fillGradient) {
+            return `url(#${serie.id}-gradient)`;
+        }
+        if (serie.color) {
+            return serie.color;
+        }
+        return defaultColorPalette[serieIndex];
+    }
+
+    // Do things that we need to do once per config, but we need the series for this.
+    function initSeries() {
+        this.config.series.forEach(function (serie) {
+            if (serie.fillGradient) {
+                var lg = el('linearGradient', {
+                    id: serie.id + '-gradient',
+                    x1: 0,
+                    x2: 0,
+                    y1: 0,
+                    y2: 1
+                });
+                lg.appendChild(el('stop', {
+                    offset: "0%",
+                    stopColor: serie.fillGradient[0]
+                }));
+                lg.appendChild(el('stop', {
+                    offset: "100%",
+                    stopColor: serie.fillGradient[1]
+                }));
+                this.defsElement.appendChild(lg);
+            }
+        }, this);
     }
 
     function initLineAndBar() {
@@ -243,7 +285,9 @@
                 y: y,
                 width: 10,
                 height: 10,
-                fill: serie.color || defaultColorPalette[serieIndex]
+                fill: getSerieFill.call(this, serie, serieIndex),
+                stroke: getSerieStrokeColor.call(this, serie, serieIndex),
+                strokeWidth: 1
             }));
             gSerie.appendChild(el('text', {
                 x: x + 20,
@@ -258,7 +302,7 @@
         this.svg.appendChild(gLegend);
         if (this.config.legendPosition === 'top') {
             var curX = 0;
-            gLegend.querySelectorAll('g').forEach(function(g) {
+            gLegend.querySelectorAll('g').forEach(function (g) {
                 const box = g.getBBox();
                 g.querySelector('rect').setAttribute('x', curX);
                 g.querySelector('text').setAttribute('x', curX + 20);
@@ -299,12 +343,44 @@
         }, document.createTextNode(this.config.xAxisTitle)));
     };
 
+    function initPie() {}
+
     window.SvgChart.prototype.addTitle = function () {
+
+        var x, y, dominantBaseline, textAnchor = null;
+        switch (this.config.titleHorizontalPosition) {
+            case 'right':
+                x = this.width - 20;
+                textAnchor = 'end';
+                break;                
+            case 'left':
+                x = 20;
+                textAnchor = 'start';
+                break;
+            default:
+                x = this.width / 2;
+                textAnchor = 'middle';
+                break;
+        }
+        switch (this.config.titleHorizontalPosition) {                
+            case 'center':
+                x = this.height / 2;
+                dominantBaseline = 'middle';
+                break;
+            case 'bottom':
+                x = this.width - 20;
+                dominantBaseline = 'auto';
+                break;
+            default:
+                y = 20;
+                dominantBaseline = 'hanging';
+                break;
+        }
         this.svg.appendChild(el('text', {
-            x: this.width / 2,
+            x: x,
             y: 20,
-            textAnchor: 'middle',
-            dominantBaseline: 'hanging',
+            textAnchor: textAnchor,
+            dominantBaseline: dominantBaseline,
             fontFamily: this.config.fontFamily || '',
             fontSize: this.config.fontSizeTitle || '',
             fill: this.config.titleColor || '',
@@ -453,7 +529,7 @@
                     x = d[1].trim();
                     y = d[2].trim();
                     break;
-            }            
+            }
             this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
         }
     }
@@ -561,11 +637,11 @@
             total += this._data.series[key];
         }
 
-        
-        
+
+
         var totalToDegree = 360 / total;
         var currentTotal = 0;
-        
+
         this.config.series.forEach(function (serie, serieIndex) {
             var serieGroup = el('g', {
                 dataSerie: serie.id,
@@ -573,7 +649,7 @@
             });
 
             const value = this._data.series[serie.id];
-            
+
             var startAngle = currentTotal * totalToDegree;
             currentTotal += value;
             var endAngle = currentTotal * totalToDegree;
@@ -581,7 +657,7 @@
             var path = describeArcDonut(centerX, centerY, radius - 40, 40, startAngle, endAngle);
             serieGroup.appendChild(el('path', {
                 d: path.join(' '),
-                fill: serie.color || defaultColorPalette[serieIndex],
+                fill: getSerieFill.call(this, serie, serieIndex),
                 className: 'my-pie-piece',
                 tabindex: 0,
                 dataValue: value
@@ -596,7 +672,7 @@
             currentSerieGroupElement.classList.remove('unattached');
         }
 
-        
+
 
         // var c1 = el('circle', {
         //     cx: centerX,
@@ -775,9 +851,10 @@
                         paths.forEach(function (path) {
                             serieGroup.appendChild(el('path', {
                                 d: path.join(' '),
-                                fill: this.config.lineChartFilled ? (serie.color || defaultColorPalette[serieIndex]) : 'none',
+                                fill: this.config.lineChartFilled ? getSerieFill.call(this, serie, serieIndex) : 'none',
                                 fillOpacity: 0.4,
                                 stroke: (serie.color || defaultColorPalette[serieIndex]),
+                                stroke: getSerieStrokeColor.call(this, serie, serieIndex),
                                 strokeWidth: this.config.lineWidth || '',
                                 className: 'my-line'
                             }));
@@ -790,8 +867,8 @@
                                     cy: point.y,
                                     r: this.config.pointRadius,
                                     zIndex: 1,
-                                    fill: (serie.color || defaultColorPalette[serieIndex]),
-                                    stroke: (serie.color || defaultColorPalette[serieIndex]),
+                                    fill: getSerieFill.call(this, serie, serieIndex),
+                                    stroke: getSerieStrokeColor.call(this, serie, serieIndex),
                                     dataValue: point.value,
                                     className: 'my-line-point',
                                     tabindex: this.config.showValueOnFocus ? 0 : null
@@ -823,11 +900,11 @@
                                 y: y,
                                 width: barWidth,
                                 height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
-                                fill: (serie.color || defaultColorPalette[serieIndex]),
+                                fill: getSerieFill.call(this, serie, serieIndex),
                                 className: 'my-bar',
                                 fillOpacity: this.config.barFillOpacity || '',
                                 strokeWidth: this.config.barStrokeWidth || 0,
-                                stroke: (serie.color || defaultColorPalette[serieIndex]),
+                                stroke: getSerieStrokeColor.call(this, serie, serieIndex),
                                 dataValue: value,
                                 tabindex: this.config.showValueOnFocus ? 0 : null
                             }));

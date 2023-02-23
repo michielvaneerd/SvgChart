@@ -31,6 +31,8 @@
         focusedValueFill: 'pink',
         focusedValueColor: 'black',
         legendPosition: 'top', // right, left, bottom
+        titleHorizontalPosition: 'right',
+        titleVerticalPosition: 'top',
 
         // Other values
         //focusedValueWidth: 120,
@@ -55,7 +57,7 @@
         xAxisLabelRotation: 45,
         // connectNullValues: false,
         // lineCurved: true,
-        // lineChartFilled: false,
+        lineChartFilled: true,
         // pointRadius: 3,
         // points: true,
         // barSpacing: 4,
@@ -68,27 +70,32 @@
         padding: {
             top: 120,
             left: 100,
-            right: 120,
+            right: 20,
             bottom: 140
         },
         series: [
+            // {
+            //     title: 'Ear',
+            //     id: 'ear',
+            //     //color: 'green',
+            //     gradient: ['red', 'orange'],
+            //     type: 'bar'
+            // },
+            // {
+            //     title: 'Mouth',
+            //     id: 'mouth',
+            //     //color: 'indigo',
+            //     type: 'bar'
+            // },
             {
-                title: 'Ear',
-                id: 'ear',
-                //color: 'green',
-                type: 'bar'
-            },
-            {
-                title: 'Mouth',
-                id: 'mouth',
-                //color: 'indigo',
-                type: 'bar'
-            },
-            {
+                // Dus color: algemeen fallback
+                // Altijd kijken naar strokeColor
+                // Als fillGradient is gevuld dan deze pakken, anders color, anders default color.
                 title: 'Hand',
                 id: 'hand',
-                //color: 'lime',
-                type: 'line'
+                type: 'line',
+                strokeColor: 'purple', // dit is ook de point color!
+                fillGradient: ['purple', 'pink'],
             },
             {
                 title: 'Nose',
@@ -96,12 +103,12 @@
                 //color: 'orange',
                 type: 'line'
             },
-            {
-                title: 'Eye',
-                id: 'eye',
-                //color: 'blue',
-                type: 'line'
-            },
+            // {
+            //     title: 'Eye',
+            //     id: 'eye',
+            //     //color: 'blue',
+            //     type: 'line'
+            // },
         ]
     };
 
