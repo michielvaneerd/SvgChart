@@ -1,6 +1,31 @@
 (function () {
 
     const defaultConfig = {
+        backgroundColor: 'white',
+        fontFamily: 'sans-serif',
+        fontSizeAxisLabel: 'small',
+        fontSizeTitle: 'normal',
+        fontSizeAxisTitle: 'smaller',
+        fontSizeLegend: 'smaller',
+        barFillOpacity: 0.5,
+        lineWidth: 2,
+        pointRadius: 2,
+        xAxisGridLineWidth: 1,
+        xAxisGridLineColor: '#C0C0C0',
+        xAxisGridLineDashArray: '1,1',
+        yAxisGridLineWidth: 1,
+        yAxisGridLineColor: '#C0C0C0',
+        yAxisGridLineDashArray: '1,1',
+        xAxisLabelColor: 'red',
+        yAxisLabelColor: 'green',
+        titleColor: 'purple',
+        xAxisTitleColor: 'orange',
+        yAxisTitleColor: 'pink',
+        focusedValueFill: 'pink',
+        focusedValueColor: 'black',
+        legendPosition: 'top', // right, left, bottom
+        titleHorizontalPosition: 'right',
+        titleVerticalPosition: 'top',
         padding: {
             left: 20,
             right: 20,
@@ -26,7 +51,7 @@
         connectNullValues: false,
         lineCurved: true,
         lineChartFilled: false,
-        pointRadius: 3,
+        
         points: true,
         barSpacing: 4,
         barStrokeWidth: 1,
@@ -62,9 +87,7 @@
 
     const defaultColorPalette = dutchFieldColorPalette;
 
-    window.SvgChart = function (parent, config, id) {
-
-        this.id = id;
+    window.SvgChart = function (parent, config) {
 
         // Based on types we must do some things. For example: for pie types we don't need to draw x and y axis grid lines. etc.
         // But it is also possible to combine charts, like line and bars... so then set 2 types
@@ -100,18 +123,25 @@
         this.svg.appendChild(this.defsElement);
         this.parent.appendChild(this.svg);
 
+        if (this.config.drawBefore) {
+            this.drawBeforeGroup = el('g', {
+                className: 'my-draw-before-group'
+            });
+            this.svg.appendChild(this.drawBeforeGroup);
+        }
+
         switch (this.config.chartType) {
-            case SvgChart.types.bar:
-            case SvgChart.types.line:
-            case SvgChart.types.lineAndBar:
+            case 'bar':
+            case 'line':
+            case 'line-and-bar':
                 initLineAndBar.call(this);
                 break;
-            case SvgChart.types.pie:
-                initPie.call(this);
+            case 'pie':
+            case 'donut':
+                initPieAndDonut.call(this);
                 break;
         }
 
-        // TODO: for all chart types?
         this.onSerieGroupTransitionendScoped = scopedFunction(this, onSerieGroupTransitionend);
 
         if (this.config.title) {
@@ -155,11 +185,19 @@
             this.valueElGroup.appendChild(this.valueElText);
         }
 
+        if (this.config.drawBefore) {
+            this.config.drawBefore(this, this.drawBeforeGroup);
+        }
+
     };
 
-    function getSerieStrokeColor(serie, serieIndex) {
-        if (serie.strokeColor) {
-            return serie.strokeColor;
+    function getSeriePropertyColor(props, serie, serieIndex) {
+        for (var i = 0; i < props.length; i++) {
+            var key = props[i];
+            console.log(key);
+            if (serie[key]) {
+                return key === 'fillGradient' ? `url(#${serie.id}-gradient)` : serie[key];
+            }
         }
         if (serie.color) {
             return serie.color;
@@ -167,14 +205,16 @@
         return defaultColorPalette[serieIndex];
     }
 
+    function getSeriePointColor(serie, serieIndex) {
+        return getSeriePropertyColor(['pointColor', 'strokeColor'], serie, serieIndex);
+    }
+
+    function getSerieStrokeColor(serie, serieIndex) {
+        return getSeriePropertyColor(['strokeColor'], serie, serieIndex);
+    }
+
     function getSerieFill(serie, serieIndex) {
-        if (serie.fillGradient) {
-            return `url(#${serie.id}-gradient)`;
-        }
-        if (serie.color) {
-            return serie.color;
-        }
-        return defaultColorPalette[serieIndex];
+        return getSeriePropertyColor(['fillGradient'], serie, serieIndex);
     }
 
     // Do things that we need to do once per config, but we need the series for this.
@@ -249,13 +289,6 @@
         });
         this.svg.appendChild(this.xAxisLineGroupElement);
     }
-
-    window.SvgChart.types = {
-        line: 'line',
-        bar: 'bar',
-        lineAndBar: 'lineAndBar',
-        pie: 'pie'
-    };
 
     window.SvgChart.prototype.addLegend = function () {
         var gLegend = el('g', {
@@ -343,7 +376,7 @@
         }, document.createTextNode(this.config.xAxisTitle)));
     };
 
-    function initPie() {}
+    function initPieAndDonut() { }
 
     window.SvgChart.prototype.addTitle = function () {
 
@@ -352,7 +385,7 @@
             case 'right':
                 x = this.width - 20;
                 textAnchor = 'end';
-                break;                
+                break;
             case 'left':
                 x = 20;
                 textAnchor = 'start';
@@ -362,7 +395,7 @@
                 textAnchor = 'middle';
                 break;
         }
-        switch (this.config.titleHorizontalPosition) {                
+        switch (this.config.titleHorizontalPosition) {
             case 'center':
                 x = this.height / 2;
                 dominantBaseline = 'middle';
@@ -519,7 +552,7 @@
             switch (type) {
                 case 'line':
                 case 'bar':
-                case 'lineAndBar':
+                case 'line-and-bar':
                     x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (width / 2);
                     y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - height;
                     break;
@@ -617,7 +650,7 @@
     }
     // For pie and donut
 
-    function dataPie() {
+    function dataPieAndDonut() {
 
         var radius = this.chartHeight / 2;
         var centerX = this.width / 2;
@@ -637,8 +670,6 @@
             total += this._data.series[key];
         }
 
-
-
         var totalToDegree = 360 / total;
         var currentTotal = 0;
 
@@ -653,8 +684,7 @@
             var startAngle = currentTotal * totalToDegree;
             currentTotal += value;
             var endAngle = currentTotal * totalToDegree;
-            //var path = describeArcPie(centerX, centerY, radius, startAngle, endAngle);
-            var path = describeArcDonut(centerX, centerY, radius - 40, 40, startAngle, endAngle);
+            var path = this.config.chartType === 'pie' ? describeArcPie(centerX, centerY, radius, startAngle, endAngle) : describeArcDonut(centerX, centerY, radius - 40, 40, startAngle, endAngle);
             serieGroup.appendChild(el('path', {
                 d: path.join(' '),
                 fill: getSerieFill.call(this, serie, serieIndex),
@@ -671,47 +701,6 @@
         if (this.config.transition) {
             currentSerieGroupElement.classList.remove('unattached');
         }
-
-
-
-        // var c1 = el('circle', {
-        //     cx: centerX,
-        //     cy: centerY,
-        //     r: radius,
-        //     fill: 'red',
-        //     fillOpacity: 0.1
-        // });
-        // this.serieGroupElement.appendChild(c1);
-
-        // this.serieGroupElement.appendChild(el('path', {
-        //     d: describeArcPie(centerX, centerY, radius, 0, 90).join(' '),
-        //     fill: 'green'
-        // }));
-        // this.serieGroupElement.appendChild(el('path', {
-        //     d: describeArcPie(centerX, centerY, radius, 90, 200).join(' '),
-        //     fill: 'red'
-        // }));
-        // this.serieGroupElement.appendChild(el('path', {
-        //     d: describeArcPie(centerX, centerY, radius, 200, 310).join(' '),
-        //     fill: 'pink'
-        // }));
-        // this.serieGroupElement.appendChild(el('path', {
-        //     d: describeArcPie(centerX, centerY, radius, 310, 360).join(' '),
-        //     fill: 'olive'
-        // }));
-
-        // this.serieGroupElement.appendChild(el('path', {
-        //     d: describeArcDonut(centerX, centerY, radius - 40, 40, 0, 90).join(' '),
-        //     fill: 'purple'
-        // }));
-        // this.serieGroupElement.appendChild(el('path', {
-        //     d: describeArcDonut(centerX, centerY, radius - 40, 40, 90, 200).join(' '),
-        //     fill: 'orange'
-        // }));
-        // this.serieGroupElement.appendChild(el('path', {
-        //     d: describeArcDonut(centerX, centerY, radius - 40, 40, 200, 310).join(' '),
-        //     fill: 'gray'
-        // }));
 
     }
 
@@ -867,8 +856,8 @@
                                     cy: point.y,
                                     r: this.config.pointRadius,
                                     zIndex: 1,
-                                    fill: getSerieFill.call(this, serie, serieIndex),
-                                    stroke: getSerieStrokeColor.call(this, serie, serieIndex),
+                                    fill: getSeriePointColor.call(this, serie, serieIndex),
+                                    stroke: getSeriePointColor.call(this, serie, serieIndex),
                                     dataValue: point.value,
                                     className: 'my-line-point',
                                     tabindex: this.config.showValueOnFocus ? 0 : null
@@ -932,13 +921,14 @@
         }
 
         switch (this.config.chartType) {
-            case SvgChart.types.lineAndBar:
-            case SvgChart.types.bar:
-            case SvgChart.types.line:
+            case 'line-and-bar':
+            case 'bar':
+            case 'line':
                 dataLineAndBar.call(this);
                 break;
-            case SvgChart.types.pie:
-                dataPie.call(this);
+            case 'pie':
+            case 'donut':
+                dataPieAndDonut.call(this);
                 break;
         }
 
@@ -1016,5 +1006,7 @@
         }
         return el;
     }
+
+    window.SvgChart.prototype.el = el;
 
 }());

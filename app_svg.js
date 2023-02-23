@@ -9,30 +9,32 @@
     // This will stay the same between each draw
     var config = {
         // Optional style values, only required when you want to save it to a PNG (because then CSS won't be used)
-        backgroundColor: 'bisque',
-        fontFamily: 'sans-serif',
-        fontSizeAxisLabel: 'small',
-        fontSizeTitle: 'normal',
-        fontSizeAxisTitle: 'smaller',
-        fontSizeLegend: 'smaller',
-        barFillOpacity: 0.5,
-        lineWidth: 3,
-        xAxisGridLineWidth: 1,
-        xAxisGridLineColor: '#C0C0C0',
-        xAxisGridLineDashArray: '1,1',
-        yAxisGridLineWidth: 1,
-        yAxisGridLineColor: '#C0C0C0',
-        yAxisGridLineDashArray: '1,1',
-        xAxisLabelColor: 'red',
-        yAxisLabelColor: 'green',
-        titleColor: 'purple',
-        xAxisTitleColor: 'orange',
-        yAxisTitleColor: 'pink',
-        focusedValueFill: 'pink',
-        focusedValueColor: 'black',
-        legendPosition: 'top', // right, left, bottom
-        titleHorizontalPosition: 'right',
-        titleVerticalPosition: 'top',
+        drawBefore: function(chart, groupEl) {
+            groupEl.appendChild(chart.el('rect', {
+                x: chart.config.padding.left + chart.config.xAxisGridPadding,
+                y: chart.config.padding.top + chart.config.yAxisGridPadding,
+                width: chart.chartWidth,
+                height: chart.chartHeight / 4,
+                fill: 'green',
+                fillOpacity: 0.2
+            }));
+            groupEl.appendChild(chart.el('rect', {
+                x: chart.config.padding.left + chart.config.xAxisGridPadding,
+                y: chart.config.padding.top + chart.config.yAxisGridPadding + (chart.chartHeight / 4),
+                width: chart.chartWidth,
+                height: chart.chartHeight / 2,
+                fill: 'orange',
+                fillOpacity: 0.2
+            }));
+            groupEl.appendChild(chart.el('rect', {
+                x: chart.config.padding.left + chart.config.xAxisGridPadding,
+                y: chart.config.padding.top + chart.config.yAxisGridPadding + (chart.chartHeight / 4) + (chart.chartHeight / 2),
+                width: chart.chartWidth,
+                height: chart.chartHeight / 4,
+                fill: 'red',
+                fillOpacity: 0.2
+            }));
+        },
 
         // Other values
         //focusedValueWidth: 120,
@@ -46,8 +48,8 @@
         // yAxisGrid: true,
         // yAxisLabels: true,
         // xAxisGrid: true,
-        // xAxisGridPadding: 0,
-        // yAxisGridPadding: 0,
+        xAxisGridPadding: 10,
+        yAxisGridPadding: 10,
         // xAxisLabels: true,
         // xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
         // xAxisGridColumnsSelectable: true,
@@ -66,9 +68,9 @@
         // xAxisLabelRotation: 45,
         // xAxisLabelTop: 30,
         // showValueOnFocus: true,
-        chartType: SvgChart.types.lineAndBar,
+        chartType: 'line-and-bar',
         padding: {
-            top: 120,
+            top: 80,
             left: 100,
             right: 20,
             bottom: 140
@@ -94,15 +96,17 @@
                 title: 'Hand',
                 id: 'hand',
                 type: 'line',
-                strokeColor: 'purple', // dit is ook de point color!
+                //color: 'green',
+                //pointColor: 'red', // pointColor => strokeColor => color
+                //strokeColor: 'purple', // dit is ook de point color!
                 fillGradient: ['purple', 'pink'],
             },
-            {
-                title: 'Nose',
-                id: 'nose',
-                //color: 'orange',
-                type: 'line'
-            },
+            // {
+            //     title: 'Nose',
+            //     id: 'nose',
+            //     //color: 'orange',
+            //     type: 'line'
+            // },
             // {
             //     title: 'Eye',
             //     id: 'eye',
