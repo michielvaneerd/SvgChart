@@ -41,7 +41,7 @@
 
         // Other values
         //focusedValueWidth: 120,
-        transition: false,
+        //transition: false,
         // maxValue: 100,
         // minValue: 0,
         // yAxisStep: 10,
@@ -51,25 +51,20 @@
         // yAxisGrid: true,
         // yAxisLabels: true,
         // xAxisGrid: true,
-        xAxisGridPadding: 10,
-        yAxisGridPadding: 10,
         // xAxisLabels: true,
-        // xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
-        // xAxisGridColumnsSelectable: true,
         title: 'De titel',
         yAxisTitle: 'Dit is de Y-as',
         xAxisTitle: 'Dit is de X-as',
-        xAxisLabelRotation: 45,
+        xAxisLabelRotation: 90,
         // connectNullValues: false,
         // lineCurved: true,
-        lineChartFilled: true,
         // pointRadius: 3,
         // points: true,
         // barSpacing: 4,
         // barStrokeWidth: 1,
-        // barStacked: false,
+        barStacked: false,
         // xAxisLabelRotation: 45,
-        // xAxisLabelTop: 30,
+        xAxisLabelTop: 50,
         // showValueOnFocus: true,
         chartType: 'line-and-bar',
         padding: {
@@ -79,43 +74,43 @@
             bottom: 140
         },
         series: [
-            // {
-            //     title: 'Ear',
-            //     id: 'ear',
-            //     //color: 'green',
-            //     gradient: ['red', 'orange'],
-            //     type: 'bar'
-            // },
-            // {
-            //     title: 'Mouth',
-            //     id: 'mouth',
-            //     //color: 'indigo',
-            //     type: 'bar'
-            // },
+            {
+                title: 'Ear',
+                id: 'ear',
+                //color: 'green',
+                gradient: ['red', 'orange'],
+                type: 'bar'
+            },
+            {
+                title: 'Mouth',
+                id: 'mouth',
+                //color: 'indigo',
+                type: 'bar'
+            },
             {
                 // Dus color: algemeen fallback
                 // Altijd kijken naar strokeColor
                 // Als fillGradient is gevuld dan deze pakken, anders color, anders default color.
                 title: 'Hand',
                 id: 'hand',
-                type: 'line',
+                type: 'bar',
                 //color: 'green',
                 //pointColor: 'red', // pointColor => strokeColor => color
                 //strokeColor: 'purple', // dit is ook de point color!
                 fillGradient: ['purple', 'pink'],
             },
-            // {
-            //     title: 'Nose',
-            //     id: 'nose',
-            //     //color: 'orange',
-            //     type: 'line'
-            // },
-            // {
-            //     title: 'Eye',
-            //     id: 'eye',
-            //     //color: 'blue',
-            //     type: 'line'
-            // },
+            {
+                title: 'Nose',
+                id: 'nose',
+                //color: 'orange',
+                type: 'line'
+            },
+            {
+                title: 'Eye',
+                id: 'eye',
+                //color: 'blue',
+                type: 'line'
+            },
         ]
     };
 
@@ -151,10 +146,10 @@
     }
 
     var chart = new SvgChart(document.getElementById('svgWrapper'), config);
-    chart.data(getNewData(false));
+    chart.chart(getNewData(false));
 
     document.getElementById('button').addEventListener('click', function () {
-        chart.data(getNewData(true));
+        chart.chart(getNewData(true));
     });
 
     document.getElementById('saveButton').addEventListener('click', function () {
@@ -162,7 +157,7 @@
     });
 
     var chart2 = new SvgChart(document.getElementById('svgWrapper2'), {
-        transition: false,
+        //transition: false,
         chartType: 'pie',
         backgroundColor: 'bisque',
         legendPosition: 'top', // right, left, bottom
@@ -197,7 +192,24 @@
             },
         ]
     });
-    console.log(chart2.config);
-    chart2.data(getNewData2());
+
+    document.getElementById('buttonConfig').addEventListener('click', function () {
+        chart2.setConfig({
+            chartType: 'pie',
+            title: 'Blabla',
+            series: [
+                {
+                    title: 'Ear',
+                    id: 'ear',
+                },
+                {
+                    title: 'Nose',
+                    id: 'nose',
+                },
+            ]
+        });
+    });
+
+    chart2.chart(getNewData2());
 
 }());

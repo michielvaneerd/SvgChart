@@ -68,20 +68,20 @@ Note that presentational attributes (like <rect fill="red"> has a lower priority
     stroke-width: 6;
 }
 
+/** Needed for transition legend select/de-select */
 #my-serie-group g {
     transition: opacity 0.6s;
 }
-
-#my-serie-group g.unselected {
+#my-serie-group g.my-unselected {
     opacity: 0;
 }
 
+/** Only needed if we use transition to show the new data */
 #my-serie-group-current {
     transition: opacity 1s;
     opacity: 1;
 }
-
-#my-serie-group-current.unattached {
+#my-serie-group-current.my-unattached {
     opacity: 0;
 }
 
@@ -89,7 +89,7 @@ Note that presentational attributes (like <rect fill="red"> has a lower priority
     font-size: large;
 } */
 
-g.my-legend-group g.unselected {
+g.my-legend-group g.my-unselected {
     opacity: 0.4;
 }
 
