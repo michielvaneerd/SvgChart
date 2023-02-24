@@ -34,21 +34,21 @@ Note that presentational attributes (like <rect fill="red"> has a lower priority
     fill: red;
 } */
 
-.my-x-axis-grid-column-selectable {
+/* .my-x-axis-grid-column-selectable {
     fill: black;
-}
+} */
 
-.my-x-axis-grid-column-selectable.selected {
+/* .my-x-axis-grid-column-selectable.selected {
     fill-opacity: 0.1;
-}
+} */
 
 .my-x-axis-grid-column-selectable-label {
     cursor: pointer;
 }
 
-.my-x-axis-grid-column-selectable-label.selected {
+/* .my-x-axis-grid-column-selectable-label.selected {
     font-weight: bold;
-}
+} */
 
 
 
@@ -70,12 +70,10 @@ Note that presentational attributes (like <rect fill="red"> has a lower priority
 
 #my-serie-group g {
     transition: opacity 0.6s;
-    z-index: 1;
 }
 
 #my-serie-group g.unselected {
     opacity: 0;
-    z-index: 0;
 }
 
 #my-serie-group-current {

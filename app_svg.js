@@ -8,6 +8,9 @@
 
     // This will stay the same between each draw
     var config = {
+        onXAxisLabelGroupSelect: function(chart, selectedColumnIndex) {
+            console.log(selectedColumnIndex);
+        },
         // Optional style values, only required when you want to save it to a PNG (because then CSS won't be used)
         drawBefore: function(chart, groupEl) {
             groupEl.appendChild(chart.el('rect', {
@@ -38,7 +41,7 @@
 
         // Other values
         //focusedValueWidth: 120,
-        // transition: true,
+        transition: false,
         // maxValue: 100,
         // minValue: 0,
         // yAxisStep: 10,
@@ -159,6 +162,7 @@
     });
 
     var chart2 = new SvgChart(document.getElementById('svgWrapper2'), {
+        transition: false,
         chartType: 'pie',
         backgroundColor: 'bisque',
         legendPosition: 'top', // right, left, bottom

@@ -16,13 +16,13 @@
         yAxisGridLineWidth: 1,
         yAxisGridLineColor: '#C0C0C0',
         yAxisGridLineDashArray: '1,1',
-        xAxisLabelColor: 'red',
-        yAxisLabelColor: 'green',
-        titleColor: 'purple',
-        xAxisTitleColor: 'orange',
-        yAxisTitleColor: 'pink',
-        focusedValueFill: 'pink',
-        focusedValueColor: 'black',
+        xAxisLabelColor: '#A0A0A0',
+        yAxisLabelColor: '#A0A0A0',
+        titleColor: 'black',
+        xAxisTitleColor: '#A0A0A0',
+        yAxisTitleColor: '#A0A0A0',
+        focusedValueFill: 'black',
+        focusedValueColor: 'white',
         legendPosition: 'top', // right, left, bottom
         titleHorizontalPosition: 'right',
         titleVerticalPosition: 'top',
@@ -494,7 +494,7 @@
         if (g && g.dataset.serie) {
             var sg = this.serieGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
             if (this.unselectedSeries[g.dataset.serie]) {
-                sg.setAttribute('display', 'inline'); // This is the default apparently
+                sg.setAttribute('display', 'inline'); // This is the default apparently and MUST be set before we change the unselected class, otherwise the transition won't
                 g.classList.remove('unselected');
                 sg.classList.remove('unselected');
                 delete this.unselectedSeries[g.dataset.serie];
@@ -580,10 +580,17 @@
             if (textNodes[i] === target) {
                 this.selectedColumnIndex = i;
                 textNodes[i].classList.add('selected');
+                textNodes[i].setAttribute('font-weight', 'bold');
                 rects[i].classList.add('selected');
+                rects[i].setAttribute('fill-opacity', 0.2);
+                if (this.config.onXAxisLabelGroupSelect) {
+                    this.config.onXAxisLabelGroupSelect(this, this.selectedColumnIndex);
+                }
             } else {
                 textNodes[i].classList.remove('selected');
                 rects[i].classList.remove('selected');
+                rects[i].setAttribute('fill-opacity', 0);
+                textNodes[i].setAttribute('font-weight', 'normal');
             }
         }
     }
@@ -749,7 +756,8 @@
                         width: columnWidth,
                         height: this.chartHeight,
                         className: 'my-x-axis-grid-column-selectable',
-                        fillOpacity: 0 // We need to set this here, otherwise this will show when drawn to canvas
+                        fillOpacity: 0,
+                        fill: 'black'
                     }));
                 }
             }
@@ -762,6 +770,7 @@
                     dominantBaseline: 'hanging',
                     fontFamily: this.config.fontFamily || '',
                     fontSize: this.config.fontSizeAxisLabel || '',
+                    fontWeight: 'normal',
                     fill: this.config.xAxisLabelColor || '',
                     tabindex: this.config.xAxisGridColumnsSelectable ? 0 : null,
                     className: 'my-x-axis-label ' + (this.config.xAxisGridColumnsSelectable ? 'my-x-axis-grid-column-selectable-label' : ''),
