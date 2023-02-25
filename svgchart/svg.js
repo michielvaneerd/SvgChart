@@ -14,7 +14,7 @@
         padding: {
             left: 40,
             right: 20,
-            top: 60,
+            top: 100,
             bottom: 40
         },
         transition: true,
@@ -22,7 +22,7 @@
         fontFamily: 'sans-serif',
         titleFontSize: 'normal',
         titleColor: 'black',
-        titleHorizontalPosition: 'right',
+        titleHorizontalPosition: 'middle',
         titleVerticalPosition: 'top',
         showValueOnFocus: true,
         focusedValueFill: 'black',
@@ -68,6 +68,7 @@
         legend: true,
         legendSelect: true,
         legendPosition: 'top', // right, left, bottom
+        legendTop: null, // top position, if null, default position for legendPosition is used.
 
         // Line charts
         lineWidth: 2,
@@ -106,7 +107,7 @@
         '#' + prefixed('serie-group-current') + '.' + prefixed('unattached') + ' { opacity: 0; }',
         'g.' + prefixed('legend-group') + ' g.' + prefixed('unselected') + ' { opacity: 0.4; }',
         'rect.' + prefixed('bar') + ':hover, path.' + prefixed('pie-piece') + ':hover { fill-opacity: 0.7; }',
-        'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; }'
+        'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; fill-opacity:1; }'
     ]);
 
     /**
@@ -471,7 +472,7 @@
             var x, y = null;
             if (this.config.legendPosition === 'top') {
                 x = this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
-                y = this.config.padding.top / 2;
+                y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
             } else {
                 x = this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
                 y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);

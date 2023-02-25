@@ -4,240 +4,121 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-// This will stay the same between each draw
-var config = {
-    onXAxisLabelGroupSelect: function (chart, selectedColumnIndex) {
-        console.log(selectedColumnIndex);
+var chartInfo = {
+    chart1: {
+        config: {
+            chartType: 'line',
+            title: 'Basic line chart',
+            minValue: 0,
+            maxValue: 100,
+            legendPosition: 'top',
+            legendTop: 60,
+            padding: {
+                right: 40
+            },
+            series: [
+                {
+                    id: 'train',
+                    title: 'Train',
+                    type: 'line'
+                },
+                {
+                    id: 'car',
+                    title: 'Car',
+                    type: 'line'
+                }
+            ]
+        },
+        data: null,
+        chart: null
     },
-    // Optional style values, only required when you want to save it to a PNG (because then CSS won't be used)
-    drawBefore: function (chart, groupEl) {
-        groupEl.appendChild(chart.el('rect', {
-            x: chart.config.padding.left + chart.config.xAxisGridPadding,
-            y: chart.config.padding.top + chart.config.yAxisGridPadding,
-            width: chart.chartWidth,
-            height: chart.chartHeight / 4,
-            fill: 'green',
-            fillOpacity: 0.2
-        }));
-        groupEl.appendChild(chart.el('rect', {
-            x: chart.config.padding.left + chart.config.xAxisGridPadding,
-            y: chart.config.padding.top + chart.config.yAxisGridPadding + (chart.chartHeight / 4),
-            width: chart.chartWidth,
-            height: chart.chartHeight / 2,
-            fill: 'orange',
-            fillOpacity: 0.2
-        }));
-        groupEl.appendChild(chart.el('rect', {
-            x: chart.config.padding.left + chart.config.xAxisGridPadding,
-            y: chart.config.padding.top + chart.config.yAxisGridPadding + (chart.chartHeight / 4) + (chart.chartHeight / 2),
-            width: chart.chartWidth,
-            height: chart.chartHeight / 4,
-            fill: 'red',
-            fillOpacity: 0.2
-        }));
+    chart2: {
+        config: {
+            chartType: 'bar',
+            xAxisGridColumns: true,
+            title: 'Basic bar chart',
+            minValue: 0,
+            maxValue: 100,
+            legendPosition: 'top',
+            legendTop: 60,
+            padding: {
+                right: 40
+            },
+            series: [
+                {
+                    id: 'train',
+                    title: 'Train',
+                    type: 'bar'
+                },
+                {
+                    id: 'car',
+                    title: 'Car',
+                    type: 'bar'
+                }
+            ]
+        },
+        data: null,
+        chart: null
     },
-
-    // Other values
-    //focusedValueWidth: 120,
-    //transition: false,
-    // maxValue: 100,
-    // minValue: 0,
-    // yAxisStep: 10,
-    // legend: true,
-    // legendSelect: true,
-    // yAxis: true,
-    // yAxisGrid: true,
-    // yAxisLabels: true,
-    // xAxisGrid: true,
-    // xAxisLabels: true,
-    title: 'De titel',
-    yAxisTitle: 'Dit is de Y-as',
-    xAxisTitle: 'Dit is de X-as',
-    xAxisLabelRotation: 90,
-    minValue: 0,
-    maxValue: 100,
-    xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
-    xAxisGridColumnsSelectable: true,
-    // connectNullValues: false,
-    // lineCurved: true,
-    // pointRadius: 3,
-    // points: true,
-    // barSpacing: 4,
-    // barStrokeWidth: 1,
-    barStacked: false,
-    textAnchorXAxisLabels: 'start',
-    // xAxisLabelRotation: 45,
-    xAxisLabelTop: 10,
-    // showValueOnFocus: true,
-    chartType: 'lineAndBar',
-    padding: {
-        top: 80,
-        left: 100,
-        right: 20,
-        bottom: 140
-    },
-    series: [
-        {
-            title: 'Ear',
-            id: 'ear',
-            //color: 'green',
-            gradient: ['red', 'orange'],
-            type: 'bar'
+    chart3: {
+        config: {
+            chartType: 'pie',
+            title: 'Basic pie chart',
+            legendPosition: 'top',
+            legendTop: 60,
+            series: [
+                {
+                    id: 'train',
+                    title: 'Train'
+                },
+                {
+                    id: 'car',
+                    title: 'Car'
+                },
+                {
+                    id: 'bike',
+                    title: 'Bike'
+                },
+                {
+                    id: 'feet',
+                    title: 'Feet'
+                }
+            ]
         },
-        {
-            title: 'Mouth',
-            id: 'mouth',
-            //color: 'indigo',
-            type: 'bar'
-        },
-        {
-            // Dus color: algemeen fallback
-            // Altijd kijken naar strokeColor
-            // Als fillGradient is gevuld dan deze pakken, anders color, anders default color.
-            title: 'Hand',
-            id: 'hand',
-            type: 'bar',
-            //color: 'green',
-            //pointColor: 'red', // pointColor => strokeColor => color
-            //strokeColor: 'purple', // dit is ook de point color!
-            fillGradient: ['purple', 'pink'],
-        },
-        {
-            title: 'Nose',
-            id: 'nose',
-            //color: 'orange',
-            type: 'line'
-        },
-        {
-            title: 'Eye',
-            id: 'eye',
-            //color: 'blue',
-            type: 'line'
-        },
-    ]
+        data: null,
+        chart: null
+    }
 };
 
-function getNewData(random) {
-    var data = {
-        series: {
-            nose: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [null, 100, null, 45, null, 2, 34, 24, null, 15, 12, null],
-            eye: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [100, 100, null, 45, null, 2, 34, null, null, null, 12, 34],
-            ear: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [10, 20, null, 45, null, 2, 30, null, null, null, 10, 20],
-            mouth: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [80, 20, null, 45, null, 28, 20, null, null, null, 20, 40],
-            hand: random ? Array(12).fill(1).map(item => getRandomIntInclusive(0, 100)) : [10, 60, null, 10, null, 70, 50, null, null, null, 70, 40],
-        },
-        xAxis: {
-            //columns: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
-            columns: ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']
-            //columns: ['jan']
-        }
-    };
-    return data;
-}
-// Data will change between each draw
-
-function getNewData2() {
-    return {
-        series: {
-            nose: getRandomIntInclusive(0, 10),
-            eye: getRandomIntInclusive(0, 10),
-            ear: getRandomIntInclusive(0, 10),
-            mouth: getRandomIntInclusive(0, 10),
-            hand: getRandomIntInclusive(0, 10),
-        }
-    };
-}
-
-var chart = new SvgChart(document.getElementById('svgWrapper'), config);
-chart.chart(getNewData(false));
-
-document.getElementById('button').addEventListener('click', function () {
-    chart.chart(getNewData(true));
-});
-
-document.getElementById('saveButton').addEventListener('click', function () {
-    chart.saveAsPng('test.png');
-});
-
-var chart2 = new SvgChart(document.getElementById('svgWrapper2'), {
-    //transition: false,
-    chartType: 'pie',
-    backgroundColor: 'bisque',
-    legendPosition: 'top', // right, left, bottom
-    padding: {
-        right: 180,
-        left: 180,
-        top: 120,
-        bottom: 80
-    },
-    title: 'Pie chart',
-    legend: true,
-    series: [
-        {
-            title: 'Ear',
-            id: 'ear',
-        },
-        {
-            title: 'Nose',
-            id: 'nose',
-        },
-        {
-            title: 'Eye',
-            id: 'eye',
-        },
-        {
-            title: 'Mouth',
-            id: 'mouth',
-        },
-        {
-            title: 'Hand',
-            id: 'hand',
-        },
-    ]
-});
-
-document.getElementById('buttonConfig').addEventListener('click', function () {
-    chart2.setConfig({
-        chartType: 'pie',
-        title: 'Blabla',
-        series: [
-            {
-                title: 'Ear',
-                id: 'ear',
-            },
-            {
-                title: 'Nose',
-                id: 'nose',
-            },
-        ]
+function setChartData(id) {
+    var isPieOrDonut = ['pie', 'donut'].indexOf(chartInfo[id].config.chartType) !== -1;
+    var serieData = {};
+    chartInfo[id].config.series.forEach(function(serie) {
+        serieData[serie.id] = !isPieOrDonut ? Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)) : getRandomIntInclusive(0, 100);
     });
-});
-
-chart2.chart(getNewData2());
-
-var chart1 = new SvgChart(document.getElementById('chart1'), {
-    chartType: 'line',
-    minValue: 0,
-    maxValue: 100,
-    series: [
-        {
-            id: 'train',
-            title: 'Train',
-            type: 'line'
-        },
-        {
-            id: 'car',
-            title: 'Car',
-            type: 'line'
+    chartInfo[id].data = {
+        series: serieData,
+        xAxis: {
+            columns: isPieOrDonut ? ['mon'] : ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
         }
-    ]
-});
-chart1.chart({
-    series: {
-        train: [12, 34, 23, 34, 45, 23, 23],
-        car: [6, 12, 34, 56, 78, 34, 23]
-    },
-    xAxis: {
-        columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+    };
+}
+
+function doChart(id) {
+    setChartData(id);
+    if (chartInfo[id].chart === null) {
+        chartInfo[id].chart = new SvgChart(document.getElementById(id), chartInfo[id].config);
+        document.getElementById(id + 'RandomDataButton').addEventListener('click', function() {
+            doChart(id);
+        });
+    } else {
+        chartInfo[id].chart.setConfig(chartInfo[id].config);
     }
-});
+    chartInfo[id].chart.chart(chartInfo[id].data);
+    document.getElementById(id + 'CodeConfig').innerText = JSON.stringify(chartInfo[id].config, null, 2);
+    document.getElementById(id + 'CodeData').innerText = JSON.stringify(chartInfo[id].data, null, 2);
+}
+
+doChart('chart1');
+doChart('chart2');
+doChart('chart3');

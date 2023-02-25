@@ -4,21 +4,40 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- <link rel="stylesheet" type="text/css" href="./app_svg.css"> -->
+  <link rel="stylesheet" type="text/css" href="./app_svg.css">
 </head>
 
 <body>
 
-  <div id="chart1" style="width:800px; height:400px"></div>
+  <h1>Basic chart</h1>
+  <div class="chartRow">
+    <div class="chartDiv" id="chart1"></div>
+    <pre class="chartCodeConfig" id="chart1CodeConfig"><code></code></pre>
+    <pre class="chartCodeData" id="chart1CodeData"><code></code></pre>
+    <div class="chartTools">
+      <button class="chartToolsButton" id="chart1RandomDataButton">Update data</button>
+    </div>
+  </div>
 
-  <!-- a position is required otherwise the value DIVs aren't positioned correctly -->
-  <div id="svgWrapper" style="width:800px; height:400px"></div>
-  <button id="button">New data</button>
-  <button id="saveButton">Save as PNG</button>
+  <h1>Basic bar chart</h1>
+  <div class="chartRow">
+    <div class="chartDiv" id="chart2"></div>
+    <pre class="chartCodeConfig" id="chart2CodeConfig"><code></code></pre>
+    <pre class="chartCodeData" id="chart2CodeData"><code></code></pre>
+    <div class="chartTools">
+      <button class="chartToolsButton" id="chart2RandomDataButton">Update data</button>
+    </div>
+  </div>
 
-  <div id="svgWrapper2" style="width:800px; height:400px"></div>
-  <button id="buttonConfig">New config</button>
-
+  <h1>Basic pie chart</h1>
+  <div class="chartRow">
+    <div class="chartDiv" id="chart3"></div>
+    <pre class="chartCodeConfig" id="chart3CodeConfig"><code></code></pre>
+    <pre class="chartCodeData" id="chart3CodeData"><code></code></pre>
+    <div class="chartTools">
+      <button class="chartToolsButton" id="chart3RandomDataButton">Update data</button>
+    </div>
+  </div>
 
   <script src="./svgchart/svg.js"></script>
   <script src="./app_svg.js"></script>
