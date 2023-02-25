@@ -1,14 +1,21 @@
 (function () {
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Private constants
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Default config object.
+     */
     const defaultConfig = {
 
         // Global
         chartType: null,
         padding: {
-            left: 20,
+            left: 40,
             right: 20,
-            top: 20,
-            bottom: 20
+            top: 60,
+            bottom: 40
         },
         transition: true,
         backgroundColor: 'white',
@@ -22,8 +29,8 @@
         focusedValueColor: 'white',
 
         // ???
-        maxValue: 100, // TODO: must be optional
-        minValue: 0, // TODO: must be optional
+        maxValue: null,
+        minValue: null,
 
         // Axis
         axisTitleFontSize: 'smaller',
@@ -38,8 +45,9 @@
         xAxisGrid: true,
         xAxisGridPadding: 0,
         xAxisLabels: true,
-        xAxisGridColumns: true, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
-        xAxisGridColumnsSelectable: true,
+        xAxisGridColumns: false, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
+        xAxisGridColumnsSelectable: false,
+        textAnchorXAxisLabels: 'middle', // If you want X axis labels that are vertical (xAxisLabelRotation = 90), then this should be 'start' if you want them aligned to the x axis.
         xAxisLabelTop: 10,
         xAxisLabelRotation: null,
 
@@ -76,52 +84,95 @@
         barStacked: false,
     };
 
+    /**
+     * String we use to prefix all class names and ID names.
+     */
     const classNamePrefix = 'my-';
 
-    const chartTypeConfigFunctions = {
-        'line': {
-            'before': configBeforeLineAndBar,
-            'after': configAfterLineAndBar,
-            'serie': configSerieLineAndBar
+    /**
+     * Mapper between chartType and config functions (functions that we need to execute once for each config) for each phase (before, after, serie).
+     */
+    const chartTypeInfo = {
+        all: {
+            requiredConfig: ['chartType'],
         },
-        'bar': {
-            'before': configBeforeLineAndBar,
-            'after': configAfterLineAndBar,
-            'serie': configSerieLineAndBar
+        line: {
+            requiredConfig: [],
+            chartTypeConfigFunctions: {
+                before: configBeforeLineAndBar,
+                after: configAfterLineAndBar,
+                serie: configSerieLineAndBar
+            }
         },
-        'line-and-bar': {
-            'before': configBeforeLineAndBar,
-            'after': configAfterLineAndBar,
-            'serie': configSerieLineAndBar
+        bar: {
+            requiredConfig: [],
+            chartTypeConfigFunctions: {
+                before: configBeforeLineAndBar,
+                after: configAfterLineAndBar,
+                serie: configSerieLineAndBar
+            }
+        },
+        lineAndBar: {
+            requiredConfig: [],
+            chartTypeConfigFunctions: {
+                before: configBeforeLineAndBar,
+                after: configAfterLineAndBar,
+                serie: configSerieLineAndBar
+            }
+        },
+        pie: {
+            requiredConfig: [],
+        },
+        donut: {
+            requiredConfig: [],
         }
     };
 
-    // Note:
-    // 1) If you want to save the SVG to a PNG (by writing it to a CANVAS element), we have to set the styling by attributes
-    // instead of using CSS! So we accept these properties and only set them when available. But users can also use CSS. So
-    // it's up to the user.
-
-    // Pie:
-    // https://marian-caikovski.medium.com/drawing-sectors-and-pie-charts-with-svg-paths-b99b5b6bf7bd
-    // https://piechartssvg.onrender.com/
-    // Donougt:
-    // https://dev.to/mustapha/how-to-create-an-interactive-svg-donut-chart-using-angular-19eo ==> waarom je NIET met stroke-dasharray moet werken ==> namelijk NIET interactief te maken. ==> zowel pie als donut charts! ==> dus deze pakken!
-    // https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
-
+    /**
+     * SVG namespace.
+     */
     const ns = 'http://www.w3.org/2000/svg';
+
+    /**
+     * Regex we use to convert from dash to camelcase.
+     */
     const attributesCamelCaseToDashRegex = /[A-Z]/g;
+
+    /**
+     * Padding of the current focussed value element (the rect with current value you see when focussing a specific point in the chart).
+     */
     const valueElPadding = 6;
 
+    /**
+     * Some color palettes.
+     */
     //const retroMetroColorPalette = ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"];
     const dutchFieldColorPalette = ["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"];
     //const riverNightsColorPalette = ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e", "#ebdc78"];
     const springPastelsColorPalette = ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"];
 
+    /**
+     * Our default color palette.
+     */
     const defaultColorPalette = dutchFieldColorPalette;
 
 
 
-    window.SvgChart = function (parent, config) {
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Public main functions
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Constructor.
+     * @param {Node} parent 
+     * @param {Object} config 
+     */
+    const SvgChart = function (parent, config) {
+
+        // Check if we have ALL required config.
 
         const parentRect = parent.getBoundingClientRect();
 
@@ -137,7 +188,12 @@
         this.setConfig(config);
     };
 
-    window.SvgChart.prototype.setConfig = function (config) {
+    /**
+     * Initializes the chart with the configuration object. Will be called by the constructor. But if you want to give a chart a new configuration object,
+     * for example if you have new series, you need to call this yourself.
+     * @param {Object} config Configuration object.
+     */
+    SvgChart.prototype.setConfig = function (config) {
 
         this.config = Object.assign({}, defaultConfig, config);
         this.config.padding = Object.assign({}, defaultConfig.padding, this.config.padding);
@@ -173,7 +229,7 @@
 
         if (this.config.drawBefore) {
             this.drawBeforeGroup = el('g', {
-                className: this.prefixed('draw-before-group')
+                className: prefixed('draw-before-group')
             });
             this.svg.appendChild(this.drawBeforeGroup);
         }
@@ -186,7 +242,7 @@
             addLegend.call(this);
         }
 
-        configSeries.call(this);
+        _config.call(this);
 
         if (this.config.drawBefore) {
             this.config.drawBefore(this, this.drawBeforeGroup);
@@ -196,9 +252,41 @@
 
     };
 
+    SvgChart.prototype.chart = function (data = null) {
+
+        if (data !== null) {
+            this.data = data;
+        }
+
+        switch (this.config.chartType) {
+            case 'lineAndBar':
+            case 'bar':
+            case 'line':
+                dataLineAndBar.call(this);
+                break;
+            case 'pie':
+            case 'donut':
+                dataPieAndDonut.call(this);
+                break;
+        }
+
+    };
+
+
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Private main functions during config
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    /**
+     * Adds the serie group node, current value node and the event listeners.
+     */
     function addSerieGroup() {
         this.serieGroupElement = el('g', {
-            id: this.prefixed('serie-group')
+            id: prefixed('serie-group')
         });
         this.svg.appendChild(this.serieGroupElement);
         _addEventListener.call(this, this.serieGroupElement, 'transitionend', this.onSerieGroupTransitionendScoped, false);
@@ -213,7 +301,7 @@
             _addEventListener.call(this, this.serieGroupElement, 'blur', this.onSerieGroupBlurScoped, true);
 
             this.valueElGroup = el('g', {
-                className: this.prefixed('value-element-group')
+                className: prefixed('value-element-group')
             });
             this.valueElRect = el('rect', {
                 fill: this.config.focusedValueFill || 'black'
@@ -230,52 +318,11 @@
         }
     }
 
-    function _addEventListener(node, eventName, callback, capture) {
-        node.addEventListener(eventName, callback, capture);
-        this._listenersToRemoveAfterConfigChange.push([node, eventName, callback, capture]);
-    }
 
-    window.SvgChart.prototype.prefixed = function (className) {
-        return classNamePrefix + className;
-    }
-
-    function getSeriePropertyColor(props, serie, serieIndex) {
-        for (var i = 0; i < props.length; i++) {
-            var key = props[i];
-            if (serie[key]) {
-                return key === 'fillGradient' ? `url(#${serie.id}-gradient)` : serie[key];
-            }
-        }
-        if (serie.color) {
-            return serie.color;
-        }
-        return defaultColorPalette[serieIndex];
-    }
-
-    function getSeriePointColor(serie, serieIndex) {
-        return getSeriePropertyColor(['pointColor', 'strokeColor'], serie, serieIndex);
-    }
-
-    function getSerieStrokeColor(serie, serieIndex) {
-        return getSeriePropertyColor(['strokeColor'], serie, serieIndex);
-    }
-
-    function getSerieFill(serie, serieIndex) {
-        return getSeriePropertyColor(['fillGradient'], serie, serieIndex);
-    }
-
-    // phase: 'before', 'after', 'serie'
-    function getChartTypeConfigFunction(phase) {
-        return (
-            (this.config.chartType in chartTypeConfigFunctions)
-            &&
-            (phase in chartTypeConfigFunctions[this.config.chartType])
-        ) ? chartTypeConfigFunctions[this.config.chartType][phase] : function () { };
-
-    }
-
-    // Do things that we need to do once per config, but we need the series for this.
-    function configSeries() {
+    /**
+     * Execute things for this config. Will be called only once for each config.
+     */
+    function _config() {
 
         getChartTypeConfigFunction.call(this, 'before').call(this);
 
@@ -309,21 +356,61 @@
 
     }
 
+    /**
+     * Function that gets executed inside the serie loop during the config for line and bar charts.
+     * @param {Object} serie Serie object.
+     * @param {Int} serieIndex Serie index.
+     */
     function configSerieLineAndBar(serie, serieIndex) {
         if (serie.type === 'bar') {
             this.barCount += 1;
         }
     }
 
+    /**
+     * Function that gets executed at the start of the config for line and bar charts.
+     */
+    function configBeforeLineAndBar() {
+        this.lineAndBarSelectedColumnIndex = null;
+        this.lineAndBarValueHeight = this.chartHeight / this.config.maxValue;
+        this.barCount = 0;
+
+        if (this.config.yAxis) {
+            addYAxisGrid.call(this);
+        }
+
+        if (this.config.xAxisTitle) {
+            addXAxisTitle.call(this);
+        }
+
+        if (this.config.yAxisTitle) {
+            addYAxisTitle.call(this);
+        }
+
+        if (this.config.xAxisLabels) {
+            addXAxisLabelsGroup.call(this);
+        }
+
+        this.xAxisLineGroupElement = this.svg.appendChild(el('g', {
+            className: prefixed('x-axis-group')
+        }));
+    }
+
+    /**
+     * Function that gets executed at the end of the config for line and bar charts.
+     */
     function configAfterLineAndBar() {
         if (this.config.barStacked) {
             this.barCount = 1;
         }
     }
 
-    function addXAxisLabels() {
+    /**
+     * Adds group for x axis labels.
+     */
+    function addXAxisLabelsGroup() {
         this.xAxisLabelsGroupElement = el('g', {
-            className: this.prefixed('x-axis-label-group')
+            className: prefixed('x-axis-label-group')
         });
         if (this.config.xAxisGridColumnsSelectable) {
             if (!this.onXAxisLabelGroupClickScoped) {
@@ -334,41 +421,19 @@
             _addEventListener.call(this, this.xAxisLabelsGroupElement, 'keypress', this.onXAxisLabelGroupKeypressScoped, false);
             // Group element that wraps the rects that indicates a selected column for line and bar charts.
             this.xAxisGridColumnsSelectableGroupElement = this.svg.appendChild(el('g', {
-                className: this.prefixed('x-axis-columns-selectable-group')
+                className: prefixed('x-axis-columns-selectable-group')
             }));
         }
         this.svg.appendChild(this.xAxisLabelsGroupElement);
     }
 
-    function configBeforeLineAndBar() {
-        this.lineAndBarSelectedColumnIndex = null;
-        this.lineAndBarValueHeight = this.chartHeight / this.config.maxValue;
-        this.barCount = 0;
 
-        if (this.config.yAxis) {
-            this.addYAxisGrid();
-        }
-
-        if (this.config.xAxisTitle) {
-            this.addXAxisTitle();
-        }
-
-        if (this.config.yAxisTitle) {
-            this.addYAxisTitle();
-        }
-
-        if (this.config.xAxisLabels) {
-            addXAxisLabels.call(this);
-        }
-
-        this.xAxisLineGroupElement = this.svg.appendChild(el('g', {
-            className: this.prefixed('x-axis-group')
-        }));
-    }
-
+    /**
+     * Adds legend.
+     */
     function addLegend() {
         var gLegend = el('g', {
-            className: this.prefixed('legend-group')
+            className: prefixed('legend-group')
         });
         if (this.config.legendSelect) {
             if (!this.onLegendClickScoped) {
@@ -425,7 +490,10 @@
 
     };
 
-    window.SvgChart.prototype.addYAxisTitle = function () {
+    /**
+     * Adds x axis title.
+     */
+    function addYAxisTitle() {
         var yAxisTitleG = el('g');
         yAxisTitleG.setAttribute('transform', 'translate(20, ' + (this.config.padding.top + this.config.yAxisGridPadding) + ')');
         var yAxisTitleEl = el('text', {
@@ -434,14 +502,17 @@
             fontFamily: this.config.fontFamily || '',
             fontSize: this.config.axisTitleFontSize || '',
             fill: this.config.yAxisTitleColor || '',
-            className: this.prefixed('text-y-axis-title')
+            className: prefixed('text-y-axis-title')
         }, document.createTextNode(this.config.yAxisTitle));
         yAxisTitleEl.setAttribute('transform', 'rotate(-90)');
         yAxisTitleG.appendChild(yAxisTitleEl);
         this.svg.appendChild(yAxisTitleG);
     };
 
-    window.SvgChart.prototype.addXAxisTitle = function () {
+    /**
+     * Adds y axis title.
+     */
+    function addXAxisTitle() {
         this.svg.appendChild(el('text', {
             x: this.width - this.config.padding.right - this.config.xAxisGridPadding,
             y: this.height - 20,
@@ -450,10 +521,13 @@
             fontFamily: this.config.fontFamily || '',
             fontSize: this.config.axisTitleFontSize || '',
             fill: this.config.xAxisTitleColor || '',
-            className: this.prefixed('text-x-axis-title')
+            className: prefixed('text-x-axis-title')
         }, document.createTextNode(this.config.xAxisTitle)));
     };
 
+    /**
+     * Adds title.
+     */
     function addTitle() {
 
         var x, y, dominantBaseline, textAnchor = null;
@@ -493,13 +567,16 @@
             fontFamily: this.config.fontFamily || '',
             fontSize: this.config.titleFontSize || '',
             fill: this.config.titleColor || '',
-            className: this.prefixed('text-title'),
+            className: prefixed('text-title'),
         }, document.createTextNode(this.config.title)));
     };
 
-    window.SvgChart.prototype.addYAxisGrid = function () {
+    /**
+     * Adds y axis grid.
+     */
+    function addYAxisGrid() {
         var gYAxis = el('g', {
-            className: this.prefixed('y-axis-group')
+            className: prefixed('y-axis-group')
         });
         var currentYAxisValue = this.config.minValue;
         while (currentYAxisValue <= this.config.maxValue) {
@@ -510,7 +587,7 @@
                     y1: y,
                     x2: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2),
                     y2: y,
-                    className: this.prefixed('y-axis-grid-line'),
+                    className: prefixed('y-axis-grid-line'),
                     stroke: this.config.yAxisGridLineColor || '',
                     strokeWidth: this.config.yAxisGridLineWidth || '',
                     strokeDasharray: this.config.yAxisGridLineDashArray || '',
@@ -524,7 +601,7 @@
                     dominantBaseline: 'middle',
                     fontFamily: this.config.fontFamily || '',
                     fontSize: this.config.axisLabelFontSize || '',
-                    className: this.prefixed('y-axis-label'),
+                    className: prefixed('y-axis-label'),
                     fill: this.config.yAxisLabelColor || ''
                 }, document.createTextNode(currentYAxisValue)));
             }
@@ -533,167 +610,91 @@
         this.svg.appendChild(gYAxis);
     }
 
-    // longstanding bug in Firefox - we MUST use the DOMParser() method: https://bugzilla.mozilla.org/show_bug.cgi?id=700533
-    window.SvgChart.prototype.saveAsPng = function (filename) {
-        var rect = this.svg.getBoundingClientRect();
-        var canvas = document.createElement('canvas');
-        canvas.setAttribute('width', rect.width);
-        canvas.setAttribute('height', rect.height);
-        var ctx = canvas.getContext('2d');
-        ctx.fillStyle = this.config.backgroundColor;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        var img = new Image();
-        var data = '<svg xmlns="http://www.w3.org/2000/svg">' + this.svg.innerHTML + '</svg>';
-        var parser = new DOMParser();
-        var result = parser.parseFromString(data, 'text/xml');
-        var inlineSVG = result.getElementsByTagName("svg")[0];
-        inlineSVG.setAttribute('width', rect.width);
-        inlineSVG.setAttribute('height', rect.height);
-        var svg64 = btoa(new XMLSerializer().serializeToString(inlineSVG));
-        var image64 = 'data:image/svg+xml;base64,' + svg64;
-        img.onload = function () {
-            ctx.drawImage(img, 0, 0, rect.width, rect.height);
-            window.URL.revokeObjectURL(image64);
-            var png_img = canvas.toDataURL("image/png");
-            const createEl = document.createElement('a');
-            createEl.href = png_img;
-            createEl.download = filename;
-            createEl.click();
-            createEl.remove();
-        }
-        img.src = image64;
-    };
 
-    function onLegendToggle(target) {
-        console.log(target);
-        var g = parent(target, 'g');
-        if (g && g.dataset.serie) {
-            var sg = this.serieGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
-            if (this.unselectedSeries[g.dataset.serie]) {
-                if (sg) {
-                    sg.setAttribute('display', 'inline'); // This is the default apparently and MUST be set before we change the unselected class, otherwise the transition won't be started
-                    sg.classList.remove(this.prefixed('unselected'));
-                }
-                g.classList.remove(this.prefixed('unselected'));
-                delete this.unselectedSeries[g.dataset.serie];
-            } else {
-                g.classList.add(this.prefixed('unselected'));
-                if (sg) {
-                    sg.classList.add(this.prefixed('unselected'));
-                }
-                this.unselectedSeries[g.dataset.serie] = true;
-            }
-        }
-    }
 
-    function onLegendKeypress(e) {
-        if (e.keyCode === 13) {
-            onLegendToggle.call(this, e.target);
-        }
-    }
 
-    function onLegendClick(e) {
-        onLegendToggle.call(this, e.target);
-    }
 
-    function onSerieGroupTransitionend(e) {
-        if (e.target.classList.contains(this.prefixed('unselected'))) {
-            e.target.setAttribute('display', 'none');
-        }
-    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Private main functions during charting
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    function onSerieGroupBlur(e) {
-        var circle = e.target;
-        var g = parent(circle, 'g');
-        var serie = g.dataset.serie;
-        if (serie) {
-            this.serieGroupElement.removeChild(this.valueElGroup);
-        }
-    }
-
-    function onSerieGroupFocus(e) {
-        var circle = e.target;
-        var g = parent(circle, 'g');
-        var serie = g.dataset.serie;
-        if (serie) {
-            var serieItem = this.config.series.find((item) => item.id === serie);
-            this.valueElText.replaceChild(document.createTextNode(serieItem.title + ': ' + circle.dataset.value), this.valueElText.firstChild);
-            this.serieGroupElement.appendChild(this.valueElGroup);
-            var box = this.valueElText.getBBox();
-            var width = box.width + (valueElPadding * 2);
-            var height = box.height + (valueElPadding * 2);
-            this.valueElRect.setAttribute('width', width);
-            this.valueElRect.setAttribute('height', height);
-            this.valueElText.setAttribute('x', width / 2);
-            this.valueElText.setAttribute('y', height / 2);
-
-            var type = serieItem.type || this.config.chartType;
-            var x, y = null;
-            switch (type) {
-                case 'line':
-                case 'bar':
-                case 'line-and-bar':
-                    x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (width / 2);
-                    y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - height;
-                    break;
-                case 'pie':
-                case 'donut':
-                    var d = circle.getAttribute('d').split(' ');
-                    x = d[1].trim();
-                    y = d[2].trim();
-                    break;
-            }
-            this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
-        }
-    }
-
-    function onXAxisLabelGroupKeypress(e) {
-        if (e.keyCode === 13) {
-            onXAxisLabelGroupSelect.call(this, e.target);
-        }
-    }
-
-    function onXAxisLabelGroupSelect(target) {
-        var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.' + this.prefixed('x-axis-grid-column-selectable-label'));
-        var rects = this.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.' + this.prefixed('x-axis-grid-column-selectable'));
-        for (var i = 0; i < textNodes.length; i++) {
-            if (textNodes[i] === target) {
-                this.lineAndBarSelectedColumnIndex = i;
-                textNodes[i].classList.add(this.prefixed('selected'));
-                textNodes[i].setAttribute('font-weight', 'bold');
-                rects[i].classList.add(this.prefixed('selected'));
-                rects[i].setAttribute('fill-opacity', 0.2);
-                if (this.config.onXAxisLabelGroupSelect) {
-                    this.config.onXAxisLabelGroupSelect(this, this.lineAndBarSelectedColumnIndex);
-                }
-            } else {
-                textNodes[i].classList.remove(this.prefixed('selected'));
-                rects[i].classList.remove(this.prefixed('selected'));
-                rects[i].setAttribute('fill-opacity', 0);
-                textNodes[i].setAttribute('font-weight', 'normal');
-            }
-        }
-    }
-
-    function onXAxisLabelGroupClick(e) {
-        onXAxisLabelGroupSelect.call(this, e.target);
-    }
-
+    /**
+     * Adds x axis line.
+     * @param {Node} parent Node.
+     * @param {Float} x X value.
+     */
     function addXAxisLine(parent, x) {
         parent.appendChild(el('line', {
             x1: x,
             y1: this.config.padding.top,
             x2: x,
             y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
-            className: this.prefixed('x-axis-grid-line'),
+            className: prefixed('x-axis-grid-line'),
             stroke: this.config.xAxisGridLineColor || '',
             strokeWidth: this.config.xAxisGridLineWidth || '',
             strokeDasharray: this.config.xAxisGridLineDashArray || '',
         }));
     }
 
-    // For pie and donut
+    /**
+     * Helper function to get a curved path from an array of points.
+     * @param {Array} points Array of points.
+     * @returns Array of curved path coordinates.
+     */
+    function getCurvedPathFromPoints(points) {
+        let path = ['M ' + points[0].x + ' ' + points[0].y];
+        for (var i = 0; i < points.length - 1; i++) {
+            var x_mid = (points[i].x + points[i + 1].x) / 2;
+            var y_mid = (points[i].y + points[i + 1].y) / 2;
+            var cp_x1 = (x_mid + points[i].x) / 2;
+            var cp_x2 = (x_mid + points[i + 1].x) / 2;
+            path.push(`Q ${cp_x1} ${points[i].y}, ${x_mid} ${y_mid}`);
+            path.push(`Q ${cp_x2} ${points[i + 1].y} ${points[i + 1].x} ${points[i + 1].y}`);
+        }
+        closePath.call(this, path, points);
+        return path;
+    }
+
+    /**
+     * Closes path for filled line charts.
+     * @param {Array} path Array of path coordinates
+     * @param {Array} points Array of points
+     */
+    function closePath(path, points) {
+        if (this.config.lineChartFilled && points.length > 1) {
+            path.push(`L ${points[points.length - 1].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
+            path.push(`L ${points[0].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
+            path.push(`L ${points[0].x} ${points[0].y}`);
+            path.push('Z');
+        }
+    }
+
+    /**
+     * Helper function to get a straight path for line charts.
+     * @param {Array} points Array of points.
+     * @returns Array of path coordinates.
+     */
+    function getStraightPathFromPoints(points) {
+        path = [];
+        points.forEach(function (point, pointIndex) {
+            if (pointIndex === 0) {
+                path.push(`M ${point.x} ${point.y}`);
+            } else {
+                path.push(`L ${point.x} ${point.y}`);
+            }
+        });
+        closePath.call(this, path, points);
+        return path;
+    }
+
+    /**
+     * Convert polar to cartesian point.
+     * @param {Int} centerX Center x.
+     * @param {Int} centerY Center y.
+     * @param {Int} radius Radius of arc.
+     * @param {Int} angleInDegrees Angle in degrees.
+     * @returns Object point.
+     */
     function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
         var angleInRadians = (angleInDegrees - 90) * Math.PI / 180;
         return {
@@ -702,6 +703,15 @@
         };
     }
 
+    /**
+     * Get path for pie.
+     * @param {Int} x X point.
+     * @param {Int} y Y point.
+     * @param {Int} radius Radius of arc.
+     * @param {Int} startAngle Start angle.
+     * @param {Int} endAngle End angle.
+     * @returns Array of path coordinates.
+     */
     function describeArcPie(x, y, radius, startAngle, endAngle) {
         var start = polarToCartesian(x, y, radius, endAngle);
         var end = polarToCartesian(x, y, radius, startAngle);
@@ -718,6 +728,16 @@
         return d;
     }
 
+    /**
+     * Get path for donut.
+     * @param {Int} x X point.
+     * @param {Int} y Y point.
+     * @param {Int} radius Radius of arc.
+     * @param {Int} spread Spread of the donut.
+     * @param {Int} startAngle Start angle.
+     * @param {Int} endAngle End angle.
+     * @returns Array of path coordinates.
+     */
     function describeArcDonut(x, y, radius, spread, startAngle, endAngle) {
         var innerStart = polarToCartesian(x, y, radius, endAngle);
         var innerEnd = polarToCartesian(x, y, radius, startAngle);
@@ -736,8 +756,10 @@
 
         return d;
     }
-    // For pie and donut
 
+    /**
+     * Main function to draw pie and donut charts.
+     */
     function dataPieAndDonut() {
 
         var radius = this.chartHeight / 2;
@@ -749,8 +771,8 @@
         }
 
         var currentSerieGroupElement = el('g', {
-            id: this.prefixed('serie-group-current'),
-            className: this.config.transition ? this.prefixed('unattached') : ''
+            id: prefixed('serie-group-current'),
+            className: this.config.transition ? prefixed('unattached') : ''
         });
 
         var total = 0;
@@ -764,7 +786,7 @@
         this.config.series.forEach(function (serie, serieIndex) {
             var serieGroup = el('g', {
                 dataSerie: serie.id,
-                className: this.unselectedSeries[serie.id] ? this.prefixed('unselected') : ''
+                className: this.unselectedSeries[serie.id] ? prefixed('unselected') : ''
             });
 
             const value = this.data.series[serie.id];
@@ -776,7 +798,7 @@
             serieGroup.appendChild(el('path', {
                 d: path.join(' '),
                 fill: getSerieFill.call(this, serie, serieIndex),
-                className: this.prefixed('pie-piece'),
+                className: prefixed('pie-piece'),
                 tabindex: 0,
                 dataValue: value
             }));
@@ -787,11 +809,68 @@
 
         this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect(); // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
         if (this.config.transition) {
-            currentSerieGroupElement.classList.remove(this.prefixed('unattached'));
+            currentSerieGroupElement.classList.remove(prefixed('unattached'));
         }
 
     }
 
+    /**
+     * Draw x axis labels
+     */
+    function addXAxisLabels(columnWidth) {
+        // Draw xAxis lines
+        var currentXAxisLineGroupElement = el('g');
+
+        var currentXAxisLabelsGroupElement = el('g', {
+            className: prefixed('x-axis-label-group-current')
+        });
+
+        var currentXAxisGridColumnsSelectableGroupElement = (this.config.xAxisGridColumnsSelectable) ? el('g') : null;
+        this.data.xAxis.columns.forEach(function (colValue, colIndex) {
+            if (this.config.xAxisGrid) {
+                const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
+                addXAxisLine.call(this, currentXAxisLineGroupElement, x);
+                if (this.config.xAxisGridColumnsSelectable) {
+                    currentXAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
+                        x: x,
+                        y: this.config.padding.top + this.config.yAxisGridPadding,
+                        width: columnWidth,
+                        height: this.chartHeight,
+                        className: prefixed('x-axis-grid-column-selectable'),
+                        fillOpacity: 0,
+                        fill: 'black'
+                    }));
+                }
+            }
+            if (this.config.xAxisLabels) {
+                var xlg = el('g', {
+                    transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
+                });
+                xlg.appendChild(el('text', {
+                    textAnchor: this.config.textAnchorXAxisLabels || 'middle',
+                    dominantBaseline: 'hanging',
+                    fontFamily: this.config.fontFamily || '',
+                    fontSize: this.config.axisLabelFontSize || '',
+                    fontWeight: 'normal',
+                    fill: this.config.xAxisLabelColor || '',
+                    tabindex: this.config.xAxisGridColumnsSelectable ? 0 : null,
+                    className: prefixed('x-axis-label') + ' ' + (this.config.xAxisGridColumnsSelectable ? prefixed('x-axis-grid-column-selectable-label') : ''),
+                    transform: this.config.xAxisLabelRotation ? `rotate(${this.config.xAxisLabelRotation})` : ''
+                }, document.createTextNode(colValue)));
+                currentXAxisLabelsGroupElement.appendChild(xlg);
+            }
+        }, this);
+        if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
+            addXAxisLine.call(this, currentXAxisLineGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.data.xAxis.columns.length * columnWidth));
+        }
+        this.xAxisLineGroupElement.appendChild(currentXAxisLineGroupElement);
+        this.config.xAxisGridColumnsSelectable && this.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
+        this.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
+    }
+
+    /**
+     * Main function to draw line and bar charts
+     */
     function dataLineAndBar() {
         if (this.xAxisLineGroupElement.firstChild) {
             this.xAxisLineGroupElement.removeChild(this.xAxisLineGroupElement.firstChild);
@@ -817,59 +896,11 @@
             : (this.chartWidth / (this.data.xAxis.columns.length - 1));
         const barWidth = (columnWidth - (this.config.barSpacing * (this.barCount + 1))) / (this.barCount || 1);
 
-        // Draw xAxis lines
-        var currentXAxisLineGroupElement = el('g');
-
-        var currentXAxisLabelsGroupElement = el('g', {
-            className: this.prefixed('x-axis-label-group-current')
-        });
-
-
-        var currentXAxisGridColumnsSelectableGroupElement = (this.config.xAxisGridColumnsSelectable) ? el('g') : null;
-        this.data.xAxis.columns.forEach(function (colValue, colIndex) {
-            if (this.config.xAxisGrid) {
-                const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
-                addXAxisLine.call(this, currentXAxisLineGroupElement, x);
-                if (this.config.xAxisGridColumnsSelectable) {
-                    currentXAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
-                        x: x,
-                        y: this.config.padding.top + this.config.yAxisGridPadding,
-                        width: columnWidth,
-                        height: this.chartHeight,
-                        className: this.prefixed('x-axis-grid-column-selectable'),
-                        fillOpacity: 0,
-                        fill: 'black'
-                    }));
-                }
-            }
-            if (this.config.xAxisLabels) {
-                var xlg = el('g', {
-                    transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
-                });
-                xlg.appendChild(el('text', {
-                    textAnchor: 'middle',
-                    dominantBaseline: 'hanging',
-                    fontFamily: this.config.fontFamily || '',
-                    fontSize: this.config.axisLabelFontSize || '',
-                    fontWeight: 'normal',
-                    fill: this.config.xAxisLabelColor || '',
-                    tabindex: this.config.xAxisGridColumnsSelectable ? 0 : null,
-                    className: this.prefixed('x-axis-label') + ' ' + (this.config.xAxisGridColumnsSelectable ? this.prefixed('x-axis-grid-column-selectable-label') : ''),
-                    transform: this.config.xAxisLabelRotation ? `rotate(${this.config.xAxisLabelRotation})` : ''
-                }, document.createTextNode(colValue)));
-                currentXAxisLabelsGroupElement.appendChild(xlg);
-            }
-        }, this);
-        if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
-            addXAxisLine.call(this, currentXAxisLineGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.data.xAxis.columns.length * columnWidth));
-        }
-        this.xAxisLineGroupElement.appendChild(currentXAxisLineGroupElement);
-        this.config.xAxisGridColumnsSelectable && this.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
-        this.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
+        addXAxisLabels.call(this, columnWidth);
 
         var currentSerieGroupElement = el('g', {
-            id: this.prefixed('serie-group-current'),
-            className: this.config.transition ? this.prefixed('unattached') : ''
+            id: prefixed('serie-group-current'),
+            className: this.config.transition ? prefixed('unattached') : ''
         });
 
         var currentBarIndex = 0;
@@ -879,7 +910,7 @@
 
             var serieGroup = el('g', {
                 dataSerie: serie.id,
-                className: this.unselectedSeries[serie.id] ? this.prefixed('unselected') : ''
+                className: this.unselectedSeries[serie.id] ? prefixed('unselected') : ''
             });
 
             switch (serie.type) {
@@ -935,7 +966,7 @@
                                 stroke: (serie.color || defaultColorPalette[serieIndex]),
                                 stroke: getSerieStrokeColor.call(this, serie, serieIndex),
                                 strokeWidth: this.config.lineWidth || '',
-                                className: this.prefixed('line')
+                                className: prefixed('line')
                             }));
                         }, this);
 
@@ -949,7 +980,7 @@
                                     fill: getSeriePointColor.call(this, serie, serieIndex),
                                     stroke: getSeriePointColor.call(this, serie, serieIndex),
                                     dataValue: point.value,
-                                    className: this.prefixed('line-point'),
+                                    className: prefixed('line-point'),
                                     tabindex: this.config.showValueOnFocus ? 0 : null
                                 }));
                             }, this);
@@ -980,7 +1011,7 @@
                                 width: barWidth,
                                 height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
                                 fill: getSerieFill.call(this, serie, serieIndex),
-                                className: this.prefixed('bar'),
+                                className: prefixed('bar'),
                                 fillOpacity: this.config.barFillOpacity || '',
                                 strokeWidth: this.config.barStrokeWidth || 0,
                                 stroke: getSerieStrokeColor.call(this, serie, serieIndex),
@@ -1000,72 +1031,269 @@
         }, this);
         this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect(); // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
         if (this.config.transition) {
-            currentSerieGroupElement.classList.remove(this.prefixed('unattached'));
+            currentSerieGroupElement.classList.remove(prefixed('unattached'));
         }
     }
 
-    window.SvgChart.prototype.chart = function (data = null) {
 
-        if (data !== null) {
-            this.data = data;
-        }
 
-        switch (this.config.chartType) {
-            case 'line-and-bar':
-            case 'bar':
-            case 'line':
-                dataLineAndBar.call(this);
-                break;
-            case 'pie':
-            case 'donut':
-                dataPieAndDonut.call(this);
-                break;
-        }
 
-    };
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Event handler callbacks
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    function getCurvedPathFromPoints(points) {
-        path = ['M ' + points[0].x + ' ' + points[0].y];
-        for (var i = 0; i < points.length - 1; i++) {
-            var x_mid = (points[i].x + points[i + 1].x) / 2;
-            var y_mid = (points[i].y + points[i + 1].y) / 2;
-            var cp_x1 = (x_mid + points[i].x) / 2;
-            var cp_x2 = (x_mid + points[i + 1].x) / 2;
-            path.push(`Q ${cp_x1} ${points[i].y}, ${x_mid} ${y_mid}`);
-            path.push(`Q ${cp_x2} ${points[i + 1].y} ${points[i + 1].x} ${points[i + 1].y}`);
-        }
-        closePath.call(this, path, points);
-        return path;
-    }
-
-    function closePath(path, points) {
-        if (this.config.lineChartFilled && points.length > 1) {
-            path.push(`L ${points[points.length - 1].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
-            path.push(`L ${points[0].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
-            path.push(`L ${points[0].x} ${points[0].y}`);
-            path.push('Z');
-        }
-    }
-
-    function getStraightPathFromPoints(points) {
-        path = [];
-        points.forEach(function (point, pointIndex) {
-            if (pointIndex === 0) {
-                path.push(`M ${point.x} ${point.y}`);
+    /**
+     * When legend gets toggled (selected / deselected).
+     * @param {Node} target Legend node that gets toggled.
+     */
+    function onLegendToggle(target) {
+        var g = parent(target, 'g');
+        if (g && g.dataset.serie) {
+            var sg = this.serieGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
+            if (this.unselectedSeries[g.dataset.serie]) {
+                if (sg) {
+                    sg.setAttribute('display', 'inline'); // This is the default apparently and MUST be set before we change the unselected class, otherwise the transition won't be started
+                    sg.classList.remove(prefixed('unselected'));
+                }
+                g.classList.remove(prefixed('unselected'));
+                delete this.unselectedSeries[g.dataset.serie];
             } else {
-                path.push(`L ${point.x} ${point.y}`);
+                g.classList.add(prefixed('unselected'));
+                if (sg) {
+                    sg.classList.add(prefixed('unselected'));
+                }
+                this.unselectedSeries[g.dataset.serie] = true;
             }
-        });
-        closePath.call(this, path, points);
-        return path;
+        }
     }
 
+    /**
+     * When a key is pressed on a focussed legend node.
+     * @param {Event} e Event object.
+     */
+    function onLegendKeypress(e) {
+        if (e.keyCode === 13) {
+            onLegendToggle.call(this, e.target);
+        }
+    }
+
+    /**
+     * When a focussed legend node is clicked.
+     * @param {Event} e Event object.
+     */
+    function onLegendClick(e) {
+        onLegendToggle.call(this, e.target);
+    }
+
+    /**
+     * When the tranisiton of a serie group has ended.
+     * @param {Event} e Event object.
+     */
+    function onSerieGroupTransitionend(e) {
+        // Currently only used to add display none to it when this serie group is unselected.
+        // We have to add display none, so this node doesn't make part of the UI anymore and cannot hide other nodes.
+        if (e.target.classList.contains(prefixed('unselected'))) {
+            e.target.setAttribute('display', 'none');
+        }
+    }
+
+    /**
+     * When a serie group node is blurred (this means loses focus).
+     * @param {Event} e Event object.
+     */
+    function onSerieGroupBlur(e) {
+        var circle = e.target;
+        var g = parent(circle, 'g');
+        var serie = g.dataset.serie;
+        if (serie) {
+            // Remove the current value element.
+            this.serieGroupElement.removeChild(this.valueElGroup);
+        }
+    }
+
+    /**
+     * When a serie group node gets focussed.
+     * @param {Event} e Event object.
+     */
+    function onSerieGroupFocus(e) {
+        var circle = e.target;
+        var g = parent(circle, 'g');
+        var serie = g.dataset.serie;
+        if (serie) {
+            var serieItem = this.config.series.find((item) => item.id === serie);
+            this.valueElText.replaceChild(document.createTextNode(serieItem.title + ': ' + circle.dataset.value), this.valueElText.firstChild);
+            this.serieGroupElement.appendChild(this.valueElGroup);
+            var box = this.valueElText.getBBox();
+            var width = box.width + (valueElPadding * 2);
+            var height = box.height + (valueElPadding * 2);
+            this.valueElRect.setAttribute('width', width);
+            this.valueElRect.setAttribute('height', height);
+            this.valueElText.setAttribute('x', width / 2);
+            this.valueElText.setAttribute('y', height / 2);
+
+            var type = serieItem.type || this.config.chartType;
+            var x, y = null;
+            switch (type) {
+                case 'line':
+                case 'bar':
+                case 'lineAndBar':
+                    x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (width / 2);
+                    y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - height;
+                    break;
+                case 'pie':
+                case 'donut':
+                    var d = circle.getAttribute('d').split(' ');
+                    x = d[1].trim();
+                    y = d[2].trim();
+                    break;
+            }
+            this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
+        }
+    }
+
+    /**
+     * When a label on the x axis receives a keypress when focussed.
+     * @param {Event} e Event object.
+     */
+    function onXAxisLabelGroupKeypress(e) {
+        if (e.keyCode === 13) {
+            onXAxisLabelGroupSelect.call(this, e.target);
+        }
+    }
+
+    /**
+     * When a label on the x axis receives a click when focussed.
+     * @param {Event} e Event object.
+     */
+    function onXAxisLabelGroupClick(e) {
+        onXAxisLabelGroupSelect.call(this, e.target);
+    }
+
+    /**
+     * Display the selected column indicator and fires the onXAxisLabelGroupSelect callback (if defined).
+     * @param {Node} target Node (x axis label) that is selected.
+     */
+    function onXAxisLabelGroupSelect(target) {
+        var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
+        var rects = this.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.' + prefixed('x-axis-grid-column-selectable'));
+        for (var i = 0; i < textNodes.length; i++) {
+            if (textNodes[i] === target) {
+                this.lineAndBarSelectedColumnIndex = i;
+                textNodes[i].classList.add(prefixed('selected'));
+                textNodes[i].setAttribute('font-weight', 'bold');
+                rects[i].classList.add(prefixed('selected'));
+                rects[i].setAttribute('fill-opacity', 0.2);
+                if (this.config.onXAxisLabelGroupSelect) {
+                    this.config.onXAxisLabelGroupSelect(this, this.lineAndBarSelectedColumnIndex);
+                }
+            } else {
+                textNodes[i].classList.remove(prefixed('selected'));
+                rects[i].classList.remove(prefixed('selected'));
+                rects[i].setAttribute('fill-opacity', 0);
+                textNodes[i].setAttribute('font-weight', 'normal');
+            }
+        }
+    }
+
+
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Private functions
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Gets first color or gradient that is defined for one of the properties for this serie.
+     * @param {Array} props Array with properties to search for.
+     * @param {Object} serie Serie object.
+     * @param {Int} serieIndex Index of serie.
+     * @returns First matched color or gradient.
+     */
+    function getSeriePropertyColor(props, serie, serieIndex) {
+        for (var i = 0; i < props.length; i++) {
+            var key = props[i];
+            if (serie[key]) {
+                return key === 'fillGradient' ? `url(#${serie.id}-gradient)` : serie[key];
+            }
+        }
+        if (serie.color) {
+            return serie.color;
+        }
+        return defaultColorPalette[serieIndex];
+    }
+
+    /**
+     * Gets color or gradient for point in line chart.
+     * @param {Object} serie Serie object.
+     * @param {Int} serieIndex Serie index.
+     * @returns First matched color or gradient.
+     */
+    function getSeriePointColor(serie, serieIndex) {
+        return getSeriePropertyColor(['pointColor', 'strokeColor'], serie, serieIndex);
+    }
+
+    /**
+     * Gets color or gradient for stroke.
+     * @param {Object} serie Serie object.
+     * @param {Int} serieIndex Serie index.
+     * @returns First matched color or gradient.
+     */
+    function getSerieStrokeColor(serie, serieIndex) {
+        return getSeriePropertyColor(['strokeColor'], serie, serieIndex);
+    }
+
+    /**
+     * Gets color or gradient for fill.
+     * @param {Object} serie Serie object.
+     * @param {Int} serieIndex Serie index.
+     * @returns First matched color or gradient.
+     */
+    function getSerieFill(serie, serieIndex) {
+        return getSeriePropertyColor(['fillGradient'], serie, serieIndex);
+    }
+
+    /**
+     * Gets function to execute for this chartType and this phase.
+     * @param {String} phase Phase in config: one of 'before', 'after', 'serie'
+     * @returns Function.
+     */
+    function getChartTypeConfigFunction(phase) {
+        return (
+            (this.config.chartType in chartTypeInfo) && chartTypeInfo[this.config.chartType].chartTypeConfigFunctions
+            &&
+            (phase in chartTypeInfo[this.config.chartType].chartTypeConfigFunctions)
+        ) ? chartTypeInfo[this.config.chartType].chartTypeConfigFunctions[phase] : function () { };
+
+    }
+
+    /**
+     * Adds a prefix to the classname.
+     * @param {String} className Class name.
+     * @returns Classname with prefix.
+     */
+    function prefixed(className) {
+        return classNamePrefix + className;
+    }
+
+    /**
+     * Scope a function to the SvgChart instance.
+     * @param {SvgChart} me The "this" object, in this case the SvgChart instance.
+     * @param {Function} func Function that should be scoped to this.
+     * @returns Function that is scoped to the SvgChart instance.
+     */
     function scopedFunction(me, func) {
         return (function (arg) {
             func.call(me, arg);
         });
     }
 
+    /**
+     * Searches for (parent) node with the provided name, starting with the current node.
+     * @param {Node} currentElement Node to start the search.
+     * @param {String} parentName Node name of parent.
+     * @returns Found node or null if nothing is found.
+     */
     function parent(currentElement, parentName) {
         var el = currentElement;
         while (el && el.nodeName.toLowerCase() !== parentName.toLowerCase()) {
@@ -1074,6 +1302,31 @@
         return el;
     }
 
+    /**
+     * Adds an event listener to a node and adds it to the _listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
+     * @param {Node} node Node to add the listener to.
+     * @param {String} eventName Name of event.
+     * @param {Function} callback Function that needs to be executed.
+     * @param {Boolean} capture Capture or not.
+     */
+    function _addEventListener(node, eventName, callback, capture) {
+        node.addEventListener(eventName, callback, capture);
+        this._listenersToRemoveAfterConfigChange.push([node, eventName, callback, capture]);
+    }
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Public functions
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Creates a new SVG node.
+     * @param {String} name Name of new node.
+     * @param {Object} attributes Attributes as key value pairs.
+     * @param {Node} child Optional child node that should be appended to the newle created node.
+     * @returns Newly created node.
+     */
     function el(name, attributes = {}, child = null) {
         var el = document.createElementNS(ns, name);
         Object.keys(attributes).forEach(function (key) {
@@ -1096,7 +1349,45 @@
         }
         return el;
     }
+    // Make it a public function as well, can be used in for example beforeDraw callback to add new nodes to the SVG node.
+    SvgChart.prototype.el = el;
 
-    window.SvgChart.prototype.el = el;
+    /**
+     * Saves chart as PNG file.
+     * @param {String} filename Filename of PNG.
+     */
+    SvgChart.prototype.saveAsPng = function (filename) {
+        var rect = this.svg.getBoundingClientRect();
+        var canvas = document.createElement('canvas');
+        canvas.setAttribute('width', rect.width);
+        canvas.setAttribute('height', rect.height);
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = this.svg.style.backgroundColor;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        var img = new Image();
+        var data = '<svg xmlns="http://www.w3.org/2000/svg">' + this.svg.innerHTML + '</svg>';
+        var parser = new DOMParser();
+        var result = parser.parseFromString(data, 'text/xml');
+        var inlineSVG = result.getElementsByTagName("svg")[0];
+        inlineSVG.setAttribute('width', rect.width);
+        inlineSVG.setAttribute('height', rect.height);
+        var svg64 = btoa(new XMLSerializer().serializeToString(inlineSVG));
+        var image64 = 'data:image/svg+xml;base64,' + svg64;
+        img.onload = function () {
+            ctx.drawImage(img, 0, 0, rect.width, rect.height);
+            window.URL.revokeObjectURL(image64);
+            var png_img = canvas.toDataURL("image/png");
+            const createEl = document.createElement('a');
+            createEl.href = png_img;
+            createEl.download = filename;
+            createEl.click();
+            createEl.remove();
+        }
+        img.src = image64;
+    };
+
+    window.SvgChart = SvgChart;
+
 
 }());
