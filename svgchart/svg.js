@@ -87,7 +87,27 @@
     /**
      * String we use to prefix all class names and ID names.
      */
-    const classNamePrefix = 'my-';
+    const classNamePrefix = 'svg-chart-';
+
+    /**
+     * Add some CSS rules to make the dynamic functions work, like hover and transitions.
+     * @param {Array} arr Array of CSS rules.
+     */
+    function addCSS(arr) {
+        document.head.appendChild(document.createElement("style")).innerHTML = arr.join("\n");
+    }
+
+    addCSS([
+        '.' + prefixed('line-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
+        '.' + prefixed('line-point') + ':hover, circle.' + prefixed('line-point') + ':focus { stroke-width: 6; outline: none; }',
+        '#' + prefixed('serie-group') + ' g { transition: opacity 0.6s; }',
+        '#' + prefixed('serie-group') + ' g.' + prefixed('unselected') + ' { opacity: 0; }',
+        '#' + prefixed('serie-group-current') + ' { transition: opacity 1s; opacity: 1; }',
+        '#' + prefixed('serie-group-current') + '.' + prefixed('unattached') + ' { opacity: 0; }',
+        'g.' + prefixed('legend-group') + ' g.' + prefixed('unselected') + ' { opacity: 0.4; }',
+        'rect.' + prefixed('bar') + ':hover, path.' + prefixed('pie-piece') + ':hover { fill-opacity: 0.7; }',
+        'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; }'
+    ]);
 
     /**
      * Mapper between chartType and config functions (functions that we need to execute once for each config) for each phase (before, after, serie).

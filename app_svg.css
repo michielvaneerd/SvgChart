@@ -9,100 +9,101 @@ Note that presentational attributes (like <rect fill="red"> has a lower priority
 
 **/
 
-/* svg.my-svg text {
+/* svg.svg-chart-svg text {
     font-family: sans-serif;
     font-size: smaller;
 } */
 
-/* svg.my-svg {
+/* svg.svg-chart-svg {
     background-color: bisque;
 } */
 
-/* line.my-y-axis-grid-line {
+/* line.svg-chart-y-axis-grid-line {
     stroke-width: 1;
     stroke: #C0C0C0;
     stroke-dasharray: 1,1;
 } */
 
-/* line.my-x-axis-grid-line {
+/* line.svg-chart-x-axis-grid-line {
     stroke-width: 1;
     stroke: #C0C0C0;
     stroke-dasharray: 1,1;
 } */
 
-/* text.my-y-axis-label, text.my-x-axis-label {
+/* text.svg-chart-y-axis-label, text.svg-chart-x-axis-label {
     fill: red;
 } */
 
-/* .my-x-axis-grid-column-selectable {
+/* .svg-chart-x-axis-grid-column-selectable {
     fill: black;
 } */
 
-/* .my-x-axis-grid-column-selectable.selected {
+/* .svg-chart-x-axis-grid-column-selectable.selected {
     fill-opacity: 0.1;
 } */
 
-.my-x-axis-grid-column-selectable-label {
+/* .svg-chart-x-axis-grid-column-selectable-label {
     cursor: pointer;
-}
+} */
 
-/* .my-x-axis-grid-column-selectable-label.selected {
+/* .svg-chart-x-axis-grid-column-selectable-label.selected {
     font-weight: bold;
 } */
 
 
 
-/* .my-line {
+/* .svg-chart-line {
     stroke-width: 2;
 } */
 
-/* .my-bar {
+/* .svg-chart-bar {
     fill-opacity: 0.5;
 } */
 
-.my-line-point, g.my-legend-group g {
+/* .svg-chart-line-point, g.svg-chart-legend-group g {
     cursor: pointer;
-}
+} */
 
-.my-line-point:hover {
+/* .svg-chart-line-point:hover, circle.svg-chart-line-point:focus {
     stroke-width: 6;
-}
+    outline: none;
+} */
 
-/** Needed for transition legend select/de-select */
-#my-serie-group g {
+/** Needed for fading out series after deselecting legend */
+/* #svg-chart-serie-group g {
     transition: opacity 0.6s;
 }
-#my-serie-group g.my-unselected {
+#svg-chart-serie-group g.svg-chart-unselected {
     opacity: 0;
-}
+} */
 
 /** Only needed if we use transition to show the new data */
-#my-serie-group-current {
+/* #svg-chart-serie-group-current {
     transition: opacity 1s;
     opacity: 1;
-}
-#my-serie-group-current.my-unattached {
+} */
+/* #svg-chart-serie-group-current.svg-chart-unattached {
     opacity: 0;
-}
+} */
 
-/* svg.my-svg text.my-text-title {
+/* svg.svg-chart-svg text.svg-chart-text-title {
     font-size: large;
 } */
 
-g.my-legend-group g.my-unselected {
+/* g.svg-chart-legend-group g.svg-chart-unselected {
     opacity: 0.4;
-}
+} */
 
-rect.my-bar:hover, path.my-pie-piece:hover {
+/* rect.svg-chart-bar:hover, path.svg-chart-pie-piece:hover {
     fill-opacity: 0.7;
-}
+} */
 
-path.my-pie-piece:focus, rect.my-bar:focus, circle.my-line-point:focus {
+/* path.svg-chart-pie-piece:focus, rect.svg-chart-bar:focus {
     outline: none;
-    stroke:white;
-    stroke-width:2;
-}
+    stroke:black;
+    stroke-width:1;
+} */
 
-/* svg.my-svg {
+/* svg.svg-chart-svg {
     background-color: yellow;
 } */
