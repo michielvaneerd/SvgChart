@@ -5,8 +5,10 @@ body {
 }
 
 .chartDiv,
-.chartCode {
+.chartCodeConfig,
+.chartCodeData {
     height: 25rem;
+    max-height: 25rem;
 }
 
 .chartRow {

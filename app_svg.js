@@ -4,8 +4,20 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function getRandomNumbersSummedUpTo(count, maxSum) {
+    let sum = maxSum;
+    const numbers = [];
+    for (let i = 0; i < count - 1; i++) {
+        const randomNumber = Math.floor(Math.random() * sum);
+        sum -= randomNumber < 0 ? 0 : randomNumber;
+        numbers.push(randomNumber < 0 ? 0 : randomNumber);
+    }
+    numbers.push(sum);
+    return numbers;
+}
+
 var chartInfo = {
-    chart1: {
+    chartBasicLine: {
         config: {
             chartType: 'line',
             title: 'Basic line chart',
@@ -20,22 +32,19 @@ var chartInfo = {
                 {
                     id: 'train',
                     title: 'Train',
-                    type: 'line'
                 },
                 {
                     id: 'car',
                     title: 'Car',
-                    type: 'line'
                 }
             ]
         },
         data: null,
         chart: null
     },
-    chart2: {
+    chartBasicBar: {
         config: {
             chartType: 'bar',
-            xAxisGridColumns: true,
             title: 'Basic bar chart',
             minValue: 0,
             maxValue: 100,
@@ -48,19 +57,71 @@ var chartInfo = {
                 {
                     id: 'train',
                     title: 'Train',
-                    type: 'bar'
                 },
                 {
                     id: 'car',
                     title: 'Car',
-                    type: 'bar'
                 }
             ]
         },
         data: null,
         chart: null
     },
-    chart3: {
+    chartStackedBar: {
+        config: {
+            chartType: 'bar',
+            title: 'Stacked bar chart',
+            legendPosition: 'top',
+            minValue: 0,
+            maxValue: 100,
+            legendTop: 60,
+            barSpacing: 20,
+            barStacked: true,
+            series: [
+                {
+                    id: 'train',
+                    title: 'Train',
+                },
+                {
+                    id: 'car',
+                    title: 'Car',
+                },
+                {
+                    id: 'bike',
+                    title: 'Bike',
+                },
+                {
+                    id: 'feet',
+                    title: 'Feet',
+                }
+            ]
+        },
+        data: null,
+        chart: null,
+        dataFunc: function (id) {
+            var numbers = [];
+            var serieData = {};
+            for (let i = 0; i < 7; i++) {
+                //serieData[serie.id] = getRandomNumbersSummedUpTo(7, 100);
+                numbers.push(getRandomNumbersSummedUpTo(4, 100));
+            };
+            chartInfo[id].config.series.forEach(function (serie) {
+                serieData[serie.id] = [];
+            });
+            numbers.forEach(function(numberArray) {
+                chartInfo[id].config.series.forEach(function (serie, serieIndex) {
+                    serieData[serie.id].push(numberArray[serieIndex]);
+                });
+            });
+            chartInfo[id].data = {
+                series: serieData,
+                xAxis: {
+                    columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+                }
+            };
+        }
+    },
+    chartBasicPie: {
         config: {
             chartType: 'pie',
             title: 'Basic pie chart',
@@ -87,13 +148,74 @@ var chartInfo = {
         },
         data: null,
         chart: null
+    },
+    chartBasicDonut: {
+        config: {
+            chartType: 'donut',
+            title: 'Basic donut chart',
+            legendPosition: 'top',
+            legendTop: 60,
+            series: [
+                {
+                    id: 'train',
+                    title: 'Train'
+                },
+                {
+                    id: 'car',
+                    title: 'Car'
+                },
+                {
+                    id: 'bike',
+                    title: 'Bike'
+                },
+                {
+                    id: 'feet',
+                    title: 'Feet'
+                }
+            ]
+        },
+        data: null,
+        chart: null
+    },
+    chartBarAndLine: {
+        config: {
+            chartType: 'lineAndBar',
+            title: 'Bar and line chart',
+            legendPosition: 'top',
+            legendTop: 60,
+            minValue: 0,
+            maxValue: 100,
+            barSpacing: 10,
+            series: [
+                {
+                    id: 'train',
+                    title: 'Train',
+                },
+                {
+                    id: 'car',
+                    title: 'Car',
+                },
+                {
+                    id: 'bike',
+                    title: 'Bike',
+                    type: 'bar'
+                },
+                {
+                    id: 'feet',
+                    title: 'Feet',
+                    type: 'bar'
+                }
+            ]
+        },
+        data: null,
+        chart: null,
     }
 };
 
 function setChartData(id) {
     var isPieOrDonut = ['pie', 'donut'].indexOf(chartInfo[id].config.chartType) !== -1;
     var serieData = {};
-    chartInfo[id].config.series.forEach(function(serie) {
+    chartInfo[id].config.series.forEach(function (serie) {
         serieData[serie.id] = !isPieOrDonut ? Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)) : getRandomIntInclusive(0, 100);
     });
     chartInfo[id].data = {
@@ -105,10 +227,10 @@ function setChartData(id) {
 }
 
 function doChart(id) {
-    setChartData(id);
+    chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
     if (chartInfo[id].chart === null) {
         chartInfo[id].chart = new SvgChart(document.getElementById(id), chartInfo[id].config);
-        document.getElementById(id + 'RandomDataButton').addEventListener('click', function() {
+        document.getElementById(id + 'RandomDataButton').addEventListener('click', function () {
             doChart(id);
         });
     } else {
@@ -119,6 +241,9 @@ function doChart(id) {
     document.getElementById(id + 'CodeData').innerText = JSON.stringify(chartInfo[id].data, null, 2);
 }
 
-doChart('chart1');
-doChart('chart2');
-doChart('chart3');
+doChart('chartBasicLine');
+doChart('chartBasicBar');
+doChart('chartStackedBar');
+doChart('chartBasicPie');
+doChart('chartBasicDonut');
+doChart('chartBarAndLine');

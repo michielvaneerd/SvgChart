@@ -83,6 +83,9 @@
         barSpacing: 4,
         barStrokeWidth: 1,
         barStacked: false,
+
+        // Pie and donut
+        pieFillOpacity: 0.6,
     };
 
     /**
@@ -114,11 +117,8 @@
      * Mapper between chartType and config functions (functions that we need to execute once for each config) for each phase (before, after, serie).
      */
     const chartTypeInfo = {
-        all: {
-            requiredConfig: ['chartType'],
-        },
         line: {
-            requiredConfig: [],
+            requiredConfig: ['minValue', 'maxValue'],
             chartTypeConfigFunctions: {
                 before: configBeforeLineAndBar,
                 after: configAfterLineAndBar,
@@ -126,27 +126,29 @@
             }
         },
         bar: {
-            requiredConfig: [],
+            requiredConfig: ['minValue', 'maxValue'],
+            requiredConfigWithValue: { // Hiermee kun je bepaalde waardes in de config vast zetten bij deze type chart.
+                xAxisGridColumns: true
+            },
             chartTypeConfigFunctions: {
                 before: configBeforeLineAndBar,
                 after: configAfterLineAndBar,
                 serie: configSerieLineAndBar
             }
         },
+        requiredConfig: ['minValue', 'maxValue'],
         lineAndBar: {
-            requiredConfig: [],
+            requiredConfigWithValue: {
+                xAxisGridColumns: true
+            },
             chartTypeConfigFunctions: {
                 before: configBeforeLineAndBar,
                 after: configAfterLineAndBar,
                 serie: configSerieLineAndBar
             }
         },
-        pie: {
-            requiredConfig: [],
-        },
-        donut: {
-            requiredConfig: [],
-        }
+        pie: {},
+        donut: {}
     };
 
     /**
@@ -193,8 +195,6 @@
      */
     const SvgChart = function (parent, config) {
 
-        // Check if we have ALL required config.
-
         const parentRect = parent.getBoundingClientRect();
 
         this.width = parentRect.width;
@@ -216,8 +216,28 @@
      */
     SvgChart.prototype.setConfig = function (config) {
 
+        if (!('chartType' in config)) {
+            console.error('Missing required chartType in config.');
+            return;
+        }
+        if (!(config.chartType in chartTypeInfo)) {
+            console.error('Unknown chartType in config.');
+            return;
+        }
+
         this.config = Object.assign({}, defaultConfig, config);
         this.config.padding = Object.assign({}, defaultConfig.padding, this.config.padding);
+
+        if (chartTypeInfo[this.config.chartType].requiredConfig) {
+            for (let key of chartTypeInfo[this.config.chartType].requiredConfig) {
+                if (!(key in this.config)) {
+                    console.error(`Missing required ${key} in config.`);
+                    return;
+                }
+            }
+        }
+
+        this.config = Object.assign(this.config, chartTypeInfo[this.config.chartType].requiredConfigWithValue);
 
         // First remove event listener from a previous config if they exist.
         if (this._listenersToRemoveAfterConfigChange && this._listenersToRemoveAfterConfigChange.length) {
@@ -383,7 +403,7 @@
      * @param {Int} serieIndex Serie index.
      */
     function configSerieLineAndBar(serie, serieIndex) {
-        if (serie.type === 'bar') {
+        if (serie.type === 'bar' || this.config.chartType === 'bar') {
             this.barCount += 1;
         }
     }
@@ -819,6 +839,7 @@
             serieGroup.appendChild(el('path', {
                 d: path.join(' '),
                 fill: getSerieFill.call(this, serie, serieIndex),
+                fillOpacity: this.config.pieFillOpacity || 1,
                 className: prefixed('pie-piece'),
                 tabindex: 0,
                 dataValue: value
@@ -934,7 +955,9 @@
                 className: this.unselectedSeries[serie.id] ? prefixed('unselected') : ''
             });
 
-            switch (serie.type) {
+            var serieType = serie.type || (this.config.chartType === 'lineAndBar' ? 'line' : this.config.chartType);
+
+            switch (serieType) {
                 case 'line':
                     {
                         var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
