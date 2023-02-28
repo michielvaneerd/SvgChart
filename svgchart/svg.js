@@ -37,6 +37,7 @@
         axisLabelFontSize: 'small',
 
         // X axis
+        xAxisTitle: null,
         xAxisGridLineWidth: 1,
         xAxisGridLineColor: '#C0C0C0',
         xAxisGridLineDashArray: '1,1',
@@ -47,11 +48,13 @@
         xAxisLabels: true,
         xAxisGridColumns: false, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
         xAxisGridColumnsSelectable: false,
+        xAxisGridColumnsSelectableColor: 'black',
         textAnchorXAxisLabels: 'middle', // If you want X axis labels that are vertical (xAxisLabelRotation = 90), then this should be 'start' if you want them aligned to the x axis.
         xAxisLabelTop: 10,
         xAxisLabelRotation: null,
 
         // Y axis
+        yAxisTitle: null,
         yAxisGridLineWidth: 1,
         yAxisGridLineColor: '#C0C0C0',
         yAxisGridLineDashArray: '1,1',
@@ -880,7 +883,7 @@
                         height: this.chartHeight,
                         className: prefixed('x-axis-grid-column-selectable'),
                         fillOpacity: 0,
-                        fill: 'black'
+                        fill: this.config.xAxisGridColumnsSelectableColor
                     }));
                 }
             }
