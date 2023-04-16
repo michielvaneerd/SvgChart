@@ -16,17 +16,21 @@ function getRandomNumbersSummedUpTo(count, maxSum) {
     return numbers;
 }
 
+var htmlDir = document.documentElement.getAttribute('dir') || 'ltr';
+
 var chartInfo = {
     chartBasicLine: {
         config: {
             chartType: 'line',
+            dir: htmlDir,
             title: 'Basic line chart',
             minValue: 0,
             maxValue: 100,
             legendPosition: 'top',
             legendTop: 60,
             padding: {
-                right: 40
+                end: 40,
+                start: 100
             },
             series: [
                 {
@@ -39,19 +43,30 @@ var chartInfo = {
                 }
             ]
         },
-        data: null,
+        //data: null,
+        data: {
+            series: {
+                train: [34, 56, 78, 34, 78, 89, 100],
+                car: [44, 23, 56, 23, 67, 34, 67],
+                //bike: Array(7).fill(1).map(item => getRandomIntInclusive(0, 100))
+            },
+            xAxis: {
+                columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+            }
+        },
         chart: null
     },
     chartBasicBar: {
         config: {
             chartType: 'bar',
+            dir: htmlDir,
             title: 'Basic bar chart',
             minValue: 0,
             maxValue: 100,
             legendPosition: 'top',
             legendTop: 60,
             padding: {
-                right: 40
+                end: 40
             },
             series: [
                 {
@@ -70,6 +85,7 @@ var chartInfo = {
     chartStackedBar: {
         config: {
             chartType: 'bar',
+            dir: htmlDir,
             title: 'Stacked bar chart',
             legendPosition: 'top',
             minValue: 0,
@@ -123,6 +139,7 @@ var chartInfo = {
     chartBasicPie: {
         config: {
             chartType: 'pie',
+            dir: htmlDir,
             title: 'Basic pie chart',
             legendPosition: 'top',
             legendTop: 60,
@@ -151,6 +168,7 @@ var chartInfo = {
     chartBasicDonut: {
         config: {
             chartType: 'donut',
+            dir: htmlDir,
             title: 'Basic donut chart',
             legendPosition: 'top',
             legendTop: 60,
@@ -179,6 +197,7 @@ var chartInfo = {
     chartBarAndLine: {
         config: {
             chartType: 'lineAndBar',
+            dir: htmlDir,
             title: 'Bar and line chart',
             legendPosition: 'top',
             legendTop: 60,
@@ -213,9 +232,10 @@ var chartInfo = {
         config: {
             padding: {
                 bottom: 70,
-                left: 80
+                start: 80
             },
             chartType: 'line',
+            dir: htmlDir,
             title: 'Custom line chart',
             legendPosition: 'top',
             legendTop: 60,
@@ -239,7 +259,7 @@ var chartInfo = {
             },
             drawBefore: function(chart, groupNode) {
                 groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.left,
+                    x: chart.config.padding.start,
                     y: chart.config.padding.top,
                     width: chart.chartWidth,
                     height: chart.lineAndBarValueHeight * 20,
@@ -247,7 +267,7 @@ var chartInfo = {
                     fillOpacity: 0.2
                 }));
                 groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.left,
+                    x: chart.config.padding.start,
                     y: chart.config.padding.top + (chart.lineAndBarValueHeight * 20),
                     width: chart.chartWidth,
                     height: chart.lineAndBarValueHeight * 40,
@@ -255,7 +275,7 @@ var chartInfo = {
                     fillOpacity: 0.2
                 }));
                 groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.left,
+                    x: chart.config.padding.start,
                     y: chart.config.padding.top + (chart.lineAndBarValueHeight * 60),
                     width: chart.chartWidth,
                     height: chart.lineAndBarValueHeight * 40,
@@ -288,9 +308,10 @@ var chartInfo = {
         config: {
             padding: {
                 bottom: 70,
-                left: 80
+                start: 80
             },
             chartType: 'line',
+            dir: htmlDir,
             title: 'Dynamic chart',
             legendPosition: 'top',
             legendTop: 60,
@@ -356,7 +377,9 @@ function doChart(id) {
     if (chartInfo[id].onNewDataFunc) {
         chartInfo[id].onNewDataFunc();
     }
-    chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
+    if (!chartInfo[id].data) {
+        chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
+    }
     if (chartInfo[id].chart === null) {
         chartInfo[id].chart = new SvgChart(document.getElementById(id), chartInfo[id].config);
         document.getElementById(id + 'RandomDataButton').addEventListener('click', function () {

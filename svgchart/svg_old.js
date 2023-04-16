@@ -10,11 +10,10 @@
     const defaultConfig = {
 
         // Global
-        dir: 'ltr',
         chartType: null,
         padding: {
-            start: 40,
-            end: 20,
+            left: 40,
+            right: 20,
             top: 100,
             bottom: 40
         },
@@ -71,7 +70,7 @@
         legendFontSize: 'smaller',
         legend: true,
         legendSelect: true,
-        legendPosition: 'top', // end, start, bottom
+        legendPosition: 'top', // right, left, bottom
         legendTop: null, // top position, if null, default position for legendPosition is used.
 
         // Line charts
@@ -197,7 +196,7 @@
      * @param {Node} parent 
      * @param {Object} config 
      */
-    var SvgChart = function (parent, config) {
+    const SvgChart = function (parent, config) {
 
         const parentRect = parent.getBoundingClientRect();
 
@@ -243,14 +242,6 @@
 
         this.config = Object.assign(this.config, chartTypeInfo[this.config.chartType].requiredConfigWithValue);
 
-        if (this.config.dir === 'ltr') {
-            this.config.padding.left = this.config.padding.start;
-            this.config.padding.right = this.config.padding.end;
-        } else {
-            this.config.padding.left = this.config.padding.end;
-            this.config.padding.right = this.config.padding.start;
-        }
-
         // First remove event listener from a previous config if they exist.
         if (this._listenersToRemoveAfterConfigChange && this._listenersToRemoveAfterConfigChange.length) {
             this._listenersToRemoveAfterConfigChange.forEach(function (item) {
@@ -267,7 +258,7 @@
         this.data = null;
         this.unselectedSeries = {};
 
-        this.chartWidth = this.width - this.config.padding.start - this.config.padding.end - (this.config.xAxisGridPadding * 2);
+        this.chartWidth = this.width - this.config.padding.left - this.config.padding.right - (this.config.xAxisGridPadding * 2);
         this.chartHeight = this.height - this.config.padding.top - this.config.padding.bottom - (this.config.yAxisGridPadding * 2);
 
         if (this.config.backgroundColor) {
@@ -497,39 +488,18 @@
             _addEventListener.call(this, gLegend, 'click', this.onLegendClickScoped, false);
         }
         this.config.series.forEach(function (serie, serieIndex) {
-            
             var gSerie = el('g', {
                 dataSerie: serie.id,
                 tabindex: this.config.legendSelect ? 0 : null
             });
-
             var x, y = null;
-
-            switch (this.config.legendPosition) {
-                case 'top':
-                    x = 0; // we rewrite this later below
-                    y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
-                    break;
-                case 'bottom':
-                    x = 0; // we rewrite this later below
-                    y = this.config.legendBottom ? this.config.legendBottom : (this.chartHeight + (this.config.padding.bottom / 2));
-                    break;
-                case 'start':
-                    x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
-                    y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);
-                    break;
-                case 'end':
-                    x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
-                    y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);
-                    break;
+            if (this.config.legendPosition === 'top') {
+                x = this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
+                y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
+            } else {
+                x = this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
+                y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);
             }
-
-            // x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
-            // if (this.config.legendPosition === 'top') {
-            //     y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
-            // } else {
-            //     y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);
-            // }
             gSerie.appendChild(el('rect', {
                 x: x,
                 y: y,
@@ -542,7 +512,7 @@
             gSerie.appendChild(el('text', {
                 x: x + 20,
                 y: y + 5,
-                textAnchor: this.config.dir === 'ltr' ? 'start' : 'end',
+                textAnchor: 'start',
                 dominantBaseline: 'middle',
                 fontFamily: this.config.fontFamily || '',
                 fontSize: this.config.legendFontSize || '',
@@ -550,16 +520,14 @@
             gLegend.appendChild(gSerie);
         }, this);
         this.svg.appendChild(gLegend);
-
         if (this.config.legendPosition === 'top') {
-            // Measure the text so we can place the rects and texts next to each other
             var curX = 0;
             gLegend.querySelectorAll('g').forEach(function (g) {
                 const box = g.getBBox();
                 g.querySelector('rect').setAttribute('x', curX);
                 g.querySelector('text').setAttribute('x', curX + 20);
                 curX += (box.width + 10);
-            }, this);
+            });
             curX -= 10;
             gLegend.setAttribute('transform', 'translate(' + ((this.width / 2) - (curX / 2)) + ', 0)');
         }
@@ -573,7 +541,7 @@
         var yAxisTitleG = el('g');
         yAxisTitleG.setAttribute('transform', 'translate(20, ' + (this.config.padding.top + this.config.yAxisGridPadding) + ')');
         var yAxisTitleEl = el('text', {
-            textAnchor: this.config.dir === 'ltr' ? 'end' : 'start',
+            textAnchor: 'end',
             dominantBaseline: 'hanging',
             fontFamily: this.config.fontFamily || '',
             fontSize: this.config.axisTitleFontSize || '',
@@ -590,9 +558,9 @@
      */
     function addXAxisTitle() {
         this.svg.appendChild(el('text', {
-            x: this.width - this.config.padding.end - this.config.xAxisGridPadding,
+            x: this.width - this.config.padding.right - this.config.xAxisGridPadding,
             y: this.height - 20,
-            textAnchor: this.config.dir === 'ltr' ? 'end' : 'start',
+            textAnchor: 'end',
             dominantBaseline: 'auto',
             fontFamily: this.config.fontFamily || '',
             fontSize: this.config.axisTitleFontSize || '',
@@ -608,13 +576,13 @@
 
         var x, y, dominantBaseline, textAnchor = null;
         switch (this.config.titleHorizontalPosition) {
-            case 'end':
+            case 'right':
                 x = this.width - 20;
-                textAnchor = this.config.dir === 'ltr' ? 'end' : 'start';
+                textAnchor = 'end';
                 break;
-            case 'start':
+            case 'left':
                 x = 20;
-                textAnchor = this.config.dir === 'ltr' ? 'start' : 'end';
+                textAnchor = 'start';
                 break;
             default:
                 x = this.width / 2;
@@ -659,9 +627,9 @@
             var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (currentYAxisValue * this.lineAndBarValueHeight);
             if (this.config.yAxisGrid) {
                 gYAxis.appendChild(el('line', {
-                    x1: this.config.padding.start,
+                    x1: this.config.padding.left,
                     y1: y,
-                    x2: this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2),
+                    x2: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2),
                     y2: y,
                     className: prefixed('y-axis-grid-line'),
                     stroke: this.config.yAxisGridLineColor || '',
@@ -671,7 +639,7 @@
             }
             if (this.config.yAxisLabels) {
                 gYAxis.appendChild(el('text', {
-                    x: this.config.dir === 'ltr' ? (this.config.padding.start - 10) : (this.config.padding.start + this.chartWidth + 10),
+                    x: this.config.padding.left - 10,
                     y: y,
                     textAnchor: 'end',
                     dominantBaseline: 'middle',
@@ -903,10 +871,9 @@
         });
 
         var currentXAxisGridColumnsSelectableGroupElement = (this.config.xAxisGridColumnsSelectable) ? el('g') : null;
-        dirForEach(this, this.data.xAxis.columns, this.config.dir, function (colValue, colIndex) {
-            console.log(`${colValue} en ${colIndex}`);
+        this.data.xAxis.columns.forEach(function (colValue, colIndex) {
             if (this.config.xAxisGrid) {
-                const x = this.config.padding.start + this.config.xAxisGridPadding + (colIndex * columnWidth);
+                const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
                 addXAxisLine.call(this, currentXAxisLineGroupElement, x);
                 if (this.config.xAxisGridColumnsSelectable) {
                     currentXAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
@@ -922,7 +889,7 @@
             }
             if (this.config.xAxisLabels) {
                 var xlg = el('g', {
-                    transform: `translate(${this.config.padding.start + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
+                    transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
                 });
                 xlg.appendChild(el('text', {
                     textAnchor: this.config.textAnchorXAxisLabels || 'middle',
@@ -937,43 +904,9 @@
                 }, document.createTextNode(colValue)));
                 currentXAxisLabelsGroupElement.appendChild(xlg);
             }
-        });
-        // this.data.xAxis.columns.forEach(function (colValue, colIndex) {
-        //     if (this.config.xAxisGrid) {
-        //         const x = this.config.padding.start + this.config.xAxisGridPadding + (colIndex * columnWidth);
-        //         addXAxisLine.call(this, currentXAxisLineGroupElement, x);
-        //         if (this.config.xAxisGridColumnsSelectable) {
-        //             currentXAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
-        //                 x: x,
-        //                 y: this.config.padding.top + this.config.yAxisGridPadding,
-        //                 width: columnWidth,
-        //                 height: this.chartHeight,
-        //                 className: prefixed('x-axis-grid-column-selectable'),
-        //                 fillOpacity: 0,
-        //                 fill: this.config.xAxisGridColumnsSelectableColor
-        //             }));
-        //         }
-        //     }
-        //     if (this.config.xAxisLabels) {
-        //         var xlg = el('g', {
-        //             transform: `translate(${this.config.padding.start + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
-        //         });
-        //         xlg.appendChild(el('text', {
-        //             textAnchor: this.config.textAnchorXAxisLabels || 'middle',
-        //             dominantBaseline: 'hanging',
-        //             fontFamily: this.config.fontFamily || '',
-        //             fontSize: this.config.axisLabelFontSize || '',
-        //             fontWeight: 'normal',
-        //             fill: this.config.xAxisLabelColor || '',
-        //             tabindex: this.config.xAxisGridColumnsSelectable ? 0 : null,
-        //             className: prefixed('x-axis-label') + ' ' + (this.config.xAxisGridColumnsSelectable ? prefixed('x-axis-grid-column-selectable-label') : ''),
-        //             transform: this.config.xAxisLabelRotation ? `rotate(${this.config.xAxisLabelRotation})` : ''
-        //         }, document.createTextNode(colValue)));
-        //         currentXAxisLabelsGroupElement.appendChild(xlg);
-        //     }
-        // }, this);
+        }, this);
         if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
-            addXAxisLine.call(this, currentXAxisLineGroupElement, this.config.padding.start + this.config.xAxisGridPadding + (this.data.xAxis.columns.length * columnWidth));
+            addXAxisLine.call(this, currentXAxisLineGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.data.xAxis.columns.length * columnWidth));
         }
         this.xAxisLineGroupElement.appendChild(currentXAxisLineGroupElement);
         this.config.xAxisGridColumnsSelectable && this.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
@@ -1007,9 +940,6 @@
             ? (this.chartWidth / (this.data.xAxis.columns.length))
             : (this.chartWidth / (this.data.xAxis.columns.length - 1));
         const barWidth = (columnWidth - (this.config.barSpacing * (this.barCount + 1))) / (this.barCount || 1);
-        // Somehow make this available in drawBefore...
-        //this.columnWidth = columnWidth;
-        //this.barWidth = barWidth;
 
         addXAxisLabels.call(this, columnWidth);
 
@@ -1035,9 +965,8 @@
                     {
                         var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
                         var flatNonNullPoints = [];
-
-                        dirForEach(this, this.data.series[serie.id], this.config.dir, function (value, valueIndex, values) {
-                            var x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
+                        this.data.series[serie.id].forEach(function (value, valueIndex, values) {
+                            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
                             var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
 
                             if (value === null) {
@@ -1048,20 +977,7 @@
                                 nonNullPoints[nonNullPoints.length - 1].push({ x: x, y: y, value: value });
                                 flatNonNullPoints.push({ x: x, y: y, value: value });
                             }
-                        });
-                        // this.data.series[serie.id].forEach(function (value, valueIndex, values) {
-                        //     var x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
-                        //     var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
-
-                        //     if (value === null) {
-                        //         if (nonNullPoints[nonNullPoints.length - 1].length > 0 && valueIndex + 1 < values.length) {
-                        //             nonNullPoints.push([]);
-                        //         }
-                        //     } else {
-                        //         nonNullPoints[nonNullPoints.length - 1].push({ x: x, y: y, value: value });
-                        //         flatNonNullPoints.push({ x: x, y: y, value: value });
-                        //     }
-                        // }, this);
+                        }, this);
 
                         var paths = [];
 
@@ -1120,19 +1036,19 @@
                     break;
                 case 'bar':
                     {
-                        dirForEach(this, this.data.series[serie.id], this.config.dir, function (value, valueIndex) {
+                        this.data.series[serie.id].forEach(function (value, valueIndex) {
 
                             var x = null;
                             var y = null;
                             var height = null;
                             if (this.config.barStacked) {
                                 if (!stackedBarValues[valueIndex]) stackedBarValues[valueIndex] = this.config.minValue;
-                                x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + this.config.barSpacing;
+                                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + this.config.barSpacing;
                                 y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight) - (stackedBarValues[valueIndex] * this.lineAndBarValueHeight);
                                 height = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
                                 stackedBarValues[valueIndex] = stackedBarValues[valueIndex] += value;
                             } else {
-                                x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
+                                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
                                 height = y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
                             }
 
@@ -1150,38 +1066,7 @@
                                 tabindex: this.config.showValueOnFocus ? 0 : null
                             }));
 
-                        });
-                        // this.data.series[serie.id].forEach(function (value, valueIndex) {
-
-                        //     var x = null;
-                        //     var y = null;
-                        //     var height = null;
-                        //     if (this.config.barStacked) {
-                        //         if (!stackedBarValues[valueIndex]) stackedBarValues[valueIndex] = this.config.minValue;
-                        //         x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + this.config.barSpacing;
-                        //         y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight) - (stackedBarValues[valueIndex] * this.lineAndBarValueHeight);
-                        //         height = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
-                        //         stackedBarValues[valueIndex] = stackedBarValues[valueIndex] += value;
-                        //     } else {
-                        //         x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
-                        //         height = y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
-                        //     }
-
-                        //     serieGroup.appendChild(el('rect', {
-                        //         x: x,
-                        //         y: y,
-                        //         width: barWidth,
-                        //         height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
-                        //         fill: getSerieFill.call(this, serie, serieIndex),
-                        //         className: prefixed('bar'),
-                        //         fillOpacity: this.config.barFillOpacity || '',
-                        //         strokeWidth: this.config.barStrokeWidth || 0,
-                        //         stroke: getSerieStrokeColor.call(this, serie, serieIndex),
-                        //         dataValue: value,
-                        //         tabindex: this.config.showValueOnFocus ? 0 : null
-                        //     }));
-
-                        // }, this);
+                        }, this);
 
                         currentBarIndex += 1;
 
@@ -1357,35 +1242,13 @@
         }
     }
 
-    SvgChart.prototype.setSelectedIndex = function (index) {
-        var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
-        return onXAxisLabelGroupSelect.call(this, textNodes.item(index));
-    };
+
 
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Private functions
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    /**
-     * Returns a forEach function that travels an array based on the this.config.dir value.
-     * If ltr ==> forEach
-     * If rtl ==> inversed forEach
-     */
-    function dirForEach(chartInstance, items, dir, callback) {
-        if (dir === 'ltr') {
-            items.forEach(function(item, index) {
-                callback.call(chartInstance, item, index);
-            }, chartInstance);
-        } else {
-            var maxIndex = items.length - 1;
-            items.reduceRight(function(_, item, index) {
-                callback.call(chartInstance, item, maxIndex - index);
-            }, null);
-        }
-    }
 
     /**
      * Gets first color or gradient that is defined for one of the properties for this serie.

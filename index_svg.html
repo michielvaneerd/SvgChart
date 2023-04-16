@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html dir="rtl">
 
 <head>
   <meta charset="utf-8">
@@ -9,7 +9,62 @@
 
 <body>
 
-  <h1>Basic line chart</h1>
+  <h1>SvgChart</h1>
+
+  <p>Small SVG charting library that provides line, bar, pie and donut charts.</p>
+
+  <h2>Getting started</h2>
+
+  <pre><code>// First create a new chart with configuration
+var myChart = new SvgChart(document.getElementById("myChartDiv"), {
+  chartType: 'line',
+  series: [
+    {
+      title: 'Cars',
+      id: 'cars'
+    },
+    {
+      title: 'Bikes',
+      id: 'bikes'
+    }
+  ]
+});
+// And then display the data
+myChart.chart({
+  series: {
+    cars: [12, 45, 67],
+    bikes: [33, 32, 23]
+  },
+  xAxis: {
+    columns: ['mon', 'tue', 'wed']
+  }
+});</code></pre>
+
+  <h2>Configuration</h2>
+  <dl>
+    <dt>chartType</dt>
+    <dd>Type of the chart, can be: 'line', 'bar', 'lineAndBar', 'pie', 'donut'</dd>
+    <dt>series</dt>
+    <dd>
+      The series without the values, each serie can be like:
+      <pre><code>{
+  title: 'Cars',
+  id: 'cars',
+  color: '#AACC33',
+  fillGradient: ['#000000', '#FFFFFF'],
+  pointColor: '#000000',
+  strokeColor: '#C0C0C0'
+}</code></pre>
+    </dd>
+
+  </dl>
+
+  <h2>Data</h2>
+  <p>Examples of the data object that gets sent to the chart() function...</p>
+
+  <h2>Examples</h2>
+
+  <h3>Basic line chart</h3>
   <div class="chartRow">
     <div class="chartDiv" id="chartBasicLine"></div>
     <pre class="chartCodeConfig" id="chartBasicLineCodeConfig"><code></code></pre>
@@ -19,7 +74,7 @@
     </div>
   </div>
 
-  <h1>Basic bar chart</h1>
+  <h3>Basic bar chart</h3>
   <div class="chartRow">
     <div class="chartDiv" id="chartBasicBar"></div>
     <pre class="chartCodeConfig" id="chartBasicBarCodeConfig"><code></code></pre>
@@ -29,7 +84,7 @@
     </div>
   </div>
 
-  <h1>Stacked bar chart</h1>
+  <h3>Stacked bar chart</h3>
   <div class="chartRow">
     <div class="chartDiv" id="chartStackedBar"></div>
     <pre class="chartCodeConfig" id="chartStackedBarCodeConfig"><code></code></pre>
@@ -39,7 +94,7 @@
     </div>
   </div>
 
-  <h1>Bar and line chart</h1>
+  <h3>Bar and line chart</h3>
   <div class="chartRow">
     <div class="chartDiv" id="chartBarAndLine"></div>
     <pre class="chartCodeConfig" id="chartBarAndLineCodeConfig"><code></code></pre>
@@ -49,7 +104,7 @@
     </div>
   </div>
 
-  <h1>Basic pie chart</h1>
+  <h3>Basic pie chart</h3>
   <div class="chartRow">
     <div class="chartDiv" id="chartBasicPie"></div>
     <pre class="chartCodeConfig" id="chartBasicPieCodeConfig"><code></code></pre>
@@ -60,7 +115,7 @@
   </div>
 
 
-  <h1>Basic donut chart</h1>
+  <h3>Basic donut chart</h3>
   <div class="chartRow">
     <div class="chartDiv" id="chartBasicDonut"></div>
     <pre class="chartCodeConfig" id="chartBasicDonutCodeConfig"><code></code></pre>
@@ -70,7 +125,7 @@
     </div>
   </div>
 
-  <h1>Custom chart</h1>
+  <h3>Custom chart</h3>
   <div class="chartRow">
     <div class="chartDiv" id="chartCustom"></div>
     <pre class="chartCodeConfig" id="chartCustomCodeConfig"><code></code></pre>
@@ -81,7 +136,7 @@
     </div>
   </div>
   
-  <h1>Dynamic chart</h1>
+  <h3>Dynamic chart</h3>
   <div class="chartRow">
     <div class="chartDiv" id="chartDynamic"></div>
     <textarea class="chartCodeConfig" id="chartDynamicConfig"></textarea>
