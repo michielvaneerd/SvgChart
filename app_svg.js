@@ -26,11 +26,15 @@ var chartInfo = {
             title: 'Basic line chart',
             minValue: 0,
             maxValue: 100,
-            legendPosition: 'top',
-            legendTop: 60,
+            legendPosition: 'end',
+            xAxisTitle: 'Days',
+            yAxisTitle: 'Count',
+            //legendTop: 60,
             padding: {
-                end: 40,
-                start: 100
+                end: 100,
+                start: 120,
+                top: 50,
+                bottom: 70
             },
             series: [
                 {

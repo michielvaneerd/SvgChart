@@ -71,7 +71,8 @@
         legendFontSize: 'smaller',
         legend: true,
         legendSelect: true,
-        legendPosition: 'top', // end, start, bottom
+        legendPosition: 'bottom', // end,  bottom, top , NOTE no start!
+        legendBottom: null,
         legendTop: null, // top position, if null, default position for legendPosition is used.
 
         // Line charts
@@ -497,7 +498,7 @@
             _addEventListener.call(this, gLegend, 'click', this.onLegendClickScoped, false);
         }
         this.config.series.forEach(function (serie, serieIndex) {
-            
+
             var gSerie = el('g', {
                 dataSerie: serie.id,
                 tabindex: this.config.legendSelect ? 0 : null
@@ -505,63 +506,109 @@
 
             var x, y = null;
 
-            switch (this.config.legendPosition) {
-                case 'top':
-                    x = 0; // we rewrite this later below
-                    y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
-                    break;
-                case 'bottom':
-                    x = 0; // we rewrite this later below
-                    y = this.config.legendBottom ? this.config.legendBottom : (this.chartHeight + (this.config.padding.bottom / 2));
-                    break;
-                case 'start':
-                    x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
-                    y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);
-                    break;
-                case 'end':
-                    x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
-                    y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);
-                    break;
+            if (this.config.dir === 'ltr') {
+                switch (this.config.legendPosition) {
+                    case 'top':
+                        x = 0; // we rewrite this later below
+                        y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
+                        break;
+                    case 'bottom':
+                        x = 0; // we rewrite this later below
+                        y = this.config.legendBottom ? this.config.legendBottom : (this.height - (this.config.padding.bottom / 2));
+                        break;
+                    case 'end':
+                        x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
+                        y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);
+                        break;
+                }
+
+                gSerie.appendChild(el('rect', {
+                    x: x,
+                    y: y,
+                    width: 10,
+                    height: 10,
+                    fill: getSerieFill.call(this, serie, serieIndex),
+                    stroke: getSerieStrokeColor.call(this, serie, serieIndex),
+                    strokeWidth: 1
+                }));
+                gSerie.appendChild(el('text', {
+                    x: x + 20,
+                    y: y + 5,
+                    textAnchor: 'start',
+                    dominantBaseline: 'middle',
+                    fontFamily: this.config.fontFamily || '',
+                    fontSize: this.config.legendFontSize || '',
+                }, document.createTextNode(serie.title)));
+                gLegend.appendChild(gSerie);
+            } else {
+                switch (this.config.legendPosition) {
+                    case 'top':
+                        x = 0; // we rewrite this later below
+                        y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
+                        break;
+                    case 'bottom':
+                        x = 0; // we rewrite this later below
+                        y = this.config.legendBottom ? this.config.legendBottom : (this.height - (this.config.padding.bottom / 2));
+                        break;
+                    case 'end':
+                        x = (this.config.xAxisGridPadding * 2) + this.config.padding.end - 30;
+                        y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);
+                        break;
+                }
+
+                gSerie.appendChild(el('rect', {
+                    x: x,
+                    y: y,
+                    width: 10,
+                    height: 10,
+                    fill: getSerieFill.call(this, serie, serieIndex),
+                    stroke: getSerieStrokeColor.call(this, serie, serieIndex),
+                    strokeWidth: 1
+                }));
+                gSerie.appendChild(el('text', {
+                    x: x - 10,
+                    y: y + 5,
+                    textAnchor: 'start',
+                    dominantBaseline: 'middle',
+                    fontFamily: this.config.fontFamily || '',
+                    fontSize: this.config.legendFontSize || '',
+                }, document.createTextNode(serie.title)));
+                gLegend.appendChild(gSerie);
             }
 
-            // x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + 20;
-            // if (this.config.legendPosition === 'top') {
-            //     y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
-            // } else {
-            //     y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * 20);
-            // }
-            gSerie.appendChild(el('rect', {
-                x: x,
-                y: y,
-                width: 10,
-                height: 10,
-                fill: getSerieFill.call(this, serie, serieIndex),
-                stroke: getSerieStrokeColor.call(this, serie, serieIndex),
-                strokeWidth: 1
-            }));
-            gSerie.appendChild(el('text', {
-                x: x + 20,
-                y: y + 5,
-                textAnchor: this.config.dir === 'ltr' ? 'start' : 'end',
-                dominantBaseline: 'middle',
-                fontFamily: this.config.fontFamily || '',
-                fontSize: this.config.legendFontSize || '',
-            }, document.createTextNode(serie.title)));
-            gLegend.appendChild(gSerie);
+
         }, this);
         this.svg.appendChild(gLegend);
 
-        if (this.config.legendPosition === 'top') {
+        if (['top', 'bottom'].indexOf(this.config.legendPosition) > -1) {
             // Measure the text so we can place the rects and texts next to each other
-            var curX = 0;
-            gLegend.querySelectorAll('g').forEach(function (g) {
-                const box = g.getBBox();
-                g.querySelector('rect').setAttribute('x', curX);
-                g.querySelector('text').setAttribute('x', curX + 20);
-                curX += (box.width + 10);
-            }, this);
-            curX -= 10;
-            gLegend.setAttribute('transform', 'translate(' + ((this.width / 2) - (curX / 2)) + ', 0)');
+            
+            if (this.config.dir === 'ltr') {
+                var curX = 0;
+                gLegend.querySelectorAll('g').forEach(function (g) {
+                    const box = g.getBBox();
+                    g.querySelector('rect').setAttribute('x', curX);
+                    g.querySelector('text').setAttribute('x', curX + 20);
+                    curX += (box.width + 10);
+                }, this);
+                curX -= 10;
+                gLegend.setAttribute('transform', 'translate(' + ((this.width / 2) - (curX / 2)) + ', 0)');
+            } else {
+                var totalLegendWidth = 0;
+                var curX = this.width - 10;
+                gLegend.querySelectorAll('g').forEach(function (g) {
+                    const box = g.getBBox();
+                    g.querySelector('rect').setAttribute('x', curX);
+                    g.querySelector('text').setAttribute('x', curX - 10);
+                    curX -= (box.width + 20);
+                    totalLegendWidth += (box.width + 10);
+                }, this);
+                //totalLegendWidth -= 10;
+                console.log(totalLegendWidth);
+                gLegend.setAttribute('transform', 'translate(-' + ((this.width / 2) - (totalLegendWidth / 2)) + ', 0)');
+            }
+
+            
         }
 
     };
@@ -906,7 +953,6 @@
 
         var currentXAxisGridColumnsSelectableGroupElement = (this.config.xAxisGridColumnsSelectable) ? el('g') : null;
         dirForEach(this, this.data.xAxis.columns, this.config.dir, function (colValue, colIndex) {
-            console.log(`${colValue} en ${colIndex}`);
             if (this.config.xAxisGrid) {
                 const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
                 addXAxisLine.call(this, currentXAxisLineGroupElement, x);
@@ -1334,12 +1380,12 @@
      */
     function dirForEach(chartInstance, items, dir, callback) {
         if (dir === 'ltr') {
-            items.forEach(function(item, index) {
+            items.forEach(function (item, index) {
                 callback.call(chartInstance, item, index);
             }, chartInstance);
         } else {
             var maxIndex = items.length - 1;
-            items.reduceRight(function(_, item, index) {
+            items.reduceRight(function (_, item, index) {
                 callback.call(chartInstance, item, maxIndex - index);
             }, null);
         }
