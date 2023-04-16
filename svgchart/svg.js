@@ -571,7 +571,8 @@
      */
     function addYAxisTitle() {
         var yAxisTitleG = el('g');
-        yAxisTitleG.setAttribute('transform', 'translate(20, ' + (this.config.padding.top + this.config.yAxisGridPadding) + ')');
+        var x = this.config.dir === 'ltr' ? 20 : (this.width - 20);
+        yAxisTitleG.setAttribute('transform', 'translate(' + x + ', ' + (this.config.padding.top + this.config.yAxisGridPadding) + ')');
         var yAxisTitleEl = el('text', {
             textAnchor: this.config.dir === 'ltr' ? 'end' : 'start',
             dominantBaseline: 'hanging',
@@ -589,10 +590,11 @@
      * Adds y axis title.
      */
     function addXAxisTitle() {
+        var x = this.config.dir === 'ltr' ? (this.width - this.config.padding.right - this.config.xAxisGridPadding) : (this.config.padding.left);
         this.svg.appendChild(el('text', {
-            x: this.width - this.config.padding.end - this.config.xAxisGridPadding,
+            x: x,
             y: this.height - 20,
-            textAnchor: this.config.dir === 'ltr' ? 'end' : 'start',
+            textAnchor: 'end',
             dominantBaseline: 'auto',
             fontFamily: this.config.fontFamily || '',
             fontSize: this.config.axisTitleFontSize || '',
@@ -659,9 +661,9 @@
             var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (currentYAxisValue * this.lineAndBarValueHeight);
             if (this.config.yAxisGrid) {
                 gYAxis.appendChild(el('line', {
-                    x1: this.config.padding.start,
+                    x1: this.config.padding.left,
                     y1: y,
-                    x2: this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2),
+                    x2: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2),
                     y2: y,
                     className: prefixed('y-axis-grid-line'),
                     stroke: this.config.yAxisGridLineColor || '',
@@ -671,7 +673,7 @@
             }
             if (this.config.yAxisLabels) {
                 gYAxis.appendChild(el('text', {
-                    x: this.config.dir === 'ltr' ? (this.config.padding.start - 10) : (this.config.padding.start + this.chartWidth + 10),
+                    x: this.config.dir === 'ltr' ? (this.config.padding.left - 10) : (this.config.padding.left + this.chartWidth + 10),
                     y: y,
                     textAnchor: 'end',
                     dominantBaseline: 'middle',
@@ -906,7 +908,7 @@
         dirForEach(this, this.data.xAxis.columns, this.config.dir, function (colValue, colIndex) {
             console.log(`${colValue} en ${colIndex}`);
             if (this.config.xAxisGrid) {
-                const x = this.config.padding.start + this.config.xAxisGridPadding + (colIndex * columnWidth);
+                const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
                 addXAxisLine.call(this, currentXAxisLineGroupElement, x);
                 if (this.config.xAxisGridColumnsSelectable) {
                     currentXAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
@@ -922,7 +924,7 @@
             }
             if (this.config.xAxisLabels) {
                 var xlg = el('g', {
-                    transform: `translate(${this.config.padding.start + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
+                    transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
                 });
                 xlg.appendChild(el('text', {
                     textAnchor: this.config.textAnchorXAxisLabels || 'middle',
@@ -973,7 +975,7 @@
         //     }
         // }, this);
         if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
-            addXAxisLine.call(this, currentXAxisLineGroupElement, this.config.padding.start + this.config.xAxisGridPadding + (this.data.xAxis.columns.length * columnWidth));
+            addXAxisLine.call(this, currentXAxisLineGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.data.xAxis.columns.length * columnWidth));
         }
         this.xAxisLineGroupElement.appendChild(currentXAxisLineGroupElement);
         this.config.xAxisGridColumnsSelectable && this.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
@@ -1037,7 +1039,7 @@
                         var flatNonNullPoints = [];
 
                         dirForEach(this, this.data.series[serie.id], this.config.dir, function (value, valueIndex, values) {
-                            var x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
+                            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
                             var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
 
                             if (value === null) {
@@ -1049,19 +1051,6 @@
                                 flatNonNullPoints.push({ x: x, y: y, value: value });
                             }
                         });
-                        // this.data.series[serie.id].forEach(function (value, valueIndex, values) {
-                        //     var x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
-                        //     var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
-
-                        //     if (value === null) {
-                        //         if (nonNullPoints[nonNullPoints.length - 1].length > 0 && valueIndex + 1 < values.length) {
-                        //             nonNullPoints.push([]);
-                        //         }
-                        //     } else {
-                        //         nonNullPoints[nonNullPoints.length - 1].push({ x: x, y: y, value: value });
-                        //         flatNonNullPoints.push({ x: x, y: y, value: value });
-                        //     }
-                        // }, this);
 
                         var paths = [];
 
@@ -1127,12 +1116,12 @@
                             var height = null;
                             if (this.config.barStacked) {
                                 if (!stackedBarValues[valueIndex]) stackedBarValues[valueIndex] = this.config.minValue;
-                                x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + this.config.barSpacing;
+                                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + this.config.barSpacing;
                                 y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight) - (stackedBarValues[valueIndex] * this.lineAndBarValueHeight);
                                 height = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
                                 stackedBarValues[valueIndex] = stackedBarValues[valueIndex] += value;
                             } else {
-                                x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
+                                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
                                 height = y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
                             }
 
@@ -1151,37 +1140,6 @@
                             }));
 
                         });
-                        // this.data.series[serie.id].forEach(function (value, valueIndex) {
-
-                        //     var x = null;
-                        //     var y = null;
-                        //     var height = null;
-                        //     if (this.config.barStacked) {
-                        //         if (!stackedBarValues[valueIndex]) stackedBarValues[valueIndex] = this.config.minValue;
-                        //         x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + this.config.barSpacing;
-                        //         y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight) - (stackedBarValues[valueIndex] * this.lineAndBarValueHeight);
-                        //         height = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
-                        //         stackedBarValues[valueIndex] = stackedBarValues[valueIndex] += value;
-                        //     } else {
-                        //         x = this.config.padding.start + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
-                        //         height = y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
-                        //     }
-
-                        //     serieGroup.appendChild(el('rect', {
-                        //         x: x,
-                        //         y: y,
-                        //         width: barWidth,
-                        //         height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
-                        //         fill: getSerieFill.call(this, serie, serieIndex),
-                        //         className: prefixed('bar'),
-                        //         fillOpacity: this.config.barFillOpacity || '',
-                        //         strokeWidth: this.config.barStrokeWidth || 0,
-                        //         stroke: getSerieStrokeColor.call(this, serie, serieIndex),
-                        //         dataValue: value,
-                        //         tabindex: this.config.showValueOnFocus ? 0 : null
-                        //     }));
-
-                        // }, this);
 
                         currentBarIndex += 1;
 

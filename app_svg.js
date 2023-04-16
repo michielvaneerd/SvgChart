@@ -259,7 +259,7 @@ var chartInfo = {
             },
             drawBefore: function(chart, groupNode) {
                 groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.start,
+                    x: chart.config.padding.left,
                     y: chart.config.padding.top,
                     width: chart.chartWidth,
                     height: chart.lineAndBarValueHeight * 20,
@@ -267,7 +267,7 @@ var chartInfo = {
                     fillOpacity: 0.2
                 }));
                 groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.start,
+                    x: chart.config.padding.left,
                     y: chart.config.padding.top + (chart.lineAndBarValueHeight * 20),
                     width: chart.chartWidth,
                     height: chart.lineAndBarValueHeight * 40,
@@ -275,7 +275,7 @@ var chartInfo = {
                     fillOpacity: 0.2
                 }));
                 groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.start,
+                    x: chart.config.padding.left,
                     y: chart.config.padding.top + (chart.lineAndBarValueHeight * 60),
                     width: chart.chartWidth,
                     height: chart.lineAndBarValueHeight * 40,
