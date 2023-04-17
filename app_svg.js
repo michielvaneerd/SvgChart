@@ -28,11 +28,13 @@ var chartInfo = {
             maxValue: 100,
             legendPosition: 'end',
             xAxisTitle: 'Days',
+            //xAxisTitleBottom: 0,
             yAxisTitle: 'Count',
+            //yAxisTitleStart: 40,
             //legendTop: 60,
             padding: {
                 end: 100,
-                start: 120,
+                start: 80,
                 top: 50,
                 bottom: 70
             },
