@@ -10,7 +10,9 @@
         paddingTop: 100,
         paddingBottom: 40,
         paddingNormal: 20,
-        legendWidth: 10
+        legendWidth: 10,
+        // Padding of the current focussed value element (the rect with current value you see when focussing a specific point in the chart).
+        focusedValuePadding: 6
     };
 
     /**
@@ -179,24 +181,17 @@
     const attributesCamelCaseToDashRegex = /[A-Z]/g;
 
     /**
-     * Padding of the current focussed value element (the rect with current value you see when focussing a specific point in the chart).
-     */
-    const valueElPadding = 6;
-
-    /**
      * Some color palettes.
      */
-    //const retroMetroColorPalette = ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"];
     const dutchFieldColorPalette = ["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"];
-    //const riverNightsColorPalette = ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e", "#ebdc78"];
+    const retroMetroColorPalette = ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"];
+    const riverNightsColorPalette = ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e", "#ebdc78"];
     const springPastelsColorPalette = ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"];
 
     /**
      * Our default color palette.
      */
     const defaultColorPalette = dutchFieldColorPalette;
-
-
 
 
 
@@ -263,6 +258,7 @@
             this.config.padding.left = this.config.padding.end;
             this.config.padding.right = this.config.padding.start;
         }
+        this.svg.setAttribute('direction', this.config.direction);
 
         // First remove event listener from a previous config if they exist.
         if (this._listenersToRemoveAfterConfigChange && this._listenersToRemoveAfterConfigChange.length) {
@@ -373,6 +369,7 @@
                 fill: this.config.focusedValueFill || 'black'
             });
             this.valueElText = el('text', {
+                direction: this.config.dir,
                 textAnchor: 'middle',
                 dominantBaseline: 'middle',
                 fontFamily: this.config.fontFamily,
@@ -546,6 +543,7 @@
                     // strokeWidth: 1
                 }));
                 gSerie.appendChild(el('text', {
+                    direction: this.config.dir,
                     x: x + (defaultConstants.legendWidth * 2),
                     y: y + (defaultConstants.legendWidth / 2) + 1, // + 1 don't know why
                     textAnchor: 'start',
@@ -590,6 +588,7 @@
                     //strokeWidth: 1
                 }));
                 gSerie.appendChild(el('text', {
+                    direction: this.config.dir,
                     x: x - defaultConstants.legendWidth,
                     y: y + (defaultConstants.legendWidth / 2) + 1, // + 1 don't know why
                     textAnchor: 'start',
@@ -650,6 +649,7 @@
         }
         yAxisTitleG.setAttribute('transform', 'translate(' + x + ', ' + (this.config.padding.top + this.config.yAxisGridPadding) + ')');
         var yAxisTitleEl = el('text', {
+            direction: this.config.dir,
             textAnchor: 'end',
             dominantBaseline: 'hanging',
             fontFamily: this.config.fontFamily || '',
@@ -668,6 +668,7 @@
     function addXAxisTitle() {
         var x = this.config.dir === 'ltr' ? (this.width - this.config.padding.right - this.config.xAxisGridPadding) : (this.config.padding.left);
         this.svg.appendChild(el('text', {
+            direction: this.config.dir,
             x: x,
             y: this.height - (this.config.xAxisTitleBottom != null ? this.config.xAxisTitleBottom : defaultConstants.paddingNormal),
             textAnchor: 'end',
@@ -714,6 +715,7 @@
                 break;
         }
         this.svg.appendChild(el('text', {
+            direction: this.config.dir,
             x: x,
             y: 20,
             textAnchor: textAnchor,
@@ -749,6 +751,7 @@
             }
             if (this.config.yAxisLabels) {
                 gYAxis.appendChild(el('text', {
+                    direction: this.config.dir,
                     x: this.config.dir === 'ltr' ? (this.config.padding.left - 10) : (this.config.padding.left + this.chartWidth + 10),
                     y: y,
                     textAnchor: 'end',
@@ -1002,6 +1005,7 @@
                     transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
                 });
                 xlg.appendChild(el('text', {
+                    direction: this.config.dir,
                     textAnchor: this.config.textAnchorXAxisLabels || 'middle',
                     dominantBaseline: 'hanging',
                     fontFamily: this.config.fontFamily || '',
@@ -1015,40 +1019,6 @@
                 currentXAxisLabelsGroupElement.appendChild(xlg);
             }
         });
-        // this.data.xAxis.columns.forEach(function (colValue, colIndex) {
-        //     if (this.config.xAxisGrid) {
-        //         const x = this.config.padding.start + this.config.xAxisGridPadding + (colIndex * columnWidth);
-        //         addXAxisLine.call(this, currentXAxisLineGroupElement, x);
-        //         if (this.config.xAxisGridColumnsSelectable) {
-        //             currentXAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
-        //                 x: x,
-        //                 y: this.config.padding.top + this.config.yAxisGridPadding,
-        //                 width: columnWidth,
-        //                 height: this.chartHeight,
-        //                 className: prefixed('x-axis-grid-column-selectable'),
-        //                 fillOpacity: 0,
-        //                 fill: this.config.xAxisGridColumnsSelectableColor
-        //             }));
-        //         }
-        //     }
-        //     if (this.config.xAxisLabels) {
-        //         var xlg = el('g', {
-        //             transform: `translate(${this.config.padding.start + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
-        //         });
-        //         xlg.appendChild(el('text', {
-        //             textAnchor: this.config.textAnchorXAxisLabels || 'middle',
-        //             dominantBaseline: 'hanging',
-        //             fontFamily: this.config.fontFamily || '',
-        //             fontSize: this.config.axisLabelFontSize || '',
-        //             fontWeight: 'normal',
-        //             fill: this.config.xAxisLabelColor || '',
-        //             tabindex: this.config.xAxisGridColumnsSelectable ? 0 : null,
-        //             className: prefixed('x-axis-label') + ' ' + (this.config.xAxisGridColumnsSelectable ? prefixed('x-axis-grid-column-selectable-label') : ''),
-        //             transform: this.config.xAxisLabelRotation ? `rotate(${this.config.xAxisLabelRotation})` : ''
-        //         }, document.createTextNode(colValue)));
-        //         currentXAxisLabelsGroupElement.appendChild(xlg);
-        //     }
-        // }, this);
         if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
             addXAxisLine.call(this, currentXAxisLineGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.data.xAxis.columns.length * columnWidth));
         }
@@ -1319,8 +1289,8 @@
             this.valueElText.replaceChild(document.createTextNode(serieItem.title + ': ' + circle.dataset.value), this.valueElText.firstChild);
             this.serieGroupElement.appendChild(this.valueElGroup);
             var box = this.valueElText.getBBox();
-            var width = box.width + (valueElPadding * 2);
-            var height = box.height + (valueElPadding * 2);
+            var width = box.width + (defaultConstants.focusedValuePadding * 2);
+            var height = box.height + (defaultConstants.focusedValuePadding * 2);
             this.valueElRect.setAttribute('width', width);
             this.valueElRect.setAttribute('height', height);
             this.valueElText.setAttribute('x', width / 2);
@@ -1584,6 +1554,7 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         var img = new Image();
         var data = '<svg xmlns="http://www.w3.org/2000/svg">' + this.svg.innerHTML + '</svg>';
+        console.log(data);
         var parser = new DOMParser();
         var result = parser.parseFromString(data, 'text/xml');
         var inlineSVG = result.getElementsByTagName("svg")[0];

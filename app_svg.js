@@ -391,6 +391,9 @@ function doChart(id) {
         document.getElementById(id + 'RandomDataButton').addEventListener('click', function () {
             doChart(id);
         });
+        document.getElementById(id + 'PngButton').addEventListener('click', function () {
+            chartInfo[id].chart.saveAsPng(id + '.png');
+        });
     } else {
         chartInfo[id].chart.setConfig(chartInfo[id].config);
     }
@@ -405,6 +408,9 @@ function dynamicChart() {
         document.getElementById('chartDynamicConfig').value = JSON.stringify(chartInfo['chartDynamic'].config, null, 2);
         document.getElementById('chartDynamicData').value = JSON.stringify(chartInfo['chartDynamic'].data, null, 2);
         document.getElementById('chartDynamicExecuteButton').addEventListener('click', dynamicChart);
+        document.getElementById('chartDynamicPngButton').addEventListener('click', function () {
+            chartInfo['chartDynamic'].chart.saveAsPng('chartDynamic.png');
+        });
     }
     
     const config = JSON.parse(document.getElementById('chartDynamicConfig').value);
