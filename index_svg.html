@@ -1,9 +1,11 @@
 <!doctype html>
-<html dir="rtl">
+<html dir="ltr">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
   <link rel="stylesheet" type="text/css" href="./app_svg.css">
 </head>
 
@@ -11,67 +13,127 @@
 
   <h1>SvgChart</h1>
 
-  <p>Small SVG charting library that provides line, bar, pie and donut charts.</p>
-
-  <h2>Getting started</h2>
-
-  <pre><code>// First create a new chart with configuration
-var myChart = new SvgChart(document.getElementById("myChartDiv"), {
-  chartType: 'line',
-  series: [
-    {
-      title: 'Cars',
-      id: 'cars'
-    },
-    {
-      title: 'Bikes',
-      id: 'bikes'
-    }
-  ]
+  <p>First create a SvgChart instance by setting a parent DOM element and a config object. Next display the chart by calling the chart() method with the data.</p>
+  <pre><code>var chart = new SvgChart(document.getElementById(id), {
+    chartType: 'line',
+    dir: document.documentElement.getAttribute('dir') || 'ltr',
+    title: 'My chart',
+    minValue: 0,
+    maxValue: 100,
+    series: [
+      {
+        id: 'train',
+        title: 'Train'
+      },
+      {
+        id: 'car',
+        title: 'Car'
+      }
+    ]
 });
-// And then display the data
-myChart.chart({
+chart.chart({
   series: {
-    cars: [12, 45, 67],
-    bikes: [33, 32, 23]
+    train: [20, 50, 70],
+    car: [30, 50, 60]
   },
   xAxis: {
     columns: ['mon', 'tue', 'wed']
   }
 });</code></pre>
 
-  <h2>Configuration</h2>
-  <dl>
-    <dt>chartType</dt>
-    <dd>Type of the chart, can be: 'line', 'bar', 'lineAndBar', 'pie', 'donut'</dd>
-    <dt>series</dt>
-    <dd>
-      The series without the values, each serie can be like:
-      <pre><code>{
-  title: 'Cars',
-  id: 'cars',
-  color: '#AACC33',
-  fillGradient: ['#000000', '#FFFFFF'],
-  pointColor: '#000000',
-  strokeColor: '#C0C0C0'
+<h2>Configuration</h2>
+
+<dl>
+  <dt data-type="string">chartType</dt>
+  <dd>
+    <p>Type of chart.</p>
+    <p>One of: line, bar, lineAndBar, pie, donut.</p>
+    <p>Default: line.</p>
+  </dd>
+  <dt data-type="string">dir</dt>
+  <dd>
+    <p>Writing direction.</p>
+    <p>One of: <code>ltr</code>, <code>rtl</code>.</p>
+    <p>Default: <code>ltr</code>.</p>
+  </dd>
+  <dt data-type="object">padding</dt>
+  <dd>
+    Object that describes the padding.<br>
+    Default: <pre class="my-hlj-no-padding-and-bg"><code>{
+  start: 40,
+  end: 20,
+  top: 100,
+  bottom: 40
 }</code></pre>
-    </dd>
+  </dd>
+  <dt data-type="string">backgroundColor</dt>
+  <dd>
+    Background color of the chart.<br>
+    Default: <code>'white'</code>
+  </dd>
 
-  </dl>
+  <dt data-type="bool">transition</dt>
+  <dd>
+    Whether the chart sould be faded into view.<br>
+    Default: <code>true</code>
+  </dd>
 
-  <h2>Data</h2>
-  <p>Examples of the data object that gets sent to the chart() function...</p>
+  <dt data-type="string">fontFamily</dt>
+  <dd>
+    <p>Font family</p>
+    <p>Allowed values are all family families. Examples are: <code>Arial</code> and <code>Verdana</code></p>
+    <p>Default: <code>sans-serif</code></p>
+  </dd>
+
+  <dt data-type="string">titleFontSize</dt>
+  <dd>
+    <p>Font size of label</p>
+    <p>Default: <code>normal</code></p>
+  </dd>
+
+  <dt data-type="string">titleColor</dt>
+  <dd>
+    <p>Color of title</p>
+    <p>Default: <code>black</code></p>
+  </dd>
+
+  <dt data-type="string">titleHorizontalPosition</dt>
+  <dd>
+    <p>Horizontal position of the title</p>
+    <p>One of: <code>center</code>, <code>start</code>, <code>end</code>.</p>
+    <p>Default: <code>center</code></p>
+  </dd>
+
+  <dt data-type="string">titleVerticalPosition</dt>
+  <dd>
+    <p>Vertical position of the title</p>
+    <p>One of: <code>center</code>, <code>top</code>, <code>bottom</code>.</p>
+    <p>Default: <code>top</code></p>
+  </dd>
+
+</dl>
 
   <h2>Examples</h2>
 
   <h3>Basic line chart</h3>
   <div class="chartRow">
-    <div class="chartDiv" id="chartBasicLine"></div>
-    <pre class="chartCodeConfig" id="chartBasicLineCodeConfig"><code></code></pre>
-    <pre class="chartCodeData" id="chartBasicLineCodeData"><code></code></pre>
     <div class="chartTools">
       <button class="chartToolsButton" id="chartBasicLineRandomDataButton">Update data</button>
       <button class="chartToolsButton" id="chartBasicLinePngButton">Download</button>
+    </div>
+    <div class="chartDiv" id="chartBasicLine"></div>
+    <pre class="chartCodeConfig" id="chartBasicLineCodeConfig"><code></code></pre>
+    <pre class="chartCodeData" id="chartBasicLineCodeData"><code></code></pre>
+  </div>
+
+  <h3>Basic line chart many values</h3>
+  <div class="chartRow">
+    <div class="chartDiv" id="chartBasicLineBig"></div>
+    <pre class="chartCodeConfig" id="chartBasicLineBigCodeConfig"><code></code></pre>
+    <pre class="chartCodeData" id="chartBasicLineBigCodeData"><code></code></pre>
+    <div class="chartTools">
+      <button class="chartToolsButton" id="chartBasicLineBigRandomDataButton">Update data</button>
+      <button class="chartToolsButton" id="chartBasicLineBigPngButton">Download</button>
     </div>
   </div>
 
@@ -154,6 +216,7 @@ myChart.chart({
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
   <script src="./svgchart/svg.js"></script>
   <script src="./app_svg.js"></script>
 </body>

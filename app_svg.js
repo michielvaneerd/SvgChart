@@ -1,3 +1,5 @@
+hljs.highlightAll();
+
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -22,6 +24,7 @@ var chartInfo = {
     chartBasicLine: {
         config: {
             chartType: 'line',
+            transition: false,
             dir: htmlDir,
             title: 'Basic line chart',
             minValue: 0,
@@ -49,16 +52,81 @@ var chartInfo = {
                 }
             ]
         },
-        //data: null,
-        data: {
-            series: {
-                train: [34, 56, 78, 34, 78, 89, 100],
-                car: [44, 23, 56, 23, 67, 34, 67],
-                //bike: Array(7).fill(1).map(item => getRandomIntInclusive(0, 100))
+        data: null,
+        // data: {
+        //     series: {
+        //         train: Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)),
+        //         car: Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)),
+        //     },
+        //     xAxis: {
+        //         columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+        //     }
+        // },
+        chart: null
+    },
+    chartBasicLineBig: {
+        config: {
+            chartType: 'line',
+            dir: htmlDir,
+            title: 'Basic line chart with many values',
+            minValue: 0,
+            maxValue: 100,
+            legendPosition: 'end',
+            xAxisTitle: 'Days',
+            //xAxisTitleBottom: 0,
+            yAxisTitle: 'Count',
+            //yAxisTitleStart: 40,
+            //legendTop: 60,
+            padding: {
+                end: 100,
+                start: 80,
+                top: 100,
+                bottom: 100
             },
-            xAxis: {
-                columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
-            }
+            series: [
+                {
+                    id: 'train',
+                    title: 'Train',
+                },
+                {
+                    id: 'car',
+                    title: 'Car',
+                },
+                {
+                    id: 'bike',
+                    title: 'Bike',
+                },
+            ],
+            xAxisLabelRotation: 45,
+            xAxisLabelTop: 30,
+            xAxisGridPadding: 20,
+            yAxisGridPadding: 20,
+            legendPosition: 'top',
+            legendTop: 60
+        },
+        dataFunc: function (id) {
+            const total = 31;
+            var numbers = [];
+            var serieData = {};
+            for (let i = 0; i < total; i++) {
+                numbers.push(getRandomNumbersSummedUpTo(4, 100));
+            };
+            chartInfo[id].config.series.forEach(function (serie) {
+                serieData[serie.id] = [];
+            });
+            numbers.forEach(function(numberArray) {
+                chartInfo[id].config.series.forEach(function (serie, serieIndex) {
+                    serieData[serie.id].push(numberArray[serieIndex]);
+                });
+            });
+            chartInfo[id].data = {
+                series: serieData,
+                xAxis: {
+                    columns: Array(total).fill(1).map(function(value, index) {
+                        return 'Item ' + (index + 1);
+                    })
+                }
+            };
         },
         chart: null
     },
@@ -383,9 +451,9 @@ function doChart(id) {
     if (chartInfo[id].onNewDataFunc) {
         chartInfo[id].onNewDataFunc();
     }
-    if (!chartInfo[id].data) {
+    //if (!chartInfo[id].data) {
         chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
-    }
+    //}
     if (chartInfo[id].chart === null) {
         chartInfo[id].chart = new SvgChart(document.getElementById(id), chartInfo[id].config);
         document.getElementById(id + 'RandomDataButton').addEventListener('click', function () {
@@ -425,6 +493,7 @@ function dynamicChart() {
 }
 
 doChart('chartBasicLine');
+doChart('chartBasicLineBig');
 doChart('chartBasicBar');
 doChart('chartStackedBar');
 doChart('chartBasicPie');

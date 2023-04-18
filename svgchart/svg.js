@@ -22,20 +22,30 @@
 
         // Global
         dir: 'ltr',
+        
         chartType: null,
+        
         padding: {
             start: defaultConstants.paddingStart,
             end: defaultConstants.paddingEnd,
             top: defaultConstants.paddingTop,
             bottom: defaultConstants.paddingBottom
         },
+        
         transition: true,
+        
         backgroundColor: 'white',
+        
         fontFamily: 'sans-serif',
+        
         titleFontSize: 'normal',
+        
         titleColor: 'black',
-        titleHorizontalPosition: 'middle',
-        titleVerticalPosition: 'top',
+        
+        titleHorizontalPosition: 'center', // center (default), start, end
+
+        titleVerticalPosition: 'center', // top (default), bottom, center
+        
         showValueOnFocus: true,
         focusedValueFill: 'black',
         focusedValueColor: 'white',
@@ -688,11 +698,11 @@
         var x, y, dominantBaseline, textAnchor = null;
         switch (this.config.titleHorizontalPosition) {
             case 'end':
-                x = this.width - 20;
+                x = this.width - defaultConstants.paddingNormal;
                 textAnchor = this.config.dir === 'ltr' ? 'end' : 'start';
                 break;
             case 'start':
-                x = 20;
+                x = defaultConstants.paddingNormal;
                 textAnchor = this.config.dir === 'ltr' ? 'start' : 'end';
                 break;
             default:
@@ -700,24 +710,24 @@
                 textAnchor = 'middle';
                 break;
         }
-        switch (this.config.titleHorizontalPosition) {
+        switch (this.config.titleVerticalPosition) {
             case 'center':
-                x = this.height / 2;
+                y = this.height / 2;
                 dominantBaseline = 'middle';
                 break;
             case 'bottom':
-                x = this.width - 20;
+                y = this.height - defaultConstants.paddingNormal;
                 dominantBaseline = 'auto';
                 break;
             default:
-                y = 20;
+                y = defaultConstants.paddingNormal;
                 dominantBaseline = 'hanging';
                 break;
         }
         this.svg.appendChild(el('text', {
             direction: this.config.dir,
             x: x,
-            y: 20,
+            y: defaultConstants.paddingNormal,
             textAnchor: textAnchor,
             dominantBaseline: dominantBaseline,
             fontFamily: this.config.fontFamily || '',
