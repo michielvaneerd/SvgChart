@@ -24,7 +24,7 @@ var chartInfo = {
     chartBasicLine: {
         config: {
             chartType: 'line',
-            transition: false,
+            transition: true,
             dir: htmlDir,
             title: 'Basic line chart',
             minValue: 0,
