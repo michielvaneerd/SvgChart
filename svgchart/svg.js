@@ -46,7 +46,7 @@
 
         titleHorizontalPosition: 'center', // center (default), start, end
 
-        titleVerticalPosition: 'center', // top (default), bottom, center
+        titleVerticalPosition: 'top', // top (default), bottom, center
 
         showValueOnFocus: true,
         focusedValueFill: 'black',
@@ -223,7 +223,7 @@
                 this.config.padding.left = this.config.padding.end;
                 this.config.padding.right = this.config.padding.start;
             }
-            this.svg.setAttribute('direction', this.config.direction);
+            this.svg.setAttribute('direction', this.config.dir);
 
             // First remove event listener from a previous config if they exist.
             if (this._listenersToRemoveAfterConfigChange && this._listenersToRemoveAfterConfigChange.length) {
@@ -1432,12 +1432,12 @@
     function dirForEach(chartInstance, items, dir, callback) {
         if (dir === 'ltr') {
             items.forEach(function (item, index) {
-                callback.call(chartInstance, item, index);
+                callback.call(chartInstance, item, index, items);
             }, chartInstance);
         } else {
             var maxIndex = items.length - 1;
             items.reduceRight(function (_, item, index) {
-                callback.call(chartInstance, item, maxIndex - index);
+                callback.call(chartInstance, item, maxIndex - index, items);
             }, null);
         }
     }

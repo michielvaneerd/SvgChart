@@ -2,44 +2,45 @@ body {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     max-width: 60rem;
     margin: 0 auto;
+    background-color: aliceblue;
 }
 
-.chartDiv,
-.chartCodeConfig,
-.chartCodeData {
+.chartDivsWrapper {
+    position: relative;
+    margin-top:1rem;
+}
+
+.chartDiv, .chartCodeConfig, .chartCodeData {
+    display: block;
+}
+
+.chartDivsWrapper textarea {
+    display: block;
     height: 25rem;
-    max-height: 25rem;
+    width:100%;
+}
+
+.chartDiv.my-hidden, .chartCodeConfig.my-hidden, .chartCodeData.my-hidden {
+    display: none;
+}
+
+.chartDiv {
+    height: 25rem;
+}
+
+button.my-active-tab {
+    background-color: black;
+    color: white;
 }
 
 .chartRow {
-    padding: .6rem;
-    margin-bottom: 2rem;
-    border: 1px solid salmon;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid midnightblue;
 }
 
-
-
-.chartCodeConfig {
-    overflow: auto;
-}
-
-.chartCodeConfig:before {
-    content: 'Config:';
-}
-
-.chartCodeData {
-    overflow: auto;
-}
-
-.chartCodeData:before {
-    content: 'Data:';
-}
-
-.chartCodeData:before,
-.chartCodeConfig:before {
-    display: block;
-    font-family: sans-serif;
-    font-weight: bold;
+.chartTools {
+    display: flex;
+    justify-content: space-between;
 }
 
 dt {
@@ -64,14 +65,32 @@ dt[data-type="bool"]::before {
     content: 'Bool ';
 }
 
-dd {
-    margin-bottom:1rem;
+dt[data-type="number"]::before {
+    content: 'Number ';
 }
+
+dt[data-required]::after {
+    content: ' *';
+}
+
+dd {
+    margin-bottom: 1rem;
+}
+
+pre {
+    position: relative;
+}
+
+pre button.my-copy-button {
+    position: absolute;
+    right:0;
+}
+
 pre.my-hlj-no-padding-and-bg {
-    margin:1rem 0;
+    margin: 1rem 0;
 }
 
 pre.my-hlj-no-padding-and-bg code.hljs {
     background-color: transparent;
-    padding:0;
+    padding: 0;
 }

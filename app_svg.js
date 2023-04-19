@@ -1,4 +1,4 @@
-hljs.highlightAll();
+//hljs.highlightAll();
 
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
@@ -325,38 +325,38 @@ var chartInfo = {
             xAxisGridColumns: true,
             lineCurved: false,
             onXAxisLabelGroupSelect: function(chart, index) {
-                var serieValues = [];
-                Object.keys(chart.data.series).forEach(function(serie) {
-                    serieValues.push(`${serie} = ${chart.data.series[serie][index]}`);
-                });
-                document.getElementById('chartCustomCodeInfo').innerHTML = `Clicked on '${chart.data.xAxis.columns[index]}' with values: ${serieValues.join(", ")}`;
-            },
+        var serieValues = [];
+        Object.keys(chart.data.series).forEach(function(serie) {
+            serieValues.push(`${serie} = ${chart.data.series[serie][index]}`);
+        });
+        document.getElementById('chartCustomCodeInfo').innerHTML = `Clicked on '${chart.data.xAxis.columns[index]}' with values: ${serieValues.join(", ")}`;
+    },
             drawBefore: function(chart, groupNode) {
-                groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.left,
-                    y: chart.config.padding.top,
-                    width: chart.chartWidth,
-                    height: chart.lineAndBarValueHeight * 20,
-                    fill: 'darkgreen',
-                    fillOpacity: 0.2
-                }));
-                groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.left,
-                    y: chart.config.padding.top + (chart.lineAndBarValueHeight * 20),
-                    width: chart.chartWidth,
-                    height: chart.lineAndBarValueHeight * 40,
-                    fill: 'orange',
-                    fillOpacity: 0.2
-                }));
-                groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.left,
-                    y: chart.config.padding.top + (chart.lineAndBarValueHeight * 60),
-                    width: chart.chartWidth,
-                    height: chart.lineAndBarValueHeight * 40,
-                    fill: 'red',
-                    fillOpacity: 0.2
-                }));
-            },
+        groupNode.appendChild(chart.el('rect', {
+            x: chart.config.padding.left,
+            y: chart.config.padding.top,
+            width: chart.chartWidth,
+            height: chart.lineAndBarValueHeight * 20,
+            fill: 'darkgreen',
+            fillOpacity: 0.2
+        }));
+        groupNode.appendChild(chart.el('rect', {
+            x: chart.config.padding.left,
+            y: chart.config.padding.top + (chart.lineAndBarValueHeight * 20),
+            width: chart.chartWidth,
+            height: chart.lineAndBarValueHeight * 40,
+            fill: 'orange',
+            fillOpacity: 0.2
+        }));
+        groupNode.appendChild(chart.el('rect', {
+            x: chart.config.padding.left,
+            y: chart.config.padding.top + (chart.lineAndBarValueHeight * 60),
+            width: chart.chartWidth,
+            height: chart.lineAndBarValueHeight * 40,
+            fill: 'red',
+            fillOpacity: 0.2
+        }));
+    },
             series: [
                 {
                     id: 'train',
@@ -430,7 +430,7 @@ var chartInfo = {
 };
 
 Function.prototype.toJSON = function() {
-    return this.toString().replace(/\n/g, "<br>");
+    return this.toString().replace(/\n/g, "<br>").replace('function(', "FUNC[");
 }
 
 function setChartData(id) {
@@ -445,6 +445,31 @@ function setChartData(id) {
             columns: isPieOrDonut ? ['mon'] : ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
         }
     };
+}
+
+function stringifyObject(ob) {
+    let s = [];
+    Object.keys(ob).forEach(function(key) {
+        const value = ob[key];
+        switch (typeof value) {
+            case 'object':
+                s.push("    " + '"' + key + '": ' + JSON.stringify(value));
+                break;
+            case 'number':
+                s.push("    " + '"' + key + '": ' + value);
+                break;
+            case 'string':
+                s.push("    " + '"' + key + '": "' + value + '"');
+                break;
+            case 'function':
+                s.push("    " + '"' + key + '": ' + value.toString());
+                break;
+            case 'boolean':
+                s.push("    " + '"' + key + '": ' + value);
+                break;
+        }
+    });
+    return "{\n" + s.join(",\n") + "\n}";
 }
 
 function doChart(id) {
@@ -466,23 +491,32 @@ function doChart(id) {
         chartInfo[id].chart.setConfig(chartInfo[id].config);
     }
     chartInfo[id].chart.chart(chartInfo[id].data);
-    document.getElementById(id + 'CodeConfig').innerHTML = JSON.stringify(chartInfo[id].config, null, 2);
-    document.getElementById(id + 'CodeData').innerHTML = JSON.stringify(chartInfo[id].data, null, 2);
+    // var conf = chartInfo[id].config;
+    // if (conf.drawBefore) {
+    //     //console.log(conf.drawBefore.toString());
+    //     stringifyObject(conf);
+    // }
+    var codeConfig = document.getElementById(id + 'CodeConfig').querySelector('code');
+    var codeData = document.getElementById(id + 'CodeData').querySelector('code');
+    codeConfig.innerHTML = stringifyObject(chartInfo[id].config);
+    codeData.innerHTML = JSON.stringify(chartInfo[id].data, null, 2);
+    hljs.highlightElement(codeConfig);
+    hljs.highlightElement(codeData);
 }
 
 function dynamicChart() {
     
     if (!chartInfo['chartDynamic'].chart) {
-        document.getElementById('chartDynamicConfig').value = JSON.stringify(chartInfo['chartDynamic'].config, null, 2);
-        document.getElementById('chartDynamicData').value = JSON.stringify(chartInfo['chartDynamic'].data, null, 2);
+        document.getElementById('chartDynamicCodeConfig').value = JSON.stringify(chartInfo['chartDynamic'].config, null, 2);
+        document.getElementById('chartDynamicCodeData').value = JSON.stringify(chartInfo['chartDynamic'].data, null, 2);
         document.getElementById('chartDynamicExecuteButton').addEventListener('click', dynamicChart);
         document.getElementById('chartDynamicPngButton').addEventListener('click', function () {
             chartInfo['chartDynamic'].chart.saveAsPng('chartDynamic.png');
         });
     }
     
-    const config = JSON.parse(document.getElementById('chartDynamicConfig').value);
-    const data = JSON.parse(document.getElementById('chartDynamicData').value);
+    const config = JSON.parse(document.getElementById('chartDynamicCodeConfig').value);
+    const data = JSON.parse(document.getElementById('chartDynamicCodeData').value);
 
     if (!chartInfo['chartDynamic'].chart) {
         chartInfo['chartDynamic'].chart = new SvgChart(document.getElementById('chartDynamic'), config);
@@ -501,3 +535,46 @@ doChart('chartBasicDonut');
 doChart('chartBarAndLine');
 doChart('chartCustom');
 dynamicChart();
+
+function getParent(el, parentTagName) {
+    let parent = el;
+    while (parent && parent.tagName.toLowerCase() !== parentTagName) {
+        parent = parent.parentNode;
+    }
+    return parent;
+}
+
+document.documentElement.addEventListener('click', function(e) {
+    const target = e.target;
+    if (target.dataset.toggle) {
+        const targetId = target.dataset.targetId;
+        const toggle = target.dataset.toggle;
+        switch (toggle) {
+            case 'chart':
+                document.getElementById(targetId).classList.remove('my-hidden');
+                document.getElementById(targetId + 'CodeConfig').classList.add('my-hidden');
+                document.getElementById(targetId + 'CodeData').classList.add('my-hidden');
+                break;
+            case 'config':
+                document.getElementById(targetId).classList.add('my-hidden');
+                document.getElementById(targetId + 'CodeConfig').classList.remove('my-hidden');
+                document.getElementById(targetId + 'CodeData').classList.add('my-hidden');
+                break;
+            case 'data':
+                document.getElementById(targetId).classList.add('my-hidden');
+                document.getElementById(targetId + 'CodeConfig').classList.add('my-hidden');
+                document.getElementById(targetId + 'CodeData').classList.remove('my-hidden');
+                break;
+        }
+        document.querySelectorAll('button[data-target-id="' + targetId + '"]').forEach(function(el) {
+            if (el === target) {
+                el.classList.add('my-active-tab');
+            } else {
+                el.classList.remove('my-active-tab');
+            }
+        });
+    } else if (target.classList.contains('my-copy-button')) {
+        var pre = getParent(target, 'pre');
+        navigator.clipboard.writeText(pre.querySelector('code').innerText);
+    }
+});
