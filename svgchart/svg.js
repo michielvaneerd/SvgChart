@@ -77,6 +77,8 @@
         textAnchorXAxisLabels: 'middle', // If you want X axis labels that are vertical (xAxisLabelRotation = 90), then this should be 'start' if you want them aligned to the x axis.
         xAxisLabelTop: 10,
         xAxisLabelRotation: null,
+        xAxisStep: 1, // how many steps between x axis grid lines
+        xAxisLabelStep: 1, // how many steps between labels x axis
 
         // Y axis
         yAxisTitle: null,
@@ -86,7 +88,8 @@
         yAxisGridLineDashArray: '1,1',
         yAxisLabelColor: '#A0A0A0',
         yAxisTitleColor: '#A0A0A0',
-        yAxisStep: 10,
+        yAxisStep: 10, // how many steps between y axis grid lines
+        yAxisLabelStep: 10, // how many steps between labels y axis
         yAxis: true,
         yAxisGrid: true,
         yAxisLabels: true,
@@ -896,7 +899,9 @@
             dirForEach(this, this.data.xAxis.columns, this.config.dir, function (colValue, colIndex) {
                 if (this.config.xAxisGrid) {
                     const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
-                    this.#addXAxisLine(currentXAxisLineGroupElement, x);
+                    if (colIndex === 0 || ((colIndex + 0) % this.config.xAxisStep === 0)) {
+                        this.#addXAxisLine(currentXAxisLineGroupElement, x);
+                    }
                     if (this.config.xAxisGridColumnsSelectable) {
                         currentXAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
                             x: x,
@@ -909,7 +914,7 @@
                         }));
                     }
                 }
-                if (this.config.xAxisLabels) {
+                if (this.config.xAxisLabels && ((colIndex + 0) % this.config.xAxisLabelStep === 0)) {
                     var xlg = el('g', {
                         transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
                     });
@@ -1012,9 +1017,10 @@
                 className: prefixed('y-axis-group')
             });
             var currentYAxisValue = this.config.minValue;
-            while (currentYAxisValue <= this.config.maxValue) {
-                var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (currentYAxisValue * this.lineAndBarValueHeight);
-                if (this.config.yAxisGrid) {
+            var currentYAxisLabelValue = this.config.minValue;
+            while (currentYAxisValue <= this.config.maxValue || currentYAxisLabelValue <= this.config.maxValue) {
+                if (this.config.yAxisGrid && currentYAxisValue <= this.config.maxValue) {
+                    let y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (currentYAxisValue * this.lineAndBarValueHeight);
                     gYAxis.appendChild(el('line', {
                         x1: this.config.padding.left,
                         y1: y,
@@ -1026,7 +1032,9 @@
                         strokeDasharray: this.config.yAxisGridLineDashArray || '',
                     }));
                 }
-                if (this.config.yAxisLabels) {
+                currentYAxisValue += this.config.yAxisStep;
+                if (this.config.yAxisLabels && currentYAxisLabelValue <= this.config.maxValue) {
+                    let y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (currentYAxisLabelValue * this.lineAndBarValueHeight);
                     gYAxis.appendChild(el('text', {
                         direction: this.config.dir,
                         x: this.config.dir === 'ltr' ? (this.config.padding.left - 10) : (this.config.padding.left + this.chartWidth + 10),
@@ -1037,9 +1045,9 @@
                         fontSize: this.config.axisLabelFontSize || '',
                         className: prefixed('y-axis-label'),
                         fill: this.config.yAxisLabelColor || ''
-                    }, document.createTextNode(currentYAxisValue)));
+                    }, document.createTextNode(currentYAxisLabelValue)));
                 }
-                currentYAxisValue += this.config.yAxisStep;
+                currentYAxisLabelValue += this.config.yAxisLabelStep;
             }
             this.svg.appendChild(gYAxis);
         }

@@ -12,6 +12,8 @@
 
     <h1>SvgChart</h1>
 
+    <p>SVG Chart library. Below you'll find the documentation. For examples see the <a href="./index.html">examples</a> page.</p>
+
     <p>First create a SvgChart instance by setting a parent DOM element and a config object. Next display the chart by
         calling the chart() method with the data.</p>
     <pre><code>var chart = new SvgChart(document.getElementById(id), {
@@ -271,112 +273,7 @@ chart.chart({
 
     </dl>
 
-    <h2>Examples</h2>
-
-    <h3>Basic line chart</h3>
-    <div class="chartRow">
-        <div class="chartTools">
-            <button class="chartToolsButton" id="chartBasicLineRandomDataButton">Update data</button>
-            <button class="chartToolsButton" id="chartBasicLinePngButton">Download</button>
-        </div>
-        <div class="chartDiv" id="chartBasicLine"></div>
-        <pre class="chartCodeConfig" id="chartBasicLineCodeConfig"><code></code></pre>
-        <pre class="chartCodeData" id="chartBasicLineCodeData"><code></code></pre>
-    </div>
-
-    <h3>Basic line chart many values</h3>
-    <div class="chartRow">
-        <div class="chartDiv" id="chartBasicLineBig"></div>
-        <pre class="chartCodeConfig" id="chartBasicLineBigCodeConfig"><code></code></pre>
-        <pre class="chartCodeData" id="chartBasicLineBigCodeData"><code></code></pre>
-        <div class="chartTools">
-            <button class="chartToolsButton" id="chartBasicLineBigRandomDataButton">Update data</button>
-            <button class="chartToolsButton" id="chartBasicLineBigPngButton">Download</button>
-        </div>
-    </div>
-
-    <h3>Basic bar chart</h3>
-    <div class="chartRow">
-        <div class="chartDiv" id="chartBasicBar"></div>
-        <pre class="chartCodeConfig" id="chartBasicBarCodeConfig"><code></code></pre>
-        <pre class="chartCodeData" id="chartBasicBarCodeData"><code></code></pre>
-        <div class="chartTools">
-            <button class="chartToolsButton" id="chartBasicBarRandomDataButton">Update data</button>
-            <button class="chartToolsButton" id="chartBasicBarPngButton">Download</button>
-        </div>
-    </div>
-
-    <h3>Stacked bar chart</h3>
-    <div class="chartRow">
-        <div class="chartDiv" id="chartStackedBar"></div>
-        <pre class="chartCodeConfig" id="chartStackedBarCodeConfig"><code></code></pre>
-        <pre class="chartCodeData" id="chartStackedBarCodeData"><code></code></pre>
-        <div class="chartTools">
-            <button class="chartToolsButton" id="chartStackedBarRandomDataButton">Update data</button>
-            <button class="chartToolsButton" id="chartStackedBarPngButton">Download</button>
-        </div>
-    </div>
-
-    <h3>Bar and line chart</h3>
-    <div class="chartRow">
-        <div class="chartDiv" id="chartBarAndLine"></div>
-        <pre class="chartCodeConfig" id="chartBarAndLineCodeConfig"><code></code></pre>
-        <pre class="chartCodeData" id="chartBarAndLineCodeData"><code></code></pre>
-        <div class="chartTools">
-            <button class="chartToolsButton" id="chartBarAndLineRandomDataButton">Update data</button>
-            <button class="chartToolsButton" id="chartBarAndLinePngButton">Download</button>
-        </div>
-    </div>
-
-    <h3>Basic pie chart</h3>
-    <div class="chartRow">
-        <div class="chartDiv" id="chartBasicPie"></div>
-        <pre class="chartCodeConfig" id="chartBasicPieCodeConfig"><code></code></pre>
-        <pre class="chartCodeData" id="chartBasicPieCodeData"><code></code></pre>
-        <div class="chartTools">
-            <button class="chartToolsButton" id="chartBasicPieRandomDataButton">Update data</button>
-            <button class="chartToolsButton" id="chartBasicPiePngButton">Download</button>
-        </div>
-    </div>
-
-
-    <h3>Basic donut chart</h3>
-    <div class="chartRow">
-        <div class="chartDiv" id="chartBasicDonut"></div>
-        <pre class="chartCodeConfig" id="chartBasicDonutCodeConfig"><code></code></pre>
-        <pre class="chartCodeData" id="chartBasicDonutCodeData"><code></code></pre>
-        <div class="chartTools">
-            <button class="chartToolsButton" id="chartBasicDonutRandomDataButton">Update data</button>
-            <button class="chartToolsButton" id="chartBasicDonutPngButton">Download</button>
-        </div>
-    </div>
-
-    <h3>Custom chart</h3>
-    <div class="chartRow">
-        <div class="chartDiv" id="chartCustom"></div>
-        <pre class="chartCodeConfig" id="chartCustomCodeConfig"><code></code></pre>
-        <pre class="chartCodeData" id="chartCustomCodeData"><code></code></pre>
-        <div class="chartTools">
-            <div id="chartCustomCodeInfo">...</div><br>
-            <button class="chartToolsButton" id="chartCustomRandomDataButton">Update data</button>
-            <button class="chartToolsButton" id="chartCustomPngButton">Download</button>
-        </div>
-    </div>
-
-    <h3>Dynamic chart</h3>
-    <div class="chartRow">
-        <div class="chartDiv" id="chartDynamic"></div>
-        <textarea class="chartCodeConfig" id="chartDynamicConfig"></textarea>
-        <textarea class="chartCodeData" id="chartDynamicData"></textarea>
-        <div class="chartTools">
-            <button class="chartToolsButton" id="chartDynamicExecuteButton">Execute chart</button>
-            <button class="chartToolsButton" id="chartDynamicPngButton">Download</button>
-        </div>
-    </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script src="./svgchart/svg.js"></script>
-    <script src="./app_svg.js"></script>
 </body>
 
 </html>

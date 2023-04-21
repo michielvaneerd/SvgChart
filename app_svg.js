@@ -73,8 +73,15 @@ var chartInfo = {
             maxValue: 100,
             legendPosition: 'end',
             xAxisTitle: 'Days',
+            yAxisStep: 10, // real value step
+            yAxisLabelStep: 20,
+            xAxisStep: 2, // step between colums (so 2 means display each second step from first one on)
+            xAxisLabelStep: 10,
+            lineCurved: false,
             //xAxisTitleBottom: 0,
             yAxisTitle: 'Count',
+            points: false,
+            lineWidth: 1,
             //yAxisTitleStart: 40,
             //legendTop: 60,
             padding: {
@@ -85,16 +92,14 @@ var chartInfo = {
             },
             series: [
                 {
-                    id: 'train',
-                    title: 'Train',
-                },
-                {
                     id: 'car',
                     title: 'Car',
+                    color: 'blue'
                 },
                 {
                     id: 'bike',
                     title: 'Bike',
+                    color: 'green'
                 },
             ],
             xAxisLabelRotation: 45,
@@ -105,7 +110,7 @@ var chartInfo = {
             legendTop: 60
         },
         dataFunc: function (id) {
-            const total = 31;
+            const total = 100;
             var numbers = [];
             var serieData = {};
             for (let i = 0; i < total; i++) {
@@ -114,7 +119,7 @@ var chartInfo = {
             chartInfo[id].config.series.forEach(function (serie) {
                 serieData[serie.id] = [];
             });
-            numbers.forEach(function(numberArray) {
+            numbers.forEach(function (numberArray) {
                 chartInfo[id].config.series.forEach(function (serie, serieIndex) {
                     serieData[serie.id].push(numberArray[serieIndex]);
                 });
@@ -122,7 +127,7 @@ var chartInfo = {
             chartInfo[id].data = {
                 series: serieData,
                 xAxis: {
-                    columns: Array(total).fill(1).map(function(value, index) {
+                    columns: Array(total).fill(1).map(function (value, index) {
                         return 'Item ' + (index + 1);
                     })
                 }
@@ -197,7 +202,7 @@ var chartInfo = {
             chartInfo[id].config.series.forEach(function (serie) {
                 serieData[serie.id] = [];
             });
-            numbers.forEach(function(numberArray) {
+            numbers.forEach(function (numberArray) {
                 chartInfo[id].config.series.forEach(function (serie, serieIndex) {
                     serieData[serie.id].push(numberArray[serieIndex]);
                 });
@@ -324,39 +329,39 @@ var chartInfo = {
             xAxisGridColumnsSelectableColor: 'red',
             xAxisGridColumns: true,
             lineCurved: false,
-            onXAxisLabelGroupSelect: function(chart, index) {
-        var serieValues = [];
-        Object.keys(chart.data.series).forEach(function(serie) {
-            serieValues.push(`${serie} = ${chart.data.series[serie][index]}`);
-        });
-        document.getElementById('chartCustomCodeInfo').innerHTML = `Clicked on '${chart.data.xAxis.columns[index]}' with values: ${serieValues.join(", ")}`;
-    },
-            drawBefore: function(chart, groupNode) {
-        groupNode.appendChild(chart.el('rect', {
-            x: chart.config.padding.left,
-            y: chart.config.padding.top,
-            width: chart.chartWidth,
-            height: chart.lineAndBarValueHeight * 20,
-            fill: 'darkgreen',
-            fillOpacity: 0.2
-        }));
-        groupNode.appendChild(chart.el('rect', {
-            x: chart.config.padding.left,
-            y: chart.config.padding.top + (chart.lineAndBarValueHeight * 20),
-            width: chart.chartWidth,
-            height: chart.lineAndBarValueHeight * 40,
-            fill: 'orange',
-            fillOpacity: 0.2
-        }));
-        groupNode.appendChild(chart.el('rect', {
-            x: chart.config.padding.left,
-            y: chart.config.padding.top + (chart.lineAndBarValueHeight * 60),
-            width: chart.chartWidth,
-            height: chart.lineAndBarValueHeight * 40,
-            fill: 'red',
-            fillOpacity: 0.2
-        }));
-    },
+            onXAxisLabelGroupSelect: function (chart, index) {
+                var serieValues = [];
+                Object.keys(chart.data.series).forEach(function (serie) {
+                    serieValues.push(`${serie} = ${chart.data.series[serie][index]}`);
+                });
+                document.getElementById('chartCustomCodeInfo').innerHTML = `Clicked on '${chart.data.xAxis.columns[index]}' with values: ${serieValues.join(", ")}`;
+            },
+            drawBefore: function (chart, groupNode) {
+                groupNode.appendChild(chart.el('rect', {
+                    x: chart.config.padding.left,
+                    y: chart.config.padding.top,
+                    width: chart.chartWidth,
+                    height: chart.lineAndBarValueHeight * 20,
+                    fill: 'darkgreen',
+                    fillOpacity: 0.2
+                }));
+                groupNode.appendChild(chart.el('rect', {
+                    x: chart.config.padding.left,
+                    y: chart.config.padding.top + (chart.lineAndBarValueHeight * 20),
+                    width: chart.chartWidth,
+                    height: chart.lineAndBarValueHeight * 40,
+                    fill: 'orange',
+                    fillOpacity: 0.2
+                }));
+                groupNode.appendChild(chart.el('rect', {
+                    x: chart.config.padding.left,
+                    y: chart.config.padding.top + (chart.lineAndBarValueHeight * 60),
+                    width: chart.chartWidth,
+                    height: chart.lineAndBarValueHeight * 40,
+                    fill: 'red',
+                    fillOpacity: 0.2
+                }));
+            },
             series: [
                 {
                     id: 'train',
@@ -374,7 +379,7 @@ var chartInfo = {
         },
         data: null,
         chart: null,
-        onNewDataFunc: function() {
+        onNewDataFunc: function () {
             document.getElementById('chartCustomCodeInfo').innerHTML = 'Click a day to see details! ';
         }
     },
@@ -429,7 +434,7 @@ var chartInfo = {
     }
 };
 
-Function.prototype.toJSON = function() {
+Function.prototype.toJSON = function () {
     return this.toString().replace(/\n/g, "<br>").replace('function(', "FUNC[");
 }
 
@@ -449,7 +454,7 @@ function setChartData(id) {
 
 function stringifyObject(ob) {
     let s = [];
-    Object.keys(ob).forEach(function(key) {
+    Object.keys(ob).forEach(function (key) {
         const value = ob[key];
         switch (typeof value) {
             case 'object':
@@ -477,7 +482,7 @@ function doChart(id) {
         chartInfo[id].onNewDataFunc();
     }
     //if (!chartInfo[id].data) {
-        chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
+    chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
     //}
     if (chartInfo[id].chart === null) {
         chartInfo[id].chart = new SvgChart(document.getElementById(id), chartInfo[id].config);
@@ -504,8 +509,16 @@ function doChart(id) {
     hljs.highlightElement(codeData);
 }
 
+function fix(obj) {
+    for (var property in obj) {
+        if (obj.hasOwnProperty(property)) {
+            obj[property] = eval("(" + obj[property] + ")");
+        }
+    }
+}
+
 function dynamicChart() {
-    
+
     if (!chartInfo['chartDynamic'].chart) {
         document.getElementById('chartDynamicCodeConfig').value = JSON.stringify(chartInfo['chartDynamic'].config, null, 2);
         document.getElementById('chartDynamicCodeData').value = JSON.stringify(chartInfo['chartDynamic'].data, null, 2);
@@ -514,9 +527,9 @@ function dynamicChart() {
             chartInfo['chartDynamic'].chart.saveAsPng('chartDynamic.png');
         });
     }
-    
-    const config = JSON.parse(document.getElementById('chartDynamicCodeConfig').value);
-    const data = JSON.parse(document.getElementById('chartDynamicCodeData').value);
+
+    const config = eval("(" + document.getElementById('chartDynamicCodeConfig').value + ")"); // note that JSON.parse doesn't work with functions as values.
+    const data = eval("(" + document.getElementById('chartDynamicCodeData').value + ")");
 
     if (!chartInfo['chartDynamic'].chart) {
         chartInfo['chartDynamic'].chart = new SvgChart(document.getElementById('chartDynamic'), config);
@@ -544,7 +557,7 @@ function getParent(el, parentTagName) {
     return parent;
 }
 
-document.documentElement.addEventListener('click', function(e) {
+document.documentElement.addEventListener('click', function (e) {
     const target = e.target;
     if (target.dataset.toggle) {
         const targetId = target.dataset.targetId;
@@ -566,7 +579,7 @@ document.documentElement.addEventListener('click', function(e) {
                 document.getElementById(targetId + 'CodeData').classList.remove('my-hidden');
                 break;
         }
-        document.querySelectorAll('button[data-target-id="' + targetId + '"]').forEach(function(el) {
+        document.querySelectorAll('button[data-target-id="' + targetId + '"]').forEach(function (el) {
             if (el === target) {
                 el.classList.add('my-active-tab');
             } else {
