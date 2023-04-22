@@ -12,7 +12,8 @@
 
     <h1>SvgChart</h1>
 
-    <p>SVG Chart library. Below you'll find the documentation. For examples see the <a href="./index.html">examples</a> page.</p>
+    <p>SVG Chart library. Below you'll find the documentation. For examples see the <a href="./index.html">examples</a>
+        page.</p>
 
     <p>First create a SvgChart instance by setting a parent DOM element and a config object. Next display the chart by
         calling the chart() method with the data.</p>
@@ -91,6 +92,38 @@ chart.chart({
             <p>Allowed values are all family families. Examples are: <code>Arial</code> and <code>Verdana</code></p>
             <p>Default: <code>sans-serif</code></p>
         </dd>
+
+        <dt data-type="bool">showValueOnFocus</dt>
+        <dd>
+            <p>Whether the value should be displayed in a box after focussing a segment.</p>
+            <p>Default: <code>true</code></p>
+        </dd>
+
+        <dt data-type="string">focusedValueFill</dt>
+        <dd>
+            <p>Fill color of focused value box</p>
+            <p>Default: <code>black</code></p>
+        </dd>
+
+        <dt data-type="string">focusedValueColor</dt>
+        <dd>
+            <p>Color of focused value text</p>
+            <p>Default: <code>white</code></p>
+        </dd>
+
+        <dt data-type="number" data-required>maxValue</dt>
+        <dd>
+            <p>Maximum value for Y axis</p>
+            <p>Default: <code>null</code></p>
+            <p>Required for: <code>line</code> and <code>bar</code> charts</p>
+        </dd>
+
+        <dt data-type="number" data-required>minValue</dt>
+        <dd>
+            <p>Minimum value for Y axis</p>
+            <p>Default: <code>null</code></p>
+        </dd>
+
     </dl>
 
     <h3>Title</h3>
@@ -124,6 +157,48 @@ chart.chart({
 
     <h3>Axis</h3>
 
+    <dt data-type="string">axisTitleFontSize</dt>
+    <dd>
+        <p>Font size of Y and X axis title</p>
+        <p>Default: <code>smaller</code></p>
+    </dd>
+
+    <dt data-type="string">axisLabelFontSize</dt>
+    <dd>
+        <p>Font size of Y and X axis labels.</p>
+        <p>Default: <code>small</code></p>
+    </dd>
+
+    <dt data-type="string"></dt>
+        <dd>
+            <p></p>
+            <p>Default: <code></code></p>
+        </dd>
+
+        <dt data-type="string"></dt>
+        <dd>
+            <p></p>
+            <p>Default: <code></code></p>
+        </dd>
+
+        <dt data-type="string"></dt>
+        <dd>
+            <p></p>
+            <p>Default: <code></code></p>
+        </dd>
+
+        <dt data-type="string"></dt>
+        <dd>
+            <p></p>
+            <p>Default: <code></code></p>
+        </dd>
+
+        <dt data-type="string"></dt>
+        <dd>
+            <p></p>
+            <p>Default: <code></code></p>
+        </dd>
+
     <h3>Legend</h3>
 
     <h3>Line and bar charts</h3>
@@ -137,79 +212,15 @@ chart.chart({
     <dl>
 
 
+
+
+
+
+
+
+
+
         
-
-        <dt data-type="bool">showValueOnFocus</dt>
-        <dd>
-            <p>Whether the value should be displayed in a box after focussing a bar or point on a line.</p>
-            <p>Default: <code>true</code></p>
-        </dd>
-
-        <dt data-type="string">focusedValueFill</dt>
-        <dd>
-            <p>Fill color of focused value box</p>
-            <p>Default: <code>black</code></p>
-        </dd>
-
-        <dt data-type="string">focusedValueColor</dt>
-        <dd>
-            <p>Color of focused value text</p>
-            <p>Default: <code>white</code></p>
-        </dd>
-
-        <dt data-type="number" data-required>maxValue</dt>
-        <dd>
-            <p>Maximum value for Y axis</p>
-            <p>Default: <code>null</code></p>
-        </dd>
-
-        <dt data-type="number" data-required>minValue</dt>
-        <dd>
-            <p>Minimum value for Y axis</p>
-            <p>Default: <code>null</code></p>
-        </dd>
-
-        <dt data-type="string">axisTitleFontSize</dt>
-        <dd>
-            <p>Font size of Y and X axis title</p>
-            <p>Default: <code>smaller</code></p>
-        </dd>
-
-        <dt data-type="string">axisLabelFontSize</dt>
-        <dd>
-            <p>Font size of Y and X axis labels.</p>
-            <p>Default: <code>small</code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
 
         <dt data-type="string"></dt>
         <dd>

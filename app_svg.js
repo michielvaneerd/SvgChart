@@ -452,6 +452,44 @@ function setChartData(id) {
     };
 }
 
+/**
+ * Rewrites CSV to data object.
+ * Format: first row: columns (first column is empty)
+ * second and next rows: first column id of serie and next columns are values
+ * ,mon,tue,wed,thu,fri,sat,sun
+ * train,45,98,45,45,56,67,89
+ * car,55,4,7,6,8,9,0
+ * 
+ */
+function csvToData(csv, id) {
+
+    let data = {
+        series: {},
+        xAxis: {
+            columns: null
+        }
+    };
+
+    const lines = csv.split("\n");
+
+    lines.forEach(function(line, lineIndex) {
+
+        const columns = line.split(',');
+        const firstColumn = columns.shift();
+
+        if (lineIndex === 0) {
+            
+            data.xAxis.columns = columns;
+            return;
+        }
+
+        data.series[firstColumn] = columns;
+        
+    });
+
+    chartInfo[id].data = data;
+}
+
 function stringifyObject(ob) {
     let s = [];
     Object.keys(ob).forEach(function (key) {
@@ -482,7 +520,12 @@ function doChart(id) {
         chartInfo[id].onNewDataFunc();
     }
     //if (!chartInfo[id].data) {
-    chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
+    var csvArea = document.getElementById(id + 'CodeDataCsv');
+    if (csvArea && csvArea.value) {
+        csvToData(csvArea.value, id);
+    } else {
+        chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
+    }
     //}
     if (chartInfo[id].chart === null) {
         chartInfo[id].chart = new SvgChart(document.getElementById(id), chartInfo[id].config);
@@ -507,14 +550,6 @@ function doChart(id) {
     codeData.innerHTML = JSON.stringify(chartInfo[id].data, null, 2);
     hljs.highlightElement(codeConfig);
     hljs.highlightElement(codeData);
-}
-
-function fix(obj) {
-    for (var property in obj) {
-        if (obj.hasOwnProperty(property)) {
-            obj[property] = eval("(" + obj[property] + ")");
-        }
-    }
 }
 
 function dynamicChart() {
@@ -561,22 +596,32 @@ document.documentElement.addEventListener('click', function (e) {
     const target = e.target;
     if (target.dataset.toggle) {
         const targetId = target.dataset.targetId;
+        const csvEl = document.getElementById(targetId + 'CodeDataCsv');
         const toggle = target.dataset.toggle;
         switch (toggle) {
             case 'chart':
                 document.getElementById(targetId).classList.remove('my-hidden');
                 document.getElementById(targetId + 'CodeConfig').classList.add('my-hidden');
                 document.getElementById(targetId + 'CodeData').classList.add('my-hidden');
+                if (csvEl) csvEl.classList.add('my-hidden');
                 break;
             case 'config':
                 document.getElementById(targetId).classList.add('my-hidden');
                 document.getElementById(targetId + 'CodeConfig').classList.remove('my-hidden');
                 document.getElementById(targetId + 'CodeData').classList.add('my-hidden');
+                if (csvEl) csvEl.classList.add('my-hidden');
                 break;
             case 'data':
                 document.getElementById(targetId).classList.add('my-hidden');
                 document.getElementById(targetId + 'CodeConfig').classList.add('my-hidden');
                 document.getElementById(targetId + 'CodeData').classList.remove('my-hidden');
+                if (csvEl) csvEl.classList.add('my-hidden');
+                break;
+            case 'data-csv':
+                document.getElementById(targetId).classList.add('my-hidden');
+                document.getElementById(targetId + 'CodeConfig').classList.add('my-hidden');
+                document.getElementById(targetId + 'CodeData').classList.add('my-hidden');
+                if (csvEl) csvEl.classList.remove('my-hidden');
                 break;
         }
         document.querySelectorAll('button[data-target-id="' + targetId + '"]').forEach(function (el) {

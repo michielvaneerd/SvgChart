@@ -1,11 +1,22 @@
 (function () {
 
+    // Note: private members should be commented with //, public members with jsdoc.
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Private constants
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // Some CSS rules are added to the HEAD tag. This flag makes sure this only happens once.
     let cssAdded = false;
 
+    /**
+     * Default constant values.
+     * @constant
+     * @private
+     * @memberof SvgChart
+     * @type {object}
+     * @default
+     */
     const defaultConstants = {
         paddingStart: 40,
         paddingEnd: 20,
@@ -13,113 +24,8 @@
         paddingBottom: 40,
         paddingNormal: 20,
         legendWidth: 10,
-        // Padding of the current focussed value element (the rect with current value you see when focussing a specific point in the chart).
+        // Padding of the currently focussed value element
         focusedValuePadding: 6
-    };
-
-    /**
-     * Default config object.
-     */
-    const defaultConfig = {
-
-        // Global
-        dir: 'ltr',
-
-        chartType: null,
-
-        padding: {
-            start: defaultConstants.paddingStart,
-            end: defaultConstants.paddingEnd,
-            top: defaultConstants.paddingTop,
-            bottom: defaultConstants.paddingBottom
-        },
-
-        transition: true,
-
-        backgroundColor: 'white',
-
-        fontFamily: 'sans-serif',
-
-        titleFontSize: 'normal',
-
-        titleColor: 'black',
-
-        titleHorizontalPosition: 'center', // center (default), start, end
-
-        titleVerticalPosition: 'top', // top (default), bottom, center
-
-        showValueOnFocus: true,
-        focusedValueFill: 'black',
-        focusedValueColor: 'white',
-
-        // ???
-        maxValue: null,
-        minValue: null,
-
-        // Axis
-        axisTitleFontSize: 'smaller',
-        axisLabelFontSize: 'small',
-
-        // X axis
-        xAxisTitle: null,
-        xAxisTitleBottom: null, // if this is <> null, then this will be the X start position of the 
-        xAxisGridLineWidth: 1,
-        xAxisGridLineColor: '#C0C0C0',
-        xAxisGridLineDashArray: '1,1',
-        xAxisLabelColor: '#A0A0A0',
-        xAxisTitleColor: '#A0A0A0',
-        xAxisGrid: true,
-        xAxisGridPadding: 0,
-        xAxisLabels: true,
-        xAxisGridColumns: false, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
-        xAxisGridColumnsSelectable: false,
-        xAxisGridColumnsSelectableColor: 'black',
-        textAnchorXAxisLabels: 'middle', // If you want X axis labels that are vertical (xAxisLabelRotation = 90), then this should be 'start' if you want them aligned to the x axis.
-        xAxisLabelTop: 10,
-        xAxisLabelRotation: null,
-        xAxisStep: 1, // how many steps between x axis grid lines
-        xAxisLabelStep: 1, // how many steps between labels x axis
-
-        // Y axis
-        yAxisTitle: null,
-        yAxisTitleStart: null, // if this is <> null, then this will be the X start position of the Y axis title.
-        yAxisGridLineWidth: 1,
-        yAxisGridLineColor: '#C0C0C0',
-        yAxisGridLineDashArray: '1,1',
-        yAxisLabelColor: '#A0A0A0',
-        yAxisTitleColor: '#A0A0A0',
-        yAxisStep: 10, // how many steps between y axis grid lines
-        yAxisLabelStep: 10, // how many steps between labels y axis
-        yAxis: true,
-        yAxisGrid: true,
-        yAxisLabels: true,
-        yAxisGridPadding: 0,
-
-        // Legend
-        legendFontSize: 'smaller',
-        legendCircle: false,
-        legend: true,
-        legendSelect: true,
-        legendPosition: 'bottom', // end,  bottom, top , NOTE no start!
-        legendBottom: null,
-        legendTop: null, // top position, if null, default position for legendPosition is used.
-
-        // Line charts
-        lineWidth: 2,
-        pointRadius: 2,
-        connectNullValues: false,
-        lineCurved: true,
-        lineChartFilled: false,
-        points: true,
-
-        // Bar charts
-        barFillOpacity: 0.5,
-        barSpacing: 4,
-        barStrokeWidth: 1,
-        barStacked: false,
-
-        // Pie and donut
-        pieFillOpacity: 0.6,
     };
 
     /**
@@ -131,20 +37,13 @@
      * Mapper between chartType and config functions (functions that we need to execute once for each config) for each phase (before, after, serie).
      */
     const chartTypeInfo = {
-        line: {
-            hasYAxis: true,
-            requiredConfig: ['minValue', 'maxValue']
-        },
+        line: {},
         bar: {
-            hasYAxis: true,
-            requiredConfig: ['minValue', 'maxValue'],
             requiredConfigWithValue: { // Hiermee kun je bepaalde waardes in de config vast zetten bij deze type chart.
                 xAxisGridColumns: true
             }
         },
-        requiredConfig: ['minValue', 'maxValue'],
         lineAndBar: {
-            hasYAxis: true,
             requiredConfigWithValue: {
                 xAxisGridColumns: true
             }
@@ -181,6 +80,9 @@
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+    /**
+     * Main class.
+     */
     class SvgChart {
 
         #onLegendClickScoped = null;
@@ -191,6 +93,116 @@
         #onXAxisLabelGroupClickScoped = null;
         #onXAxisLabelGroupKeypressScoped = null;
 
+        static defaultConfig = {
+
+            /**
+             * @var {string} dir Lang ir
+             * @memberof defaultConfig
+             */
+            dir: 'ltr',
+
+            chartType: null,
+
+            padding: {
+                start: defaultConstants.paddingStart,
+                end: defaultConstants.paddingEnd,
+                top: defaultConstants.paddingTop,
+                bottom: defaultConstants.paddingBottom
+            },
+
+            transition: true,
+
+            backgroundColor: 'white',
+
+            fontFamily: 'sans-serif',
+
+            titleFontSize: 'normal',
+
+            titleColor: 'black',
+
+            titleHorizontalPosition: 'center', // center (default), start, end
+
+            titleVerticalPosition: 'top', // top (default), bottom, center
+
+            showValueOnFocus: true,
+            focusedValueFill: 'black',
+            focusedValueColor: 'white',
+
+            // ???
+            maxValue: null,
+            minValue: null,
+
+            // Axis
+            axisTitleFontSize: 'smaller',
+            axisLabelFontSize: 'small',
+
+            // X axis
+            xAxisTitle: null,
+            xAxisTitleBottom: null, // if this is <> null, then this will be the X start position of the 
+            xAxisGridLineWidth: 1,
+            xAxisGridLineColor: '#C0C0C0',
+            xAxisGridLineDashArray: '1,1',
+            xAxisLabelColor: '#A0A0A0',
+            xAxisTitleColor: '#A0A0A0',
+            xAxisGrid: true,
+            xAxisGridPadding: 0,
+            xAxisLabels: true,
+            xAxisGridColumns: false, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
+            xAxisGridColumnsSelectable: false,
+            xAxisGridColumnsSelectableColor: 'black',
+            textAnchorXAxisLabels: 'middle', // If you want X axis labels that are vertical (xAxisLabelRotation = 90), then this should be 'start' if you want them aligned to the x axis.
+            xAxisLabelTop: 10,
+            xAxisLabelRotation: null,
+            xAxisStep: 1, // how many steps between x axis grid lines
+            xAxisLabelStep: 1, // how many steps between labels x axis
+
+            // Y axis
+            yAxisTitle: null,
+            yAxisTitleStart: null, // if this is <> null, then this will be the X start position of the Y axis title.
+            yAxisGridLineWidth: 1,
+            yAxisGridLineColor: '#C0C0C0',
+            yAxisGridLineDashArray: '1,1',
+            yAxisLabelColor: '#A0A0A0',
+            yAxisTitleColor: '#A0A0A0',
+            yAxisStep: 10, // how many steps between y axis grid lines
+            yAxisLabelStep: 10, // how many steps between labels y axis
+            yAxis: true,
+            yAxisGrid: true,
+            yAxisLabels: true,
+            yAxisGridPadding: 0,
+
+            // Legend
+            legendFontSize: 'smaller',
+            legendCircle: false,
+            legend: true,
+            legendSelect: true,
+            legendPosition: 'bottom', // end,  bottom, top , NOTE no start!
+            legendBottom: null,
+            legendTop: null, // top position, if null, default position for legendPosition is used.
+
+            // Line charts
+            lineWidth: 2,
+            pointRadius: 2,
+            connectNullValues: false,
+            lineCurved: true,
+            lineChartFilled: false,
+            points: true,
+
+            // Bar charts
+            barFillOpacity: 0.5,
+            barSpacing: 4,
+            barStrokeWidth: 1,
+            barStacked: false,
+
+            // Pie and donut
+            pieFillOpacity: 0.6,
+        };
+
+        /**
+         * 
+         * @param {object} parent Parent DOM node.
+         * @param {object} config Config object,
+         */
         constructor(parent, config) {
 
             if (!cssAdded) {
@@ -214,8 +226,8 @@
 
         setConfig(config) {
 
-            this.config = Object.assign({}, defaultConfig, config);
-            this.config.padding = Object.assign({}, defaultConfig.padding, this.config.padding);
+            this.config = Object.assign({}, SvgChart.defaultConfig, config);
+            this.config.padding = Object.assign({}, SvgChart.defaultConfig.padding, this.config.padding);
 
             this.config = Object.assign(this.config, chartTypeInfo[this.config.chartType].requiredConfigWithValue);
 
@@ -1289,9 +1301,6 @@
 
 
     }
-
-
-
 
 
 
