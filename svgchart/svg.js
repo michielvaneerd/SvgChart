@@ -284,7 +284,63 @@
                 this.#addLegend();
             }
 
-            this.#config();
+            switch (this.config.chartType) {
+                case 'line':
+                case 'bar':
+                case 'lineAndBar':
+                    {
+                        this.lineAndBarSelectedColumnIndex = null;
+                        this.lineAndBarValueHeight = this.chartHeight / this.config.maxValue;
+                        this.barCount = this.config.barStacked ? 1 : 0;
+
+                        if (this.config.yAxis) {
+                            this.#addYAxisGrid();
+                        }
+
+                        if (this.config.xAxisTitle) {
+                            this.#addXAxisTitle();
+                        }
+
+                        if (this.config.yAxisTitle) {
+                            this.#addYAxisTitle();
+                        }
+
+                        if (this.config.xAxisLabels) {
+                            this.#addXAxisLabelsGroup();
+                        }
+
+                        this.xAxisLineGroupElement = this.svg.appendChild(el('g', {
+                            className: prefixed('x-axis-group')
+                        }));
+                    }
+                    break;
+            }
+
+            this.config.series.forEach(function (serie, serieIndex) {
+
+                if (!this.config.barStacked && (serie.type === 'bar' || this.config.chartType === 'bar')) {
+                    this.barCount += 1;
+                }
+
+                if (serie.fillGradient) {
+                    var lg = el('linearGradient', {
+                        id: serie.id + '-gradient',
+                        x1: 0,
+                        x2: 0,
+                        y1: 0,
+                        y2: 1
+                    });
+                    lg.appendChild(el('stop', {
+                        offset: "0%",
+                        stopColor: serie.fillGradient[0]
+                    }));
+                    lg.appendChild(el('stop', {
+                        offset: "100%",
+                        stopColor: serie.fillGradient[1]
+                    }));
+                    this.defsElement.appendChild(lg);
+                }
+            }, this);
 
             if (this.config.drawBefore) {
                 this.config.drawBefore(this, this.drawBeforeGroup);
@@ -391,86 +447,6 @@
                 }, document.createTextNode(''));
                 this.valueElGroup.appendChild(this.valueElRect);
                 this.valueElGroup.appendChild(this.valueElText);
-            }
-        }
-
-        #emptyFunction() {
-
-        }
-
-        /**
-     * Execute things for this config. Will be called only once for each config.
-     */
-        #config() {
-
-            switch (this.config.chartType) {
-                case 'line':
-                case 'bar':
-                case 'lineAndBar':
-                    {
-                        this.lineAndBarSelectedColumnIndex = null;
-                        this.lineAndBarValueHeight = this.chartHeight / this.config.maxValue;
-                        this.barCount = 0;
-
-                        if (this.config.yAxis) {
-                            this.#addYAxisGrid();
-                        }
-
-                        if (this.config.xAxisTitle) {
-                            this.#addXAxisTitle();
-                        }
-
-                        if (this.config.yAxisTitle) {
-                            this.#addYAxisTitle();
-                        }
-
-                        if (this.config.xAxisLabels) {
-                            this.#addXAxisLabelsGroup();
-                        }
-
-                        this.xAxisLineGroupElement = this.svg.appendChild(el('g', {
-                            className: prefixed('x-axis-group')
-                        }));
-                    }
-                    break;
-            }
-
-            this.config.series.forEach(function (serie, serieIndex) {
-
-                if (serie.type === 'bar' || this.config.chartType === 'bar') {
-                    this.barCount += 1;
-                }
-
-                if (serie.fillGradient) {
-                    var lg = el('linearGradient', {
-                        id: serie.id + '-gradient',
-                        x1: 0,
-                        x2: 0,
-                        y1: 0,
-                        y2: 1
-                    });
-                    lg.appendChild(el('stop', {
-                        offset: "0%",
-                        stopColor: serie.fillGradient[0]
-                    }));
-                    lg.appendChild(el('stop', {
-                        offset: "100%",
-                        stopColor: serie.fillGradient[1]
-                    }));
-                    this.defsElement.appendChild(lg);
-                }
-            }, this);
-
-            switch (this.config.chartType) {
-                case 'line':
-                case 'bar':
-                case 'lineAndBar':
-                    {
-                        if (this.config.barStacked) {
-                            this.barCount = 1;
-                        }
-                    }
-                    break;
             }
         }
 
