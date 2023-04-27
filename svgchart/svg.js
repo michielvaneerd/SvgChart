@@ -1,3 +1,4 @@
+import { addCssRules, el, parent, prefixed, directionForEach, describeArcPie, describeArcDonut } from "./utils.js";
 
 const defaultConstants = {
     paddingStart: 40,
@@ -10,10 +11,7 @@ const defaultConstants = {
     focusedValuePadding: 6
 };
 
-/**
- * String we use to prefix all class names and ID names.
- */
-const classNamePrefix = 'svg-chart-';
+
 
 /**
  * Mapper between chartType and config functions (functions that we need to execute once for each config) for each phase (before, after, serie).
@@ -34,15 +32,7 @@ const chartTypeInfo = {
     donut: {}
 };
 
-/**
- * SVG namespace.
- */
-const ns = 'http://www.w3.org/2000/svg';
 
-/**
- * Regex we use to convert from dash to camelcase.
- */
-const attributesCamelCaseToDashRegex = /[A-Z]/g;
 
 /**
  * Some color palettes.
@@ -64,6 +54,7 @@ const defaultColorPalette = dutchFieldColorPalette;
 class SvgChart {
 
     static #cssAdded = false;
+    static #colorPalette = dutchFieldColorPalette;
 
     #onLegendClickScoped = null;
     #onLegendKeypressScoped = null;
@@ -72,6 +63,10 @@ class SvgChart {
     #onSerieGroupBlurScoped = null;
     #onXAxisLabelGroupClickScoped = null;
     #onXAxisLabelGroupKeypressScoped = null;
+
+    static setColorPalette(colors) {
+        SvgChart.#colorPalette = colors;
+    }
 
     static defaultConfig = {
 
@@ -475,9 +470,7 @@ class SvgChart {
                 ry: this.config.legendCircle ? defaultConstants.legendWidth : 0,
                 width: defaultConstants.legendWidth,
                 height: defaultConstants.legendWidth,
-                fill: getSerieFill.call(this, serie, serieIndex),
-                // stroke: getSerieStrokeColor.call(this, serie, serieIndex),
-                // strokeWidth: 1
+                fill: this.#getSerieFill(serie, serieIndex)
             });
 
             const text = el('text', {
@@ -533,9 +526,6 @@ class SvgChart {
 
     }
 
-    /**
- * Adds title.
- */
     #addTitle() {
 
         var x, y, dominantBaseline, textAnchor = null;
@@ -581,15 +571,14 @@ class SvgChart {
     }
 
     /**
- * Main function to draw line and bar charts
- */
+     * Main function to visualise data for line or bar chart types.
+     */
     #dataLineAndBar() {
+
+        const currentSerieGroupElement = this.#dataBefore();
+
         if (this.xAxisGroupElement.firstChild) {
             this.xAxisGroupElement.removeChild(this.xAxisGroupElement.firstChild);
-        }
-
-        if (this.serieGroupElement.firstChild) {
-            this.serieGroupElement.removeChild(this.serieGroupElement.firstChild);
         }
 
         if (this.config.xAxisGridColumnsSelectable) {
@@ -607,16 +596,12 @@ class SvgChart {
             ? (this.chartWidth / (this.data.xAxis.columns.length))
             : (this.chartWidth / (this.data.xAxis.columns.length - 1));
         const barWidth = (columnWidth - (this.config.barSpacing * (this.barCountPerColumn + 1))) / (this.barCountPerColumn || 1);
-        // Somehow make this available in drawBefore...
-        //this.columnWidth = columnWidth;
-        //this.barWidth = barWidth;
+        
+        // Make this available on the instance.
+        this.columnWidth = columnWidth;
+        this.barWidth = barWidth;
 
         this.#addXAxisLabels(columnWidth);
-
-        var currentSerieGroupElement = el('g', {
-            id: prefixed('serie-group-current'),
-            className: this.config.transition ? prefixed('unattached') : ''
-        });
 
         var currentBarIndex = 0;
         var stackedBarValues = []; // value index => current value (steeds optellen)
@@ -636,7 +621,7 @@ class SvgChart {
                         var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
                         var flatNonNullPoints = [];
 
-                        dirForEach(this, this.data.series[serie.id], this.config.dir, function (value, valueIndex, values) {
+                        directionForEach(this, this.data.series[serie.id], this.isLTR, function (value, valueIndex, values) {
                             var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
                             var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
 
@@ -679,10 +664,9 @@ class SvgChart {
                         paths.forEach(function (path) {
                             serieGroup.appendChild(el('path', {
                                 d: path.join(' '),
-                                fill: this.config.lineChartFilled ? getSerieFill.call(this, serie, serieIndex) : 'none',
+                                fill: this.config.lineChartFilled ? this.#getSerieFill(serie, serieIndex) : 'none',
                                 fillOpacity: 0.4,
-                                //stroke: (serie.color || defaultColorPalette[serieIndex]),
-                                stroke: getSerieStrokeColor.call(this, serie, serieIndex),
+                                stroke: this.#getSerieStrokeColor(serie, serieIndex),
                                 strokeWidth: this.config.lineWidth || '',
                                 className: prefixed('line')
                             }));
@@ -695,8 +679,8 @@ class SvgChart {
                                     cy: point.y,
                                     r: this.config.pointRadius,
                                     zIndex: 1,
-                                    fill: getSeriePointColor.call(this, serie, serieIndex),
-                                    stroke: getSeriePointColor.call(this, serie, serieIndex),
+                                    fill: this.#getSeriePointColor(serie, serieIndex),
+                                    stroke: this.#getSeriePointColor(serie, serieIndex),
                                     dataValue: point.value,
                                     className: prefixed('line-point'),
                                     tabindex: this.config.showValueOnFocus ? 0 : null
@@ -707,7 +691,7 @@ class SvgChart {
                     break;
                 case 'bar':
                     {
-                        dirForEach(this, this.data.series[serie.id], this.config.dir, function (value, valueIndex) {
+                        directionForEach(this, this.data.series[serie.id], this.isLTR, function (value, valueIndex) {
 
                             var x = null;
                             var y = null;
@@ -728,11 +712,11 @@ class SvgChart {
                                 y: y,
                                 width: barWidth,
                                 height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
-                                fill: getSerieFill.call(this, serie, serieIndex),
+                                fill: this.#getSerieFill(serie, serieIndex),
                                 className: prefixed('bar'),
                                 fillOpacity: this.config.barFillOpacity || '',
                                 strokeWidth: this.config.barStrokeWidth || 0,
-                                stroke: getSerieStrokeColor.call(this, serie, serieIndex),
+                                stroke: this.#getSerieStrokeColor(serie, serieIndex),
                                 dataValue: value,
                                 tabindex: this.config.showValueOnFocus ? 0 : null
                             }));
@@ -747,6 +731,30 @@ class SvgChart {
 
             currentSerieGroupElement.appendChild(serieGroup);
         }, this);
+
+        this.#dataAfter(currentSerieGroupElement);
+    }
+
+    /**
+     * Things we need to do for all chart types before we start visualise the data.
+     * @returns {HTMLElement} The current serie group element.
+     */
+    #dataBefore() {
+        if (this.serieGroupElement.firstChild) {
+            this.serieGroupElement.firstChild.remove();
+        }
+        var currentSerieGroupElement = el('g', {
+            id: prefixed('serie-group-current'),
+            className: this.config.transition ? prefixed('unattached') : ''
+        });
+        return currentSerieGroupElement;
+    }
+
+    /**
+     * Things we need to do for all chart types after we visualised the data.
+     * @param {HTMLElement} currentSerieGroupElement The current serie group element we got from #dataBefore().
+     */
+    #dataAfter(currentSerieGroupElement) {
         this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect(); // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
         if (this.config.transition) {
             currentSerieGroupElement.classList.remove(prefixed('unattached'));
@@ -754,22 +762,15 @@ class SvgChart {
     }
 
     /**
- * Main function to draw pie and donut charts.
- */
+     * Main function to visualise data for pie or donut chart types.
+     */
     #dataPieAndDonut() {
+
+        const currentSerieGroupElement = this.#dataBefore();
 
         var radius = this.chartHeight / 2;
         var centerX = this.width / 2;
         var centerY = this.chartHeight / 2 + this.config.padding.top;
-
-        if (this.serieGroupElement.firstChild) {
-            this.serieGroupElement.firstChild.remove();
-        }
-
-        var currentSerieGroupElement = el('g', {
-            id: prefixed('serie-group-current'),
-            className: this.config.transition ? prefixed('unattached') : ''
-        });
 
         var total = 0;
         for (let key in this.data.series) {
@@ -793,7 +794,7 @@ class SvgChart {
             var path = this.config.chartType === 'pie' ? describeArcPie(centerX, centerY, radius, startAngle, endAngle) : describeArcDonut(centerX, centerY, radius - 40, 40, startAngle, endAngle);
             serieGroup.appendChild(el('path', {
                 d: path.join(' '),
-                fill: getSerieFill.call(this, serie, serieIndex),
+                fill: this.#getSerieFill(serie, serieIndex),
                 fillOpacity: this.config.pieFillOpacity || 1,
                 className: prefixed('pie-piece'),
                 tabindex: 0,
@@ -804,16 +805,10 @@ class SvgChart {
 
         }, this);
 
-        this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect(); // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
-        if (this.config.transition) {
-            currentSerieGroupElement.classList.remove(prefixed('unattached'));
-        }
+        this.#dataAfter(currentSerieGroupElement);
 
     }
 
-    /**
- * Draw x axis labels
- */
     #addXAxisLabels(columnWidth) {
         // Draw xAxis lines
         var currentXAxisGroupElement = el('g');
@@ -823,7 +818,7 @@ class SvgChart {
         });
 
         var currentXAxisGridColumnsSelectableGroupElement = (this.config.xAxisGridColumnsSelectable) ? el('g') : null;
-        dirForEach(this, this.data.xAxis.columns, this.config.dir, function (colValue, colIndex) {
+        directionForEach(this, this.data.xAxis.columns, this.isLTR, function (colValue, colIndex) {
             if (this.config.xAxisGrid) {
                 const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
                 if (colIndex === 0 || ((colIndex + 0) % this.config.xAxisStep === 0)) {
@@ -1037,6 +1032,33 @@ class SvgChart {
         return path;
     }
 
+
+
+    #getSeriePropertyColor(props, serie, serieIndex) {
+        for (var i = 0; i < props.length; i++) {
+            var key = props[i];
+            if (serie[key]) {
+                return key === 'fillGradient' ? `url(#${serie.id}-gradient)` : serie[key];
+            }
+        }
+        if (serie.color) {
+            return serie.color;
+        }
+        return defaultColorPalette[serieIndex];
+    }
+
+    #getSeriePointColor(serie, serieIndex) {
+        return this.#getSeriePropertyColor(['pointColor', 'strokeColor'], serie, serieIndex);
+    }
+
+    #getSerieStrokeColor(serie, serieIndex) {
+        return this.#getSeriePropertyColor(['strokeColor'], serie, serieIndex);
+    }
+
+    #getSerieFill(serie, serieIndex) {
+        return this.#getSeriePropertyColor(['fillGradient'], serie, serieIndex);
+    }
+
     /**
 * Adds an event listener to a node and adds it to the _listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
 * @param {Node} node Node to add the listener to.
@@ -1204,6 +1226,8 @@ class SvgChart {
     }
 
 
+
+
 }
 
 
@@ -1245,75 +1269,7 @@ class SvgChart {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/**
- * Convert polar to cartesian point.
- * @param {Int} centerX Center x.
- * @param {Int} centerY Center y.
- * @param {Int} radius Radius of arc.
- * @param {Int} angleInDegrees Angle in degrees.
- * @returns Object point.
- */
-function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180;
-    return {
-        x: centerX + (radius * Math.cos(angleInRadians)),
-        y: centerY + (radius * Math.sin(angleInRadians))
-    };
-}
 
-/**
- * Get path for pie.
- * @param {Int} x X point.
- * @param {Int} y Y point.
- * @param {Int} radius Radius of arc.
- * @param {Int} startAngle Start angle.
- * @param {Int} endAngle End angle.
- * @returns Array of path coordinates.
- */
-function describeArcPie(x, y, radius, startAngle, endAngle) {
-    var start = polarToCartesian(x, y, radius, endAngle);
-    var end = polarToCartesian(x, y, radius, startAngle);
-
-    var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
-
-    var d = [
-        "M", start.x, start.y,
-        "A", radius, radius, 0, arcSweep, 0, end.x, end.y,
-        "L", x, y,
-        "L", start.x, start.y
-    ];
-
-    return d;
-}
-
-/**
- * Get path for donut.
- * @param {Int} x X point.
- * @param {Int} y Y point.
- * @param {Int} radius Radius of arc.
- * @param {Int} spread Spread of the donut.
- * @param {Int} startAngle Start angle.
- * @param {Int} endAngle End angle.
- * @returns Array of path coordinates.
- */
-function describeArcDonut(x, y, radius, spread, startAngle, endAngle) {
-    var innerStart = polarToCartesian(x, y, radius, endAngle);
-    var innerEnd = polarToCartesian(x, y, radius, startAngle);
-    var outerStart = polarToCartesian(x, y, radius + spread, endAngle);
-    var outerEnd = polarToCartesian(x, y, radius + spread, startAngle);
-
-    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-
-    var d = [
-        "M", outerStart.x, outerStart.y,
-        "A", radius + spread, radius + spread, 0, largeArcFlag, 0, outerEnd.x, outerEnd.y,
-        "L", innerEnd.x, innerEnd.y,
-        "A", radius, radius, 0, largeArcFlag, 1, innerStart.x, innerStart.y,
-        "L", outerStart.x, outerStart.y, "Z"
-    ];
-
-    return d;
-}
 
 
 
@@ -1345,142 +1301,17 @@ function describeArcDonut(x, y, radius, spread, startAngle, endAngle) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/**
- * Returns a forEach function that travels an array based on the this.config.dir value.
- * If ltr ==> forEach
- * If rtl ==> inversed forEach
- */
-function dirForEach(chartInstance, items, dir, callback) {
-    if (dir === 'ltr') {
-        const length = items.length;
-        for (let i = 0; i < length; i++) {
-            callback.call(chartInstance, items[i], i, items);
-        }
-    } else {
-        const maxIndex = items.length - 1;
-        for (let i = maxIndex; i >= 0; i--) {
-            callback.call(chartInstance, items[i], maxIndex - i, items);
-        }
-    }
-}
-
-/**
- * Gets first color or gradient that is defined for one of the properties for this serie.
- * @param {Array} props Array with properties to search for.
- * @param {Object} serie Serie object.
- * @param {Int} serieIndex Index of serie.
- * @returns First matched color or gradient.
- */
-function getSeriePropertyColor(props, serie, serieIndex) {
-    for (var i = 0; i < props.length; i++) {
-        var key = props[i];
-        if (serie[key]) {
-            return key === 'fillGradient' ? `url(#${serie.id}-gradient)` : serie[key];
-        }
-    }
-    if (serie.color) {
-        return serie.color;
-    }
-    return defaultColorPalette[serieIndex];
-}
-
-/**
- * Gets color or gradient for point in line chart.
- * @param {Object} serie Serie object.
- * @param {Int} serieIndex Serie index.
- * @returns First matched color or gradient.
- */
-function getSeriePointColor(serie, serieIndex) {
-    return getSeriePropertyColor(['pointColor', 'strokeColor'], serie, serieIndex);
-}
-
-/**
- * Gets color or gradient for stroke.
- * @param {Object} serie Serie object.
- * @param {Int} serieIndex Serie index.
- * @returns First matched color or gradient.
- */
-function getSerieStrokeColor(serie, serieIndex) {
-    return getSeriePropertyColor(['strokeColor'], serie, serieIndex);
-}
-
-/**
- * Gets color or gradient for fill.
- * @param {Object} serie Serie object.
- * @param {Int} serieIndex Serie index.
- * @returns First matched color or gradient.
- */
-function getSerieFill(serie, serieIndex) {
-    return getSeriePropertyColor(['fillGradient'], serie, serieIndex);
-}
-
-/**
- * Adds a prefix to the classname.
- * @param {String} className Class name.
- * @returns Classname with prefix.
- */
-function prefixed(className) {
-    return classNamePrefix + className;
-}
-
-/**
- * Searches for (parent) node with the provided name, starting with the current node.
- * @param {Node} currentElement Node to start the search.
- * @param {String} parentName Node name of parent.
- * @returns Found node or null if nothing is found.
- */
-function parent(currentElement, parentName) {
-    var el = currentElement;
-    while (el && el.nodeName.toLowerCase() !== parentName.toLowerCase()) {
-        el = el.parentNode;
-    }
-    return el;
-}
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Public functions
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Creates a new SVG node.
- * @param {String} name Name of new node.
- * @param {Object} attributes Attributes as key value pairs.
- * @param {Node} child Optional child node that should be appended to the newle created node.
- * @returns Newly created node.
- */
-function el(name, attributes = {}, child = null) {
-    var el = document.createElementNS(ns, name);
-    Object.keys(attributes).forEach(function (key) {
-        if (attributes[key] === null) {
-            return;
-        }
-        switch (key) {
-            case 'className':
-                if (attributes[key]) {
-                    el.classList.add(...attributes[key].trim().split(' '));
-                }
-                break;
-            default:
-                el.setAttribute(key.replaceAll(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
-                break;
-        }
-    });
-    if (child) {
-        el.appendChild(child);
-    }
-    return el;
-}
-// Make it a public function as well, can be used in for example beforeDraw callback to add new nodes to the SVG node.
-SvgChart.prototype.el = el;
 
 
 
-// Init - do something with side effects!
+
+
 
 function addCss() {
-    document.head.appendChild(document.createElement("style")).innerHTML = [
+    addCssRules([
         '.' + prefixed('line-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
         '.' + prefixed('line-point') + ':hover, circle.' + prefixed('line-point') + ':focus { stroke-width: 6; outline: none; }',
         '#' + prefixed('serie-group') + ' g { transition: opacity 0.6s; }',
@@ -1490,8 +1321,10 @@ function addCss() {
         'g.' + prefixed('legend-group') + ' g.' + prefixed('unselected') + ' { opacity: 0.4; }',
         'rect.' + prefixed('bar') + ':hover, path.' + prefixed('pie-piece') + ':hover { fill-opacity: 0.7; }',
         'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; fill-opacity:1; }'
-    ].join("\n");
+    ]);
 }
+
+SvgChart.prototype.el = el;
 
 export { SvgChart };
 
