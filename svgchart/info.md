@@ -46,3 +46,32 @@ Again for all:
 ## For donut
 
 ## For pie and donut
+
+
+# Structure groups:
+
+- .draw-before-group
+
+
+- .serie-group => series data will be written in ==> this is kept dusinr new data display
+- .serie-group-current ==> attached to .serie-group (and removed when new data is displayed)
+- .value-element-group ==> group wrapper for focused value element (after focusing element with value)
+
+
+
+
+
+- .draw-after-group
+
+
+
+???
+
+.x-axis-group ==> 
+
+- .legend-group ==> legend group
+
+.x-axis-label-group ==> g voor x axis albels die behouden blijft
+.x-axis-label-group-current ==> g voor x axis labels die steeds wordt verwijderd na nieuwe data
+
+.y-axis-group => g voor y axis lines and labels, blijft bebouden tussen nieuwe data, dus alleen bij nieuwe config

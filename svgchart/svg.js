@@ -76,10 +76,6 @@
     // Public main functions
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-    /**
-     * Main class.
-     */
     class SvgChart {
 
         static #cssAdded = false;
@@ -94,10 +90,6 @@
 
         static defaultConfig = {
 
-            /**
-             * @var {string} dir Lang ir
-             * @memberof defaultConfig
-             */
             dir: 'ltr',
 
             chartType: null,
@@ -197,16 +189,11 @@
             pieFillOpacity: 0.6,
         };
 
-        /**
-         * 
-         * @param {object} parent Parent DOM node.
-         * @param {object} config Config object,
-         */
         constructor(parent, config) {
 
             if (!SvgChart.#cssAdded) {
                 SvgChart.#cssAdded = true;
-                addAllCssRulesToHead();
+                addCss();
             }
 
             const parentRect = parent.getBoundingClientRect();
@@ -310,7 +297,7 @@
                             this.#addXAxisLabelsGroup();
                         }
 
-                        this.xAxisLineGroupElement = this.svg.appendChild(el('g', {
+                        this.xAxisGroupElement = this.svg.appendChild(el('g', {
                             className: prefixed('x-axis-group')
                         }));
                     }
@@ -387,10 +374,6 @@
             return this.#onXAxisLabelGroupSelect(textNodes.item(index));
         }
 
-        /**
-     * Saves chart as PNG file.
-     * @param {String} filename Filename of PNG.
-     */
         saveAsPng(filename) {
             var rect = this.svg.getBoundingClientRect();
             var canvas = document.createElement('canvas');
@@ -616,8 +599,8 @@
      * Main function to draw line and bar charts
      */
         #dataLineAndBar() {
-            if (this.xAxisLineGroupElement.firstChild) {
-                this.xAxisLineGroupElement.removeChild(this.xAxisLineGroupElement.firstChild);
+            if (this.xAxisGroupElement.firstChild) {
+                this.xAxisGroupElement.removeChild(this.xAxisGroupElement.firstChild);
             }
 
             if (this.serieGroupElement.firstChild) {
@@ -848,7 +831,7 @@
      */
         #addXAxisLabels(columnWidth) {
             // Draw xAxis lines
-            var currentXAxisLineGroupElement = el('g');
+            var currentXAxisGroupElement = el('g');
 
             var currentXAxisLabelsGroupElement = el('g', {
                 className: prefixed('x-axis-label-group-current')
@@ -859,7 +842,7 @@
                 if (this.config.xAxisGrid) {
                     const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
                     if (colIndex === 0 || ((colIndex + 0) % this.config.xAxisStep === 0)) {
-                        this.#addXAxisLine(currentXAxisLineGroupElement, x);
+                        this.#addXAxisLine(currentXAxisGroupElement, x);
                     }
                     if (this.config.xAxisGridColumnsSelectable) {
                         currentXAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
@@ -893,9 +876,9 @@
                 }
             });
             if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
-                this.#addXAxisLine(currentXAxisLineGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.data.xAxis.columns.length * columnWidth));
+                this.#addXAxisLine(currentXAxisGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.data.xAxis.columns.length * columnWidth));
             }
-            this.xAxisLineGroupElement.appendChild(currentXAxisLineGroupElement);
+            this.xAxisGroupElement.appendChild(currentXAxisGroupElement);
             this.config.xAxisGridColumnsSelectable && this.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
             this.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
         }
@@ -950,9 +933,6 @@
             this.svg.appendChild(yAxisTitleG);
         }
 
-        /**
-     * Adds y axis title.
-     */
         #addXAxisTitle() {
             var x = this.isLTR ? (this.width - this.config.padding.right - this.config.xAxisGridPadding) : (this.config.padding.left);
             this.svg.appendChild(el('text', {
@@ -968,9 +948,6 @@
             }, document.createTextNode(this.config.xAxisTitle)));
         }
 
-        /**
-     * Adds y axis grid.
-     */
         #addYAxisGrid() {
             var gYAxis = el('g', {
                 className: prefixed('y-axis-group')
@@ -1011,11 +988,6 @@
             this.svg.appendChild(gYAxis);
         }
 
-        /**
-     * Adds x axis line.
-     * @param {Node} parent Node.
-     * @param {Float} x X value.
-     */
         #addXAxisLine(parent, x) {
             parent.appendChild(el('line', {
                 x1: x,
@@ -1457,20 +1429,6 @@
         return getSeriePropertyColor(['fillGradient'], serie, serieIndex);
     }
 
-    // /**
-    //  * Gets function to execute for this chartType and this phase.
-    //  * @param {String} phase Phase in config: one of 'before', 'after', 'serie'
-    //  * @returns Function.
-    //  */
-    // function getChartTypeConfigFunction(phase) {
-    //     return (
-    //         (this.config.chartType in chartTypeInfo) && chartTypeInfo[this.config.chartType].chartTypeConfigFunctions
-    //         &&
-    //         (phase in chartTypeInfo[this.config.chartType].chartTypeConfigFunctions)
-    //     ) ? chartTypeInfo[this.config.chartType].chartTypeConfigFunctions[phase] : function () { };
-
-    // }
-
     /**
      * Adds a prefix to the classname.
      * @param {String} className Class name.
@@ -1536,16 +1494,8 @@
 
     // Init - do something with side effects!
 
-    /**
-     * Add some CSS rules to make the dynamic functions work, like hover and transitions.
-     * @param {Array} arr Array of CSS rules.
-     */
-    function addCSS(arr) {
-        document.head.appendChild(document.createElement("style")).innerHTML = arr.join("\n");
-    }
-
-    function addAllCssRulesToHead() {
-        addCSS([
+    function addCss() {
+        document.head.appendChild(document.createElement("style")).innerHTML = [
             '.' + prefixed('line-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
             '.' + prefixed('line-point') + ':hover, circle.' + prefixed('line-point') + ':focus { stroke-width: 6; outline: none; }',
             '#' + prefixed('serie-group') + ' g { transition: opacity 0.6s; }',
@@ -1555,7 +1505,7 @@
             'g.' + prefixed('legend-group') + ' g.' + prefixed('unselected') + ' { opacity: 0.4; }',
             'rect.' + prefixed('bar') + ':hover, path.' + prefixed('pie-piece') + ':hover { fill-opacity: 0.7; }',
             'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; fill-opacity:1; }'
-        ]);
+        ].join("\n");
     }
 
     window.SvgChart = SvgChart;
