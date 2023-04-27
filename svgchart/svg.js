@@ -228,9 +228,11 @@
             this.config = Object.assign({}, SvgChart.defaultConfig, config);
             this.config.padding = Object.assign({}, SvgChart.defaultConfig.padding, this.config.padding);
 
+            this.isLTR = this.config.dir === 'ltr';
+
             this.config = Object.assign(this.config, chartTypeInfo[this.config.chartType].requiredConfigWithValue);
 
-            if (this.config.dir === 'ltr') {
+            if (this.isLTR) {
                 this.config.padding.left = this.config.padding.start;
                 this.config.padding.right = this.config.padding.end;
             } else {
@@ -421,10 +423,6 @@
             img.src = image64;
         }
 
-
-        /**
-     * Adds the serie group node, current value node and the event listeners.
-     */
         #addSerieGroup() {
             this.serieGroupElement = el('g', {
                 id: prefixed('serie-group')
@@ -460,13 +458,12 @@
             }
         }
 
-        /**
-     * Adds legend.
-     */
         #addLegend() {
-            var gLegend = el('g', {
+
+            const gLegend = el('g', {
                 className: prefixed('legend-group')
             });
+
             if (this.config.legendSelect) {
                 if (!this.#onLegendClickScoped) {
                     this.#onLegendClickScoped = this.#onLegendClick.bind(this);
@@ -475,130 +472,94 @@
                 this.#addEventListener(gLegend, 'keypress', this.#onLegendKeypressScoped, false);
                 this.#addEventListener(gLegend, 'click', this.#onLegendClickScoped, false);
             }
+
             this.config.series.forEach(function (serie, serieIndex) {
 
-                var gSerie = el('g', {
+                const gSerie = el('g', {
                     dataSerie: serie.id,
                     tabindex: this.config.legendSelect ? 0 : null
                 });
 
-                var x, y = null;
+                let x = 0, y = 0;
 
-                if (this.config.dir === 'ltr') {
-                    switch (this.config.legendPosition) {
-                        case 'top':
-                            x = 0; // we rewrite this later below
-                            y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
-                            break;
-                        case 'bottom':
-                            x = 0; // we rewrite this later below
-                            y = this.config.legendBottom ? this.config.legendBottom : (this.height - (this.config.padding.bottom / 2));
-                            break;
-                        case 'end':
+                switch (this.config.legendPosition) {
+                    case 'top':
+                        y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
+                        break;
+                    case 'bottom':
+                        y = this.config.legendBottom ? this.config.legendBottom : (this.height - (this.config.padding.bottom / 2));
+                        break;
+                    case 'end':
+                        if (this.isLTR) {
                             x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + defaultConstants.paddingNormal;
                             y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * defaultConstants.paddingNormal);
-                            break;
-                    }
-
-                    gSerie.appendChild(el('rect', {
-                        x: x,
-                        y: y,
-                        rx: this.config.legendCircle ? defaultConstants.legendWidth : 0,
-                        ry: this.config.legendCircle ? defaultConstants.legendWidth : 0,
-                        width: defaultConstants.legendWidth,
-                        height: defaultConstants.legendWidth,
-                        fill: getSerieFill.call(this, serie, serieIndex),
-                        // stroke: getSerieStrokeColor.call(this, serie, serieIndex),
-                        // strokeWidth: 1
-                    }));
-                    gSerie.appendChild(el('text', {
-                        direction: this.config.dir,
-                        x: x + (defaultConstants.legendWidth * 2),
-                        y: y + (defaultConstants.legendWidth / 2) + 1, // + 1 don't know why
-                        textAnchor: 'start',
-                        dominantBaseline: 'middle',
-                        fontFamily: this.config.fontFamily || '',
-                        fontSize: this.config.legendFontSize || '',
-                    }, document.createTextNode(serie.title)));
-                    gLegend.appendChild(gSerie);
-                } else {
-                    switch (this.config.legendPosition) {
-                        case 'top':
-                            x = 0; // we rewrite this later below
-                            y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
-                            break;
-                        case 'bottom':
-                            x = 0; // we rewrite this later below
-                            y = this.config.legendBottom ? this.config.legendBottom : (this.height - (this.config.padding.bottom / 2));
-                            break;
-                        case 'end':
+                        } else {
                             x = (this.config.xAxisGridPadding * 2) + this.config.padding.end - defaultConstants.paddingNormal - defaultConstants.legendWidth;
                             y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * defaultConstants.paddingNormal);
-                            break;
-                    }
-
-                    // gSerie.appendChild(el('circle', {
-                    //     cx: x + 5,
-                    //     cy: y + 5,
-                    //     r: 5,
-                    //     fill: getSerieFill.call(this, serie, serieIndex),
-                    //     stroke: getSerieStrokeColor.call(this, serie, serieIndex),
-                    //     strokeWidth: 1
-                    // }));
-                    gSerie.appendChild(el('rect', {
-                        x: x,
-                        y: y,
-                        rx: this.config.legendCircle ? defaultConstants.legendWidth : 0,
-                        ry: this.config.legendCircle ? defaultConstants.legendWidth : 0,
-                        width: defaultConstants.legendWidth,
-                        height: defaultConstants.legendWidth,
-                        fill: getSerieFill.call(this, serie, serieIndex),
-                        //stroke: getSerieStrokeColor.call(this, serie, serieIndex),
-                        //strokeWidth: 1
-                    }));
-                    gSerie.appendChild(el('text', {
-                        direction: this.config.dir,
-                        x: x - defaultConstants.legendWidth,
-                        y: y + (defaultConstants.legendWidth / 2) + 1, // + 1 don't know why
-                        textAnchor: 'start',
-                        dominantBaseline: 'middle',
-                        fontFamily: this.config.fontFamily || '',
-                        fontSize: this.config.legendFontSize || '',
-                    }, document.createTextNode(serie.title)));
-                    gLegend.appendChild(gSerie);
+                        }
+                        break;
                 }
 
+                const rect = el('rect', {
+                    x: x,
+                    y: y,
+                    rx: this.config.legendCircle ? defaultConstants.legendWidth : 0,
+                    ry: this.config.legendCircle ? defaultConstants.legendWidth : 0,
+                    width: defaultConstants.legendWidth,
+                    height: defaultConstants.legendWidth,
+                    fill: getSerieFill.call(this, serie, serieIndex),
+                    // stroke: getSerieStrokeColor.call(this, serie, serieIndex),
+                    // strokeWidth: 1
+                });
 
+                const text = el('text', {
+                    direction: this.config.dir,
+                    x: this.isLTR ? (x + (defaultConstants.legendWidth * 2)) : (x - defaultConstants.legendWidth),
+                    y: y + (defaultConstants.legendWidth / 2) + 1, // + 1 don't know why
+                    textAnchor: 'start',
+                    dominantBaseline: 'middle',
+                    fontFamily: this.config.fontFamily || '',
+                    fontSize: this.config.legendFontSize || '',
+                }, document.createTextNode(serie.title));
+
+
+                if (this.isLTR) {
+                    gSerie.appendChild(rect);
+                    gSerie.appendChild(text);
+                } else {
+                    gSerie.appendChild(text);
+                    gSerie.appendChild(rect);
+                }
+                gLegend.appendChild(gSerie);
             }, this);
+
             this.svg.appendChild(gLegend);
 
             if (['top', 'bottom'].indexOf(this.config.legendPosition) > -1) {
-                // Measure the text so we can place the rects and texts next to each other
 
-                if (this.config.dir === 'ltr') {
-                    var curX = 0;
-                    gLegend.querySelectorAll('g').forEach(function (g) {
-                        const box = g.getBBox();
-                        g.querySelector('rect').setAttribute('x', curX);
-                        g.querySelector('text').setAttribute('x', (curX + (defaultConstants.legendWidth * 2)));
+                // Measure the text so we can place the rects and texts next to each other
+                // and center the complete legend row.
+
+                let totalLegendWidth = 0;
+                let curX = this.isLTR ? 0 : (this.width - defaultConstants.legendWidth);
+                gLegend.querySelectorAll('g').forEach(function (g) {
+                    const box = g.getBBox();
+                    g.querySelector('rect').setAttribute('x', curX);
+                    g.querySelector('text').setAttribute('x', this.isLTR ? (curX + (defaultConstants.legendWidth * 2)) : (curX - 10));
+                    if (this.isLTR) {
                         curX += (box.width + defaultConstants.paddingNormal);
-                    }, this);
+                    } else {
+                        curX -= (box.width + defaultConstants.paddingNormal);
+                    }
+                    totalLegendWidth += (box.width + defaultConstants.paddingNormal);
+                }, this);
+                if (this.isLTR) {
                     curX -= defaultConstants.paddingNormal;
                     gLegend.setAttribute('transform', 'translate(' + ((this.width / 2) - (curX / 2)) + ', 0)');
                 } else {
-                    var totalLegendWidth = 0;
-                    var curX = this.width - defaultConstants.legendWidth;
-                    gLegend.querySelectorAll('g').forEach(function (g) {
-                        const box = g.getBBox();
-                        g.querySelector('rect').setAttribute('x', curX);
-                        g.querySelector('text').setAttribute('x', curX - 10);
-                        curX -= (box.width + defaultConstants.paddingNormal);
-                        totalLegendWidth += (box.width + defaultConstants.paddingNormal);
-                    }, this);
                     totalLegendWidth -= defaultConstants.paddingNormal;
                     gLegend.setAttribute('transform', 'translate(-' + ((this.width / 2) - (totalLegendWidth / 2)) + ', 0)');
                 }
-
 
             }
 
@@ -613,11 +574,11 @@
             switch (this.config.titleHorizontalPosition) {
                 case 'end':
                     x = this.width - defaultConstants.paddingNormal;
-                    textAnchor = this.config.dir === 'ltr' ? 'end' : 'start';
+                    textAnchor = this.isLTR ? 'end' : 'start';
                     break;
                 case 'start':
                     x = defaultConstants.paddingNormal;
-                    textAnchor = this.config.dir === 'ltr' ? 'start' : 'end';
+                    textAnchor = this.isLTR ? 'start' : 'end';
                     break;
                 default:
                     x = this.width / 2;
@@ -969,7 +930,7 @@
             var yAxisTitleG = el('g');
             // By default: x is 20 pixels from start border
             var x = 0;
-            if (this.config.dir === 'ltr') {
+            if (this.isLTR) {
                 x = this.config.yAxisTitleStart ? this.config.yAxisTitleStart : defaultConstants.paddingNormal;
             } else {
                 x = this.config.yAxisTitleStart ? (this.width - this.config.yAxisTitleStart) : (this.width - defaultConstants.paddingNormal);
@@ -984,7 +945,7 @@
                 fill: this.config.yAxisTitleColor || '',
                 className: prefixed('text-y-axis-title')
             }, document.createTextNode(this.config.yAxisTitle));
-            yAxisTitleEl.setAttribute('transform', this.config.dir === 'ltr' ? 'rotate(-90)' : 'rotate(90)');
+            yAxisTitleEl.setAttribute('transform', this.isLTR ? 'rotate(-90)' : 'rotate(90)');
             yAxisTitleG.appendChild(yAxisTitleEl);
             this.svg.appendChild(yAxisTitleG);
         }
@@ -993,7 +954,7 @@
      * Adds y axis title.
      */
         #addXAxisTitle() {
-            var x = this.config.dir === 'ltr' ? (this.width - this.config.padding.right - this.config.xAxisGridPadding) : (this.config.padding.left);
+            var x = this.isLTR ? (this.width - this.config.padding.right - this.config.xAxisGridPadding) : (this.config.padding.left);
             this.svg.appendChild(el('text', {
                 direction: this.config.dir,
                 x: x,
@@ -1035,7 +996,7 @@
                     let y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (currentYAxisLabelValue * this.lineAndBarValueHeight);
                     gYAxis.appendChild(el('text', {
                         direction: this.config.dir,
-                        x: this.config.dir === 'ltr' ? (this.config.padding.left - 10) : (this.config.padding.left + this.chartWidth + 10),
+                        x: this.isLTR ? (this.config.padding.left - 10) : (this.config.padding.left + this.chartWidth + 10),
                         y: y,
                         textAnchor: 'end',
                         dominantBaseline: 'middle',
