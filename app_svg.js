@@ -1,4 +1,6 @@
-//hljs.highlightAll();
+import { SvgChart } from "./svgchart/svg.js";
+
+
 
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
