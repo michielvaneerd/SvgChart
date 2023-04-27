@@ -14,14 +14,6 @@ const attributesCamelCaseToDashRegex = /[A-Z]/g;
 const classNamePrefix = 'svg-chart-';
 
 /**
- * Add CSS rules to the HEAD tag.
- * @param {Array} rules CSS rules to add.
- */
-function addCssRules(rules) {
-    document.head.appendChild(document.createElement("style")).innerHTML = rules.join("\n");
-}
-
-/**
  * Creates a new HTML element.
  * @param {String} name Tag name for new HTML element.
  * @param {Object} [attributes] Key value pair of attributes to set.
@@ -165,4 +157,4 @@ function describeArcDonut(x, y, radius, spread, startAngle, endAngle) {
     return d;
 }
 
-export { addCssRules, el, parent, prefixed, directionForEach, describeArcPie, describeArcDonut };
+export { el, parent, prefixed, directionForEach, describeArcPie, describeArcDonut };

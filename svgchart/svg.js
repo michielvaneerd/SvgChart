@@ -1,10 +1,8 @@
-import { addCssRules, el, parent, prefixed, directionForEach, describeArcPie, describeArcDonut } from "./utils.js";
+import { el, parent, prefixed, directionForEach, describeArcPie, describeArcDonut } from "./utils.js";
 import { colors } from "./colors.js";
 import { defaultConfig } from "./config.js";
 
-/**
- * Mapper between chartType and config functions (functions that we need to execute once for each config) for each phase (before, after, serie).
- */
+// Mapper between chart type and some required config properties.
 const chartTypeInfo = {
     line: {},
     bar: {
