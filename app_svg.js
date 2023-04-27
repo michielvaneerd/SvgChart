@@ -330,38 +330,46 @@ var chartInfo = {
             xAxisGridColumns: true,
             lineCurved: false,
             onXAxisLabelGroupSelect: function (chart, index) {
-                var serieValues = [];
-                Object.keys(chart.data.series).forEach(function (serie) {
-                    serieValues.push(`${serie} = ${chart.data.series[serie][index]}`);
-                });
-                document.getElementById('chartCustomCodeInfo').innerHTML = `Clicked on '${chart.data.xAxis.columns[index]}' with values: ${serieValues.join(", ")}`;
-            },
+        var serieValues = [];
+        Object.keys(chart.data.series).forEach(function (serie) {
+            serieValues.push(`${serie} = ${chart.data.series[serie][index]}`);
+        });
+        document.getElementById('chartCustomCodeInfo').innerHTML = `Clicked on '${chart.data.xAxis.columns[index]}' with values: ${serieValues.join(", ")}`;
+    },
+            drawAfter: function (chart, groupNode) {
+        groupNode.appendChild(chart.el('text', {
+            x: chart.config.padding.left + 100,
+            y: chart.config.padding.top + 100,
+            fontWeight: 'bold',
+            fontSize: '26px'
+        }, document.createTextNode('TEST!')));
+    },
             drawBefore: function (chart, groupNode) {
-                groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.left,
-                    y: chart.config.padding.top,
-                    width: chart.chartWidth,
-                    height: chart.lineAndBarValueHeight * 20,
-                    fill: 'darkgreen',
-                    fillOpacity: 0.2
-                }));
-                groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.left,
-                    y: chart.config.padding.top + (chart.lineAndBarValueHeight * 20),
-                    width: chart.chartWidth,
-                    height: chart.lineAndBarValueHeight * 40,
-                    fill: 'orange',
-                    fillOpacity: 0.2
-                }));
-                groupNode.appendChild(chart.el('rect', {
-                    x: chart.config.padding.left,
-                    y: chart.config.padding.top + (chart.lineAndBarValueHeight * 60),
-                    width: chart.chartWidth,
-                    height: chart.lineAndBarValueHeight * 40,
-                    fill: 'red',
-                    fillOpacity: 0.2
-                }));
-            },
+        groupNode.appendChild(chart.el('rect', {
+            x: chart.config.padding.left,
+            y: chart.config.padding.top,
+            width: chart.chartWidth,
+            height: chart.lineAndBarValueHeight * 20,
+            fill: 'darkgreen',
+            fillOpacity: 0.2
+        }));
+        groupNode.appendChild(chart.el('rect', {
+            x: chart.config.padding.left,
+            y: chart.config.padding.top + (chart.lineAndBarValueHeight * 20),
+            width: chart.chartWidth,
+            height: chart.lineAndBarValueHeight * 40,
+            fill: 'orange',
+            fillOpacity: 0.2
+        }));
+        groupNode.appendChild(chart.el('rect', {
+            x: chart.config.padding.left,
+            y: chart.config.padding.top + (chart.lineAndBarValueHeight * 60),
+            width: chart.chartWidth,
+            height: chart.lineAndBarValueHeight * 40,
+            fill: 'red',
+            fillOpacity: 0.2
+        }));
+    },
             series: [
                 {
                     id: 'train',
@@ -472,19 +480,19 @@ function csvToData(csv, id) {
 
     const lines = csv.split("\n");
 
-    lines.forEach(function(line, lineIndex) {
+    lines.forEach(function (line, lineIndex) {
 
         const columns = line.split(',');
         const firstColumn = columns.shift();
 
         if (lineIndex === 0) {
-            
+
             data.xAxis.columns = columns;
             return;
         }
 
         data.series[firstColumn] = columns;
-        
+
     });
 
     chartInfo[id].data = data;
@@ -539,11 +547,6 @@ function doChart(id) {
         chartInfo[id].chart.setConfig(chartInfo[id].config);
     }
     chartInfo[id].chart.chart(chartInfo[id].data);
-    // var conf = chartInfo[id].config;
-    // if (conf.drawBefore) {
-    //     //console.log(conf.drawBefore.toString());
-    //     stringifyObject(conf);
-    // }
     var codeConfig = document.getElementById(id + 'CodeConfig').querySelector('code');
     var codeData = document.getElementById(id + 'CodeData').querySelector('code');
     codeConfig.innerHTML = stringifyObject(chartInfo[id].config);

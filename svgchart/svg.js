@@ -6,9 +6,6 @@
     // Private constants
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Some CSS rules are added to the HEAD tag. This flag makes sure this only happens once.
-    let cssAdded = false;
-
     /**
      * Default constant values.
      * @constant
@@ -84,6 +81,8 @@
      * Main class.
      */
     class SvgChart {
+
+        static #cssAdded = false;
 
         #onLegendClickScoped = null;
         #onLegendKeypressScoped = null;
@@ -205,8 +204,8 @@
          */
         constructor(parent, config) {
 
-            if (!cssAdded) {
-                cssAdded = true;
+            if (!SvgChart.#cssAdded) {
+                SvgChart.#cssAdded = true;
                 addAllCssRulesToHead();
             }
 
@@ -291,7 +290,7 @@
                     {
                         this.lineAndBarSelectedColumnIndex = null;
                         this.lineAndBarValueHeight = this.chartHeight / this.config.maxValue;
-                        this.barCount = this.config.barStacked ? 1 : 0;
+                        this.barCountPerColumn = this.config.barStacked ? 1 : 0;
 
                         if (this.config.yAxis) {
                             this.#addYAxisGrid();
@@ -319,7 +318,7 @@
             this.config.series.forEach(function (serie, serieIndex) {
 
                 if (!this.config.barStacked && (serie.type === 'bar' || this.config.chartType === 'bar')) {
-                    this.barCount += 1;
+                    this.barCountPerColumn += 1;
                 }
 
                 if (serie.fillGradient) {
@@ -348,6 +347,13 @@
 
             this.#addSerieGroup();
 
+            if (this.config.drawAfter) {
+                this.drawAfterGroup = el('g', {
+                    className: prefixed('draw-after-group')
+                });
+                this.svg.appendChild(this.drawAfterGroup);
+            }
+
         }
 
         chart(data = null) {
@@ -366,6 +372,10 @@
                 case 'donut':
                     this.#dataPieAndDonut();
                     break;
+            }
+
+            if (this.config.drawAfter) {
+                this.config.drawAfter(this, this.drawAfterGroup);
             }
 
         }
@@ -667,7 +677,7 @@
             const columnWidth = this.config.xAxisGridColumns
                 ? (this.chartWidth / (this.data.xAxis.columns.length))
                 : (this.chartWidth / (this.data.xAxis.columns.length - 1));
-            const barWidth = (columnWidth - (this.config.barSpacing * (this.barCount + 1))) / (this.barCount || 1);
+            const barWidth = (columnWidth - (this.config.barSpacing * (this.barCountPerColumn + 1))) / (this.barCountPerColumn || 1);
             // Somehow make this available in drawBefore...
             //this.columnWidth = columnWidth;
             //this.barWidth = barWidth;
@@ -1424,14 +1434,15 @@
      */
     function dirForEach(chartInstance, items, dir, callback) {
         if (dir === 'ltr') {
-            items.forEach(function (item, index) {
-                callback.call(chartInstance, item, index, items);
-            }, chartInstance);
+            const length = items.length;
+            for (let i = 0; i < length; i++) {
+                callback.call(chartInstance, items[i], i, items);
+            }
         } else {
-            var maxIndex = items.length - 1;
-            items.reduceRight(function (_, item, index) {
-                callback.call(chartInstance, item, maxIndex - index, items);
-            }, null);
+            const maxIndex = items.length - 1;
+            for (let i = maxIndex; i >= 0; i--) {
+                callback.call(chartInstance, items[i], maxIndex - i, items);
+            }
         }
     }
 
