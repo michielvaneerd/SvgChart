@@ -1,18 +1,6 @@
 import { addCssRules, el, parent, prefixed, directionForEach, describeArcPie, describeArcDonut } from "./utils.js";
 import { colors } from "./colors.js";
-
-const defaultConstants = {
-    paddingStart: 40,
-    paddingEnd: 20,
-    paddingTop: 100,
-    paddingBottom: 40,
-    paddingNormal: 20,
-    legendWidth: 10,
-    // Padding of the currently focussed value element
-    focusedValuePadding: 6
-};
-
-
+import { defaultConfig } from "./config.js";
 
 /**
  * Mapper between chartType and config functions (functions that we need to execute once for each config) for each phase (before, after, serie).
@@ -33,9 +21,6 @@ const chartTypeInfo = {
     donut: {}
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Public main functions
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class SvgChart {
 
@@ -50,120 +35,43 @@ class SvgChart {
     #onXAxisLabelGroupClickScoped = null;
     #onXAxisLabelGroupKeypressScoped = null;
 
+    /**
+     * Set a color palette for all chart instances.
+     * @param {Array} colors Array of colors.
+     */
     static setColorPalette(colors) {
         SvgChart.#colorPalette = colors;
     }
 
+    /**
+     * Get all default color palettes.
+     * @returns {Array} Array of color palettes (that are arrays of colors).
+     */
     static getColorPalettes() {
         return colors;
     }
 
-    static defaultConfig = {
-
-        dir: 'ltr',
-
-        chartType: null,
-
-        padding: {
-            start: defaultConstants.paddingStart,
-            end: defaultConstants.paddingEnd,
-            top: defaultConstants.paddingTop,
-            bottom: defaultConstants.paddingBottom
-        },
-
-        transition: true,
-
-        backgroundColor: 'white',
-
-        fontFamily: 'sans-serif',
-
-        titleFontSize: 'normal',
-
-        titleColor: 'black',
-
-        titleHorizontalPosition: 'center', // center (default), start, end
-
-        titleVerticalPosition: 'top', // top (default), bottom, center
-
-        showValueOnFocus: true,
-        focusedValueFill: 'black',
-        focusedValueColor: 'white',
-
-        // ???
-        maxValue: null,
-        minValue: null,
-
-        // Axis
-        axisTitleFontSize: 'smaller',
-        axisLabelFontSize: 'small',
-
-        // X axis
-        xAxisTitle: null,
-        xAxisTitleBottom: null, // if this is <> null, then this will be the X start position of the 
-        xAxisGridLineWidth: 1,
-        xAxisGridLineColor: '#C0C0C0',
-        xAxisGridLineDashArray: '1,1',
-        xAxisLabelColor: '#A0A0A0',
-        xAxisTitleColor: '#A0A0A0',
-        xAxisGrid: true,
-        xAxisGridPadding: 0,
-        xAxisLabels: true,
-        xAxisGridColumns: false, // we have now columns we can select / deselect instead of just x axis lines, so it is similar to bar charts, also good if you use bar charts in teh same chart!
-        xAxisGridColumnsSelectable: false,
-        xAxisGridColumnsSelectableColor: 'black',
-        textAnchorXAxisLabels: 'middle', // If you want X axis labels that are vertical (xAxisLabelRotation = 90), then this should be 'start' if you want them aligned to the x axis.
-        xAxisLabelTop: 10,
-        xAxisLabelRotation: null,
-        xAxisStep: 1, // how many steps between x axis grid lines
-        xAxisLabelStep: 1, // how many steps between labels x axis
-
-        // Y axis
-        yAxisTitle: null,
-        yAxisTitleStart: null, // if this is <> null, then this will be the X start position of the Y axis title.
-        yAxisGridLineWidth: 1,
-        yAxisGridLineColor: '#C0C0C0',
-        yAxisGridLineDashArray: '1,1',
-        yAxisLabelColor: '#A0A0A0',
-        yAxisTitleColor: '#A0A0A0',
-        yAxisStep: 10, // how many steps between y axis grid lines
-        yAxisLabelStep: 10, // how many steps between labels y axis
-        yAxis: true,
-        yAxisGrid: true,
-        yAxisLabels: true,
-        yAxisGridPadding: 0,
-
-        // Legend
-        legendFontSize: 'smaller',
-        legendCircle: false,
-        legend: true,
-        legendSelect: true,
-        legendPosition: 'bottom', // end,  bottom, top , NOTE no start!
-        legendBottom: null,
-        legendTop: null, // top position, if null, default position for legendPosition is used.
-
-        // Line charts
-        lineWidth: 2,
-        pointRadius: 2,
-        connectNullValues: false,
-        lineCurved: true,
-        lineChartFilled: false,
-        points: true,
-
-        // Bar charts
-        barFillOpacity: 0.5,
-        barSpacing: 4,
-        barStrokeWidth: 1,
-        barStacked: false,
-
-        // Pie and donut
-        pieFillOpacity: 0.6,
-    };
-
+    /**
+     * Constructor - create a new chart instance.
+     * @param {HTMLElement} parent Parent DOM node the SVG element will be attached to.
+     * @param {Object} config Configuration object.
+     */
     constructor(parent, config) {
 
         if (!SvgChart.#cssAdded) {
             SvgChart.#cssAdded = true;
-            addCss();
+            const cssRules = [
+                '.' + prefixed('line-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
+                '.' + prefixed('line-point') + ':hover, circle.' + prefixed('line-point') + ':focus { stroke-width: 6; outline: none; }',
+                '#' + prefixed('serie-group') + ' g { transition: opacity 0.6s; }',
+                '#' + prefixed('serie-group') + ' g.' + prefixed('unselected') + ' { opacity: 0; }',
+                '#' + prefixed('serie-group-current') + ' { transition: opacity 1s; opacity: 1; }',
+                '#' + prefixed('serie-group-current') + '.' + prefixed('unattached') + ' { opacity: 0; }',
+                'g.' + prefixed('legend-group') + ' g.' + prefixed('unselected') + ' { opacity: 0.4; }',
+                'rect.' + prefixed('bar') + ':hover, path.' + prefixed('pie-piece') + ':hover { fill-opacity: 0.7; }',
+                'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; fill-opacity:1; }'
+            ];
+            document.head.appendChild(document.createElement("style")).innerHTML = cssRules.join("\n");
         }
 
         const parentRect = parent.getBoundingClientRect();
@@ -180,10 +88,14 @@ class SvgChart {
         this.setConfig(config);
     }
 
+    /**
+     * Set the configuration for this chart instance.
+     * @param {Object} config Configuration object.
+     */
     setConfig(config) {
 
-        this.config = Object.assign({}, SvgChart.defaultConfig, config);
-        this.config.padding = Object.assign({}, SvgChart.defaultConfig.padding, this.config.padding);
+        this.config = Object.assign({}, defaultConfig, config);
+        this.config.padding = Object.assign({}, defaultConfig.padding, this.config.padding);
 
         this.isLTR = this.config.dir === 'ltr';
 
@@ -315,6 +227,10 @@ class SvgChart {
 
     }
 
+    /**
+     * Writing the charts.
+     * @param {Array} data Data array.
+     */
     chart(data = null) {
 
         if (data !== null) {
@@ -344,6 +260,10 @@ class SvgChart {
         return this.#onXAxisLabelGroupSelect(textNodes.item(index));
     }
 
+    /**
+     * Saves chart as PNG file.
+     * @param {String} filename Filename.
+     */
     saveAsPng(filename) {
         var rect = this.svg.getBoundingClientRect();
         var canvas = document.createElement('canvas');
@@ -444,11 +364,11 @@ class SvgChart {
                     break;
                 case 'end':
                     if (this.isLTR) {
-                        x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + defaultConstants.paddingNormal;
-                        y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * defaultConstants.paddingNormal);
+                        x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + this.config.paddingNormal;
+                        y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * this.config.paddingNormal);
                     } else {
-                        x = (this.config.xAxisGridPadding * 2) + this.config.padding.end - defaultConstants.paddingNormal - defaultConstants.legendWidth;
-                        y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * defaultConstants.paddingNormal);
+                        x = (this.config.xAxisGridPadding * 2) + this.config.padding.end - this.config.paddingNormal - this.config.legendWidth;
+                        y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * this.config.paddingNormal);
                     }
                     break;
             }
@@ -456,17 +376,17 @@ class SvgChart {
             const rect = el('rect', {
                 x: x,
                 y: y,
-                rx: this.config.legendCircle ? defaultConstants.legendWidth : 0,
-                ry: this.config.legendCircle ? defaultConstants.legendWidth : 0,
-                width: defaultConstants.legendWidth,
-                height: defaultConstants.legendWidth,
+                rx: this.config.legendCircle ? this.config.legendWidth : 0,
+                ry: this.config.legendCircle ? this.config.legendWidth : 0,
+                width: this.config.legendWidth,
+                height: this.config.legendWidth,
                 fill: this.#getSerieFill(serie, serieIndex)
             });
 
             const text = el('text', {
                 direction: this.config.dir,
-                x: this.isLTR ? (x + (defaultConstants.legendWidth * 2)) : (x - defaultConstants.legendWidth),
-                y: y + (defaultConstants.legendWidth / 2) + 1, // + 1 don't know why
+                x: this.isLTR ? (x + (this.config.legendWidth * 2)) : (x - this.config.legendWidth),
+                y: y + (this.config.legendWidth / 2) + 1, // + 1 don't know why
                 textAnchor: 'start',
                 dominantBaseline: 'middle',
                 fontFamily: this.config.fontFamily || '',
@@ -492,23 +412,23 @@ class SvgChart {
             // and center the complete legend row.
 
             let totalLegendWidth = 0;
-            let curX = this.isLTR ? 0 : (this.width - defaultConstants.legendWidth);
+            let curX = this.isLTR ? 0 : (this.width - this.config.legendWidth);
             gLegend.querySelectorAll('g').forEach(function (g) {
                 const box = g.getBBox();
                 g.querySelector('rect').setAttribute('x', curX);
-                g.querySelector('text').setAttribute('x', this.isLTR ? (curX + (defaultConstants.legendWidth * 2)) : (curX - 10));
+                g.querySelector('text').setAttribute('x', this.isLTR ? (curX + (this.config.legendWidth * 2)) : (curX - 10));
                 if (this.isLTR) {
-                    curX += (box.width + defaultConstants.paddingNormal);
+                    curX += (box.width + this.config.paddingNormal);
                 } else {
-                    curX -= (box.width + defaultConstants.paddingNormal);
+                    curX -= (box.width + this.config.paddingNormal);
                 }
-                totalLegendWidth += (box.width + defaultConstants.paddingNormal);
+                totalLegendWidth += (box.width + this.config.paddingNormal);
             }, this);
             if (this.isLTR) {
-                curX -= defaultConstants.paddingNormal;
+                curX -= this.config.paddingNormal;
                 gLegend.setAttribute('transform', 'translate(' + ((this.width / 2) - (curX / 2)) + ', 0)');
             } else {
-                totalLegendWidth -= defaultConstants.paddingNormal;
+                totalLegendWidth -= this.config.paddingNormal;
                 gLegend.setAttribute('transform', 'translate(-' + ((this.width / 2) - (totalLegendWidth / 2)) + ', 0)');
             }
 
@@ -521,11 +441,11 @@ class SvgChart {
         var x, y, dominantBaseline, textAnchor = null;
         switch (this.config.titleHorizontalPosition) {
             case 'end':
-                x = this.width - defaultConstants.paddingNormal;
+                x = this.width - this.config.paddingNormal;
                 textAnchor = this.isLTR ? 'end' : 'start';
                 break;
             case 'start':
-                x = defaultConstants.paddingNormal;
+                x = this.config.paddingNormal;
                 textAnchor = this.isLTR ? 'start' : 'end';
                 break;
             default:
@@ -539,18 +459,18 @@ class SvgChart {
                 dominantBaseline = 'middle';
                 break;
             case 'bottom':
-                y = this.height - defaultConstants.paddingNormal;
+                y = this.height - this.config.paddingNormal;
                 dominantBaseline = 'auto';
                 break;
             default:
-                y = defaultConstants.paddingNormal;
+                y = this.config.paddingNormal;
                 dominantBaseline = 'hanging';
                 break;
         }
         this.svg.appendChild(el('text', {
             direction: this.config.dir,
             x: x,
-            y: defaultConstants.paddingNormal,
+            y: this.config.paddingNormal,
             textAnchor: textAnchor,
             dominantBaseline: dominantBaseline,
             fontFamily: this.config.fontFamily || '',
@@ -586,7 +506,7 @@ class SvgChart {
             ? (this.chartWidth / (this.data.xAxis.columns.length))
             : (this.chartWidth / (this.data.xAxis.columns.length - 1));
         const barWidth = (columnWidth - (this.config.barSpacing * (this.barCountPerColumn + 1))) / (this.barCountPerColumn || 1);
-        
+
         // Make this available on the instance.
         this.columnWidth = columnWidth;
         this.barWidth = barWidth;
@@ -884,9 +804,9 @@ class SvgChart {
         // By default: x is 20 pixels from start border
         var x = 0;
         if (this.isLTR) {
-            x = this.config.yAxisTitleStart ? this.config.yAxisTitleStart : defaultConstants.paddingNormal;
+            x = this.config.yAxisTitleStart ? this.config.yAxisTitleStart : this.config.paddingNormal;
         } else {
-            x = this.config.yAxisTitleStart ? (this.width - this.config.yAxisTitleStart) : (this.width - defaultConstants.paddingNormal);
+            x = this.config.yAxisTitleStart ? (this.width - this.config.yAxisTitleStart) : (this.width - this.config.paddingNormal);
         }
         yAxisTitleG.setAttribute('transform', 'translate(' + x + ', ' + (this.config.padding.top + this.config.yAxisGridPadding) + ')');
         var yAxisTitleEl = el('text', {
@@ -908,7 +828,7 @@ class SvgChart {
         this.svg.appendChild(el('text', {
             direction: this.config.dir,
             x: x,
-            y: this.height - (this.config.xAxisTitleBottom != null ? this.config.xAxisTitleBottom : defaultConstants.paddingNormal),
+            y: this.height - (this.config.xAxisTitleBottom != null ? this.config.xAxisTitleBottom : this.config.paddingNormal),
             textAnchor: 'end',
             dominantBaseline: 'auto',
             fontFamily: this.config.fontFamily || '',
@@ -1144,8 +1064,8 @@ class SvgChart {
             this.valueElText.replaceChild(document.createTextNode(serieItem.title + ': ' + circle.dataset.value), this.valueElText.firstChild);
             this.serieGroupElement.appendChild(this.valueElGroup);
             var box = this.valueElText.getBBox();
-            var width = box.width + (defaultConstants.focusedValuePadding * 2);
-            var height = box.height + (defaultConstants.focusedValuePadding * 2);
+            var width = box.width + (this.config.focusedValuePadding * 2);
+            var height = box.height + (this.config.focusedValuePadding * 2);
             this.valueElRect.setAttribute('width', width);
             this.valueElRect.setAttribute('height', height);
             this.valueElText.setAttribute('x', width / 2);
@@ -1172,9 +1092,9 @@ class SvgChart {
     }
 
     /**
- * When a label on the x axis receives a keypress when focussed.
- * @param {Event} e Event object.
- */
+     * When a label on the x axis receives a keypress when focussed.
+     * @param {Event} e Event object.
+     */
     #onXAxisLabelGroupKeypress(e) {
         if (e.keyCode === 13) {
             this.#onXAxisLabelGroupSelect(e.target);
@@ -1191,13 +1111,13 @@ class SvgChart {
 
     /**
      * Display the selected column indicator and fires the onXAxisLabelGroupSelect callback (if defined).
-     * @param {Node} target Node (x axis label) that is selected.
+     * @param {HTMLElement} label Node (x axis label) that is selected.
      */
-    #onXAxisLabelGroupSelect(target) {
+    #onXAxisLabelGroupSelect(label) {
         var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
         var rects = this.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.' + prefixed('x-axis-grid-column-selectable'));
         for (var i = 0; i < textNodes.length; i++) {
-            if (textNodes[i] === target) {
+            if (textNodes[i] === label) {
                 this.lineAndBarSelectedColumnIndex = i;
                 textNodes[i].classList.add(prefixed('selected'));
                 textNodes[i].setAttribute('font-weight', 'bold');
@@ -1215,107 +1135,10 @@ class SvgChart {
         }
     }
 
-
-
-
 }
 
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Private main functions during config
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Private functions that don't require a chart instance
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Event handler callbacks
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Private functions
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-function addCss() {
-    addCssRules([
-        '.' + prefixed('line-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
-        '.' + prefixed('line-point') + ':hover, circle.' + prefixed('line-point') + ':focus { stroke-width: 6; outline: none; }',
-        '#' + prefixed('serie-group') + ' g { transition: opacity 0.6s; }',
-        '#' + prefixed('serie-group') + ' g.' + prefixed('unselected') + ' { opacity: 0; }',
-        '#' + prefixed('serie-group-current') + ' { transition: opacity 1s; opacity: 1; }',
-        '#' + prefixed('serie-group-current') + '.' + prefixed('unattached') + ' { opacity: 0; }',
-        'g.' + prefixed('legend-group') + ' g.' + prefixed('unselected') + ' { opacity: 0.4; }',
-        'rect.' + prefixed('bar') + ':hover, path.' + prefixed('pie-piece') + ':hover { fill-opacity: 0.7; }',
-        'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; fill-opacity:1; }'
-    ]);
-}
-
+// Add el function to chart instance, so we can use it in the calling function, for example
+// to use it in the drawBefore or drawAfter callbacks.
 SvgChart.prototype.el = el;
 
 export { SvgChart };
-
-
