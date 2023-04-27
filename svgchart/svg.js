@@ -1,4 +1,5 @@
 import { addCssRules, el, parent, prefixed, directionForEach, describeArcPie, describeArcDonut } from "./utils.js";
+import { colors } from "./colors.js";
 
 const defaultConstants = {
     paddingStart: 40,
@@ -32,21 +33,6 @@ const chartTypeInfo = {
     donut: {}
 };
 
-
-
-/**
- * Some color palettes.
- */
-const dutchFieldColorPalette = ["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"];
-const retroMetroColorPalette = ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"];
-const riverNightsColorPalette = ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e", "#ebdc78"];
-const springPastelsColorPalette = ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"];
-
-/**
- * Our default color palette.
- */
-const defaultColorPalette = dutchFieldColorPalette;
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Public main functions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +40,7 @@ const defaultColorPalette = dutchFieldColorPalette;
 class SvgChart {
 
     static #cssAdded = false;
-    static #colorPalette = dutchFieldColorPalette;
+    static #colorPalette = colors.dutchFieldColorPalette;
 
     #onLegendClickScoped = null;
     #onLegendKeypressScoped = null;
@@ -66,6 +52,10 @@ class SvgChart {
 
     static setColorPalette(colors) {
         SvgChart.#colorPalette = colors;
+    }
+
+    static getColorPalettes() {
+        return colors;
     }
 
     static defaultConfig = {
@@ -1044,7 +1034,7 @@ class SvgChart {
         if (serie.color) {
             return serie.color;
         }
-        return defaultColorPalette[serieIndex];
+        return SvgChart.#colorPalette[serieIndex];
     }
 
     #getSeriePointColor(serie, serieIndex) {

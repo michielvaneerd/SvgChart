@@ -1,6 +1,7 @@
 import { SvgChart } from "./svgchart/svg.js";
 
-
+//const colors = SvgChart.getColorPalettes();
+//SvgChart.setColorPalette(colors.springPastelsColorPalette);
 
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
@@ -641,3 +642,4 @@ document.documentElement.addEventListener('click', function (e) {
         navigator.clipboard.writeText(pre.querySelector('code').innerText);
     }
 });
+
