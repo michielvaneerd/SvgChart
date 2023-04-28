@@ -23,7 +23,8 @@ const chartTypeInfo = {
 class SvgChart {
 
     static #cssAdded = false;
-    static #colorPalette = colors.dutchFieldColorPalette;
+    static colorPalettes = colors;
+    static #activeColorPalette = colors.dutchFieldColorPalette;
 
     #onLegendClickScoped = null;
     #onLegendKeypressScoped = null;
@@ -37,16 +38,8 @@ class SvgChart {
      * Set a color palette for all chart instances.
      * @param {Array} colors Array of colors.
      */
-    static setColorPalette(colors) {
-        SvgChart.#colorPalette = colors;
-    }
-
-    /**
-     * Get all default color palettes.
-     * @returns {Array} Array of color palettes (that are arrays of colors).
-     */
-    static getColorPalettes() {
-        return colors;
+    static setActiveColorPalette(colors) {
+        SvgChart.#activeColorPalette = colors;
     }
 
     /**
@@ -69,7 +62,7 @@ class SvgChart {
                 'rect.' + prefixed('bar') + ':hover, path.' + prefixed('pie-piece') + ':hover { fill-opacity: 0.7; }',
                 'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; fill-opacity:1; }'
             ];
-            document.head.appendChild(document.createElement("style")).innerHTML = cssRules.join("\n");
+            parent.ownerDocument.head.appendChild(document.createElement("style")).innerHTML = cssRules.join("\n");
         }
 
         const parentRect = parent.getBoundingClientRect();
@@ -235,17 +228,21 @@ class SvgChart {
             this.data = data;
         }
 
+        const currentSerieGroupElement = this.#dataBefore();
+
         switch (this.config.chartType) {
             case 'lineAndBar':
             case 'bar':
             case 'line':
-                this.#dataLineAndBar();
+                this.#dataLineAndBar(currentSerieGroupElement);
                 break;
             case 'pie':
             case 'donut':
-                this.#dataPieAndDonut();
+                this.#dataPieAndDonut(currentSerieGroupElement);
                 break;
         }
+
+        this.#dataAfter(currentSerieGroupElement);
 
         if (this.config.drawAfter) {
             this.config.drawAfter(this, this.drawAfterGroup);
@@ -480,10 +477,9 @@ class SvgChart {
 
     /**
      * Main function to visualise data for line or bar chart types.
+     * @param {HTMLElement} currentSerieGroupElement The current serie group element
      */
-    #dataLineAndBar() {
-
-        const currentSerieGroupElement = this.#dataBefore();
+    #dataLineAndBar(currentSerieGroupElement) {
 
         if (this.xAxisGroupElement.firstChild) {
             this.xAxisGroupElement.removeChild(this.xAxisGroupElement.firstChild);
@@ -639,8 +635,6 @@ class SvgChart {
 
             currentSerieGroupElement.appendChild(serieGroup);
         }, this);
-
-        this.#dataAfter(currentSerieGroupElement);
     }
 
     /**
@@ -671,10 +665,9 @@ class SvgChart {
 
     /**
      * Main function to visualise data for pie or donut chart types.
+     * @param {HTMLElement} currentSerieGroupElement The current serie group element
      */
-    #dataPieAndDonut() {
-
-        const currentSerieGroupElement = this.#dataBefore();
+    #dataPieAndDonut(currentSerieGroupElement) {
 
         var radius = this.chartHeight / 2;
         var centerX = this.width / 2;
@@ -712,8 +705,6 @@ class SvgChart {
             currentSerieGroupElement.appendChild(serieGroup);
 
         }, this);
-
-        this.#dataAfter(currentSerieGroupElement);
 
     }
 
@@ -890,10 +881,10 @@ class SvgChart {
     }
 
     /**
- * Helper function to get a curved path from an array of points.
- * @param {Array} points Array of points.
- * @returns Array of curved path coordinates.
- */
+     * Helper function to get a curved path from an array of points.
+     * @param {Array} points Array of points.
+     * @returns Array of curved path coordinates.
+     */
     #getCurvedPathFromPoints(points) {
         let path = ['M ' + points[0].x + ' ' + points[0].y];
         for (var i = 0; i < points.length - 1; i++) {
@@ -952,7 +943,7 @@ class SvgChart {
         if (serie.color) {
             return serie.color;
         }
-        return SvgChart.#colorPalette[serieIndex];
+        return SvgChart.#activeColorPalette[serieIndex];
     }
 
     #getSeriePointColor(serie, serieIndex) {
@@ -968,12 +959,12 @@ class SvgChart {
     }
 
     /**
-* Adds an event listener to a node and adds it to the _listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
-* @param {Node} node Node to add the listener to.
-* @param {String} eventName Name of event.
-* @param {Function} callback Function that needs to be executed.
-* @param {Boolean} capture Capture or not.
-*/
+     * Adds an event listener to a node and adds it to the _listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
+     * @param {Node} node Node to add the listener to.
+     * @param {String} eventName Name of event.
+     * @param {Function} callback Function that needs to be executed.
+     * @param {Boolean} capture Capture or not.
+     */
     #addEventListener(node, eventName, callback, capture) {
         node.addEventListener(eventName, callback, capture);
         this._listenersToRemoveAfterConfigChange.push([node, eventName, callback, capture]);
@@ -981,9 +972,9 @@ class SvgChart {
 
 
     /**
- * When legend gets toggled (selected / deselected).
- * @param {Node} target Legend node that gets toggled.
- */
+     * When legend gets toggled (selected / deselected).
+     * @param {Node} target Legend node that gets toggled.
+     */
     #onLegendToggle(target) {
         var g = parent(target, 'g');
         if (g && g.dataset.serie) {
@@ -1024,9 +1015,9 @@ class SvgChart {
     }
 
     /**
-* When the tranisiton of a serie group has ended.
-* @param {Event} e Event object.
-*/
+     * When the tranisiton of a serie group has ended.
+     * @param {Event} e Event object.
+     */
     #onSerieGroupTransitionend(e) {
         // Currently only used to add display none to it when this serie group is unselected.
         // We have to add display none, so this node doesn't make part of the UI anymore and cannot hide other nodes.
@@ -1036,9 +1027,9 @@ class SvgChart {
     }
 
     /**
- * When a serie group node is blurred (this means loses focus).
- * @param {Event} e Event object.
- */
+     * When a serie group node is blurred (this means loses focus).
+     * @param {Event} e Event object.
+     */
     #onSerieGroupBlur(e) {
         var circle = e.target;
         var g = parent(circle, 'g');
