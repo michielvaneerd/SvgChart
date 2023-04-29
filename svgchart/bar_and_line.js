@@ -3,6 +3,7 @@ import { Controller } from "./controller.js";
 
 /**
  * Controller class for bar and line charts.
+ * @extends Controller
  */
 class BarAndLineController extends Controller {
 

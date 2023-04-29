@@ -3,6 +3,7 @@ import { Controller } from "./controller.js";
 
 /**
  * Class for displaying pie and donut charts.
+ * @extends Controller
  */
 class PieAndDonutController extends Controller {
 

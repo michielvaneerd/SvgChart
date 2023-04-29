@@ -5,11 +5,19 @@ class SvgChartConfig {
 
     /**
      * @prop {String} dir - Language direction.
+     * @default ltr
      */
     dir = 'ltr';
 
+    /**
+     * @prop {String} chartType - Chart type. Possible values: line, bar, lineAndBar, pie, donut.
+     */
     chartType = null;
 
+    /**
+     * @prop {Object} padding - Padding object.
+     * @example {start: 40, end: 20, top: 100, bottom: 40}
+     */
     padding = {
         start: 40,
         end: 20,

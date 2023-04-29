@@ -208,7 +208,7 @@ class SvgChart {
 
     /**
      * Writing the charts.
-     * @param {Array} data Data array.
+     * @param {Object} data Data object.
      */
     chart(data = null) {
 
@@ -248,7 +248,6 @@ class SvgChart {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         var img = new Image();
         var data = '<svg xmlns="http://www.w3.org/2000/svg">' + this.svg.innerHTML + '</svg>';
-        console.log(data);
         var parser = new DOMParser();
         var result = parser.parseFromString(data, 'text/xml');
         var inlineSVG = result.getElementsByTagName("svg")[0];
