@@ -87,4 +87,20 @@ function directionForEach(instance, items, isRTL, callback) {
     }
 }
 
-export { el, parent, prefixed, directionForEach, };
+/**
+ * Convert polar to cartesian point.
+ * @param {Number} centerX Center x.
+ * @param {Number} centerY Center y.
+ * @param {Number} radius Radius of arc.
+ * @param {Number} angleInDegrees Angle in degrees.
+ * @returns {Object} Point.
+ */
+function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180;
+    return {
+        x: centerX + (radius * Math.cos(angleInRadians)),
+        y: centerY + (radius * Math.sin(angleInRadians))
+    };
+}
+
+export { el, parent, prefixed, directionForEach, polarToCartesian };

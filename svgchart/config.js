@@ -115,6 +115,7 @@ class SvgChartConfig {
 
     // Pie and donut
     pieFillOpacity = 0.6;
+    donutWidth = 80;
 };
 
 export { SvgChartConfig };
