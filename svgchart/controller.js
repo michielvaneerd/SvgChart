@@ -16,6 +16,7 @@ class Controller {
             throw new Error('Controller class cannot be directly instanstiated.');
         }
         this.svgChart = svgChart;
+        this.config = this.svgChart.config;
     }
 
     /**
@@ -30,7 +31,6 @@ class Controller {
      * Execute config things before global config things are done.
      */
     configBefore() {
-        this.config = this.svgChart.config;
         console.log('configBefore');
     }
 

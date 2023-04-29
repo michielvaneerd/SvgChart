@@ -78,20 +78,6 @@ class SvgChart {
         });
         parent.appendChild(this.svg);
 
-        switch (config.chartType) {
-            case 'line':
-            case 'bar':
-            case 'lineAndBar':
-                this.controller = new BarAndLineController(this);
-                break;
-            case 'pie':
-                this.controller = new PieController(this);
-                break;
-            case 'donut':
-                this.controller = new DonutController(this);
-                break;
-        }
-
         this.setConfig(config);
     }
 
@@ -117,6 +103,21 @@ class SvgChart {
             this.config.padding.left = this.config.padding.end;
             this.config.padding.right = this.config.padding.start;
         }
+
+        switch (config.chartType) {
+            case 'line':
+            case 'bar':
+            case 'lineAndBar':
+                this.controller = new BarAndLineController(this);
+                break;
+            case 'pie':
+                this.controller = new PieController(this);
+                break;
+            case 'donut':
+                this.controller = new DonutController(this);
+                break;
+        }
+
         this.svg.setAttribute('direction', this.config.dir);
 
         // First remove event listener from a previous config if they exist.
