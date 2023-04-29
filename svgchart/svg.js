@@ -1,6 +1,8 @@
-import { el, parent, prefixed, directionForEach, describeArcPie, describeArcDonut } from "./utils.js";
+import { el, parent, prefixed } from "./utils.js";
 import { colors } from "./colors.js";
-import { defaultConfig } from "./config.js";
+import { BarAndLineController } from "./bar_and_line.js";
+import { PieAndDonutController } from "./pie_and_donut.js";
+import { SvgChartConfig } from "./config.js";
 
 // Mapper between chart type and some required config properties.
 const chartTypeInfo = {
@@ -31,8 +33,6 @@ class SvgChart {
     #onSerieGroupTransitionendScoped = null;
     #onSerieGroupFocusScoped = null;
     #onSerieGroupBlurScoped = null;
-    #onXAxisLabelGroupClickScoped = null;
-    #onXAxisLabelGroupKeypressScoped = null;
 
     /**
      * Set a color palette for all chart instances.
@@ -51,6 +51,7 @@ class SvgChart {
 
         if (!SvgChart.#cssAdded) {
             SvgChart.#cssAdded = true;
+            // TODO: split between chart types.
             const cssRules = [
                 '.' + prefixed('line-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
                 '.' + prefixed('line-point') + ':hover, circle.' + prefixed('line-point') + ':focus { stroke-width: 6; outline: none; }',
@@ -76,6 +77,18 @@ class SvgChart {
         });
         parent.appendChild(this.svg);
 
+        switch (config.chartType) {
+            case 'line':
+            case 'bar':
+            case 'lineAndBar':
+                this.controller = new BarAndLineController(this);
+                break;
+            case 'pie':
+            case 'donut':
+                this.controller = new PieAndDonutController(this);
+                break;
+        }
+
         this.setConfig(config);
     }
 
@@ -85,8 +98,10 @@ class SvgChart {
      */
     setConfig(config) {
 
-        this.config = Object.assign({}, defaultConfig, config);
-        this.config.padding = Object.assign({}, defaultConfig.padding, this.config.padding);
+        const newConfig = new SvgChartConfig();
+
+        this.config = Object.assign({}, newConfig, config);
+        this.config.padding = Object.assign({}, newConfig.padding, this.config.padding);
 
         this.isLTR = this.config.dir === 'ltr';
 
@@ -145,43 +160,11 @@ class SvgChart {
             this.#addLegend();
         }
 
-        switch (this.config.chartType) {
-            case 'line':
-            case 'bar':
-            case 'lineAndBar':
-                {
-                    this.lineAndBarSelectedColumnIndex = null;
-                    this.lineAndBarValueHeight = this.chartHeight / this.config.maxValue;
-                    this.barCountPerColumn = this.config.barStacked ? 1 : 0;
+        this.controller.configBefore();
 
-                    if (this.config.yAxis) {
-                        this.#addYAxisGrid();
-                    }
+        this.config.series.forEach(function (serie) {
 
-                    if (this.config.xAxisTitle) {
-                        this.#addXAxisTitle();
-                    }
-
-                    if (this.config.yAxisTitle) {
-                        this.#addYAxisTitle();
-                    }
-
-                    if (this.config.xAxisLabels) {
-                        this.#addXAxisLabelsGroup();
-                    }
-
-                    this.xAxisGroupElement = this.svg.appendChild(el('g', {
-                        className: prefixed('x-axis-group')
-                    }));
-                }
-                break;
-        }
-
-        this.config.series.forEach(function (serie, serieIndex) {
-
-            if (!this.config.barStacked && (serie.type === 'bar' || this.config.chartType === 'bar')) {
-                this.barCountPerColumn += 1;
-            }
+            this.controller.configSerieBefore(serie);
 
             if (serie.fillGradient) {
                 var lg = el('linearGradient', {
@@ -201,6 +184,9 @@ class SvgChart {
                 }));
                 this.defsElement.appendChild(lg);
             }
+
+            this.controller.configSerieAfter(serie);
+
         }, this);
 
         if (this.config.drawBefore) {
@@ -216,6 +202,8 @@ class SvgChart {
             this.svg.appendChild(this.drawAfterGroup);
         }
 
+        this.controller.configAfter();
+
     }
 
     /**
@@ -230,17 +218,7 @@ class SvgChart {
 
         const currentSerieGroupElement = this.#dataBefore();
 
-        switch (this.config.chartType) {
-            case 'lineAndBar':
-            case 'bar':
-            case 'line':
-                this.#dataLineAndBar(currentSerieGroupElement);
-                break;
-            case 'pie':
-            case 'donut':
-                this.#dataPieAndDonut(currentSerieGroupElement);
-                break;
-        }
+        this.controller.draw(currentSerieGroupElement);
 
         this.#dataAfter(currentSerieGroupElement);
 
@@ -250,10 +228,10 @@ class SvgChart {
 
     }
 
-    setSelectedIndex(index) {
-        var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
-        return this.#onXAxisLabelGroupSelect(textNodes.item(index));
-    }
+    // setSelectedIndex(index) {
+    //     var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
+    //     return this.#onXAxisLabelGroupSelect(textNodes.item(index));
+    // }
 
     /**
      * Saves chart as PNG file.
@@ -296,7 +274,7 @@ class SvgChart {
             id: prefixed('serie-group')
         });
         this.svg.appendChild(this.serieGroupElement);
-        this.#addEventListener(this.serieGroupElement, 'transitionend', this.#onSerieGroupTransitionendScoped, false);
+        this.addEventListener(this.serieGroupElement, 'transitionend', this.#onSerieGroupTransitionendScoped, false);
 
         if (this.config.showValueOnFocus) {
             if (!this.#onSerieGroupFocusScoped) {
@@ -304,8 +282,8 @@ class SvgChart {
                 this.#onSerieGroupBlurScoped = this.#onSerieGroupBlur.bind(this);
             }
 
-            this.#addEventListener(this.serieGroupElement, 'focus', this.#onSerieGroupFocusScoped, true);
-            this.#addEventListener(this.serieGroupElement, 'blur', this.#onSerieGroupBlurScoped, true);
+            this.addEventListener(this.serieGroupElement, 'focus', this.#onSerieGroupFocusScoped, true);
+            this.addEventListener(this.serieGroupElement, 'blur', this.#onSerieGroupBlurScoped, true);
 
             this.valueElGroup = el('g', {
                 className: prefixed('value-element-group')
@@ -337,8 +315,8 @@ class SvgChart {
                 this.#onLegendClickScoped = this.#onLegendClick.bind(this);
                 this.#onLegendKeypressScoped = this.#onLegendKeypress.bind(this);
             }
-            this.#addEventListener(gLegend, 'keypress', this.#onLegendKeypressScoped, false);
-            this.#addEventListener(gLegend, 'click', this.#onLegendClickScoped, false);
+            this.addEventListener(gLegend, 'keypress', this.#onLegendKeypressScoped, false);
+            this.addEventListener(gLegend, 'click', this.#onLegendClickScoped, false);
         }
 
         this.config.series.forEach(function (serie, serieIndex) {
@@ -375,7 +353,7 @@ class SvgChart {
                 ry: this.config.legendCircle ? this.config.legendWidth : 0,
                 width: this.config.legendWidth,
                 height: this.config.legendWidth,
-                fill: this.#getSerieFill(serie, serieIndex)
+                fill: this.getSerieFill(serie, serieIndex)
             });
 
             const text = el('text', {
@@ -476,168 +454,6 @@ class SvgChart {
     }
 
     /**
-     * Main function to visualise data for line or bar chart types.
-     * @param {HTMLElement} currentSerieGroupElement The current serie group element
-     */
-    #dataLineAndBar(currentSerieGroupElement) {
-
-        if (this.xAxisGroupElement.firstChild) {
-            this.xAxisGroupElement.removeChild(this.xAxisGroupElement.firstChild);
-        }
-
-        if (this.config.xAxisGridColumnsSelectable) {
-            if (this.xAxisGridColumnsSelectableGroupElement.firstChild) {
-                this.xAxisGridColumnsSelectableGroupElement.firstChild.remove();
-            }
-        }
-
-        if (this.xAxisLabelsGroupElement.firstChild) {
-            this.xAxisLabelsGroupElement.removeChild(this.xAxisLabelsGroupElement.firstChild);
-        }
-
-        // Note that for bar charts to display correctly, this.config.xAxisGridColumns MUST be true!
-        const columnWidth = this.config.xAxisGridColumns
-            ? (this.chartWidth / (this.data.xAxis.columns.length))
-            : (this.chartWidth / (this.data.xAxis.columns.length - 1));
-        const barWidth = (columnWidth - (this.config.barSpacing * (this.barCountPerColumn + 1))) / (this.barCountPerColumn || 1);
-
-        // Make this available on the instance.
-        this.columnWidth = columnWidth;
-        this.barWidth = barWidth;
-
-        this.#addXAxisLabels(columnWidth);
-
-        var currentBarIndex = 0;
-        var stackedBarValues = []; // value index => current value (steeds optellen)
-
-        this.config.series.forEach(function (serie, serieIndex) {
-
-            var serieGroup = el('g', {
-                dataSerie: serie.id,
-                className: this.unselectedSeries[serie.id] ? prefixed('unselected') : ''
-            });
-
-            var serieType = serie.type || (this.config.chartType === 'lineAndBar' ? 'line' : this.config.chartType);
-
-            switch (serieType) {
-                case 'line':
-                    {
-                        var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
-                        var flatNonNullPoints = [];
-
-                        directionForEach(this, this.data.series[serie.id], this.isLTR, function (value, valueIndex, values) {
-                            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0);
-                            var y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
-
-                            if (value === null) {
-                                if (nonNullPoints[nonNullPoints.length - 1].length > 0 && valueIndex + 1 < values.length) {
-                                    nonNullPoints.push([]);
-                                }
-                            } else {
-                                nonNullPoints[nonNullPoints.length - 1].push({ x: x, y: y, value: value });
-                                flatNonNullPoints.push({ x: x, y: y, value: value });
-                            }
-                        });
-
-                        var paths = [];
-
-                        if (this.config.connectNullValues) {
-
-                            // Loop through flatNonNullPoints
-
-                            let path = this.config.lineCurved ? this.#getCurvedPathFromPoints(flatNonNullPoints) : this.#getStraightPathFromPoints(flatNonNullPoints);
-                            if (path.length > 0) {
-                                paths.push(path);
-                            }
-
-                        } else {
-
-                            // Loop through nonNullPoints
-
-                            nonNullPoints.forEach(function (currentNonNullPoints) {
-                                if (currentNonNullPoints.length > 0) {
-                                    let path = this.config.lineCurved ? this.#getCurvedPathFromPoints(currentNonNullPoints) : this.#getStraightPathFromPoints(currentNonNullPoints);
-                                    if (path.length > 0) {
-                                        paths.push(path);
-                                    }
-                                }
-                            }, this);
-
-                        }
-
-                        paths.forEach(function (path) {
-                            serieGroup.appendChild(el('path', {
-                                d: path.join(' '),
-                                fill: this.config.lineChartFilled ? this.#getSerieFill(serie, serieIndex) : 'none',
-                                fillOpacity: 0.4,
-                                stroke: this.#getSerieStrokeColor(serie, serieIndex),
-                                strokeWidth: this.config.lineWidth || '',
-                                className: prefixed('line')
-                            }));
-                        }, this);
-
-                        if (this.config.points) {
-                            flatNonNullPoints.forEach(function (point) {
-                                serieGroup.appendChild(el('circle', {
-                                    cx: point.x,
-                                    cy: point.y,
-                                    r: this.config.pointRadius,
-                                    zIndex: 1,
-                                    fill: this.#getSeriePointColor(serie, serieIndex),
-                                    stroke: this.#getSeriePointColor(serie, serieIndex),
-                                    dataValue: point.value,
-                                    className: prefixed('line-point'),
-                                    tabindex: this.config.showValueOnFocus ? 0 : null
-                                }));
-                            }, this);
-                        }
-                    }
-                    break;
-                case 'bar':
-                    {
-                        directionForEach(this, this.data.series[serie.id], this.isLTR, function (value, valueIndex) {
-
-                            var x = null;
-                            var y = null;
-                            var height = null;
-                            if (this.config.barStacked) {
-                                if (!stackedBarValues[valueIndex]) stackedBarValues[valueIndex] = this.config.minValue;
-                                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + this.config.barSpacing;
-                                y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight) - (stackedBarValues[valueIndex] * this.lineAndBarValueHeight);
-                                height = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
-                                stackedBarValues[valueIndex] = stackedBarValues[valueIndex] += value;
-                            } else {
-                                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * columnWidth) + (barWidth * currentBarIndex) + (this.config.barSpacing * (currentBarIndex + 1));
-                                height = y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (value * this.lineAndBarValueHeight);
-                            }
-
-                            serieGroup.appendChild(el('rect', {
-                                x: x,
-                                y: y,
-                                width: barWidth,
-                                height: this.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
-                                fill: this.#getSerieFill(serie, serieIndex),
-                                className: prefixed('bar'),
-                                fillOpacity: this.config.barFillOpacity || '',
-                                strokeWidth: this.config.barStrokeWidth || 0,
-                                stroke: this.#getSerieStrokeColor(serie, serieIndex),
-                                dataValue: value,
-                                tabindex: this.config.showValueOnFocus ? 0 : null
-                            }));
-
-                        });
-
-                        currentBarIndex += 1;
-
-                    }
-                    break;
-            }
-
-            currentSerieGroupElement.appendChild(serieGroup);
-        }, this);
-    }
-
-    /**
      * Things we need to do for all chart types before we start visualise the data.
      * @returns {HTMLElement} The current serie group element.
      */
@@ -663,277 +479,7 @@ class SvgChart {
         }
     }
 
-    /**
-     * Main function to visualise data for pie or donut chart types.
-     * @param {HTMLElement} currentSerieGroupElement The current serie group element
-     */
-    #dataPieAndDonut(currentSerieGroupElement) {
-
-        var radius = this.chartHeight / 2;
-        var centerX = this.width / 2;
-        var centerY = this.chartHeight / 2 + this.config.padding.top;
-
-        var total = 0;
-        for (let key in this.data.series) {
-            total += this.data.series[key];
-        }
-
-        var totalToDegree = 360 / total;
-        var currentTotal = 0;
-
-        this.config.series.forEach(function (serie, serieIndex) {
-            var serieGroup = el('g', {
-                dataSerie: serie.id,
-                className: this.unselectedSeries[serie.id] ? prefixed('unselected') : ''
-            });
-
-            const value = this.data.series[serie.id];
-
-            var startAngle = currentTotal * totalToDegree;
-            currentTotal += value;
-            var endAngle = currentTotal * totalToDegree;
-            var path = this.config.chartType === 'pie' ? describeArcPie(centerX, centerY, radius, startAngle, endAngle) : describeArcDonut(centerX, centerY, radius - 40, 40, startAngle, endAngle);
-            serieGroup.appendChild(el('path', {
-                d: path.join(' '),
-                fill: this.#getSerieFill(serie, serieIndex),
-                fillOpacity: this.config.pieFillOpacity || 1,
-                className: prefixed('pie-piece'),
-                tabindex: 0,
-                dataValue: value
-            }));
-
-            currentSerieGroupElement.appendChild(serieGroup);
-
-        }, this);
-
-    }
-
-    #addXAxisLabels(columnWidth) {
-        // Draw xAxis lines
-        var currentXAxisGroupElement = el('g');
-
-        var currentXAxisLabelsGroupElement = el('g', {
-            className: prefixed('x-axis-label-group-current')
-        });
-
-        var currentXAxisGridColumnsSelectableGroupElement = (this.config.xAxisGridColumnsSelectable) ? el('g') : null;
-        directionForEach(this, this.data.xAxis.columns, this.isLTR, function (colValue, colIndex) {
-            if (this.config.xAxisGrid) {
-                const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
-                if (colIndex === 0 || ((colIndex + 0) % this.config.xAxisStep === 0)) {
-                    this.#addXAxisLine(currentXAxisGroupElement, x);
-                }
-                if (this.config.xAxisGridColumnsSelectable) {
-                    currentXAxisGridColumnsSelectableGroupElement.appendChild(el('rect', {
-                        x: x,
-                        y: this.config.padding.top + this.config.yAxisGridPadding,
-                        width: columnWidth,
-                        height: this.chartHeight,
-                        className: prefixed('x-axis-grid-column-selectable'),
-                        fillOpacity: 0,
-                        fill: this.config.xAxisGridColumnsSelectableColor
-                    }));
-                }
-            }
-            if (this.config.xAxisLabels && ((colIndex + 0) % this.config.xAxisLabelStep === 0)) {
-                var xlg = el('g', {
-                    transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
-                });
-                xlg.appendChild(el('text', {
-                    direction: this.config.dir,
-                    textAnchor: this.config.textAnchorXAxisLabels || 'middle',
-                    dominantBaseline: 'hanging',
-                    fontFamily: this.config.fontFamily || '',
-                    fontSize: this.config.axisLabelFontSize || '',
-                    fontWeight: 'normal',
-                    fill: this.config.xAxisLabelColor || '',
-                    tabindex: this.config.xAxisGridColumnsSelectable ? 0 : null,
-                    className: prefixed('x-axis-label') + ' ' + (this.config.xAxisGridColumnsSelectable ? prefixed('x-axis-grid-column-selectable-label') : ''),
-                    transform: this.config.xAxisLabelRotation ? `rotate(${this.config.xAxisLabelRotation})` : ''
-                }, document.createTextNode(colValue)));
-                currentXAxisLabelsGroupElement.appendChild(xlg);
-            }
-        });
-        if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
-            this.#addXAxisLine(currentXAxisGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.data.xAxis.columns.length * columnWidth));
-        }
-        this.xAxisGroupElement.appendChild(currentXAxisGroupElement);
-        this.config.xAxisGridColumnsSelectable && this.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
-        this.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
-    }
-
-
-    /**
-     * Adds group for x axis labels.
-     */
-    #addXAxisLabelsGroup() {
-        this.xAxisLabelsGroupElement = el('g', {
-            className: prefixed('x-axis-label-group')
-        });
-        if (this.config.xAxisGridColumnsSelectable) {
-            if (!this.#onXAxisLabelGroupClickScoped) {
-                this.#onXAxisLabelGroupClickScoped = this.#onXAxisLabelGroupClick.bind(this);
-                this.#onXAxisLabelGroupKeypressScoped = this.#onXAxisLabelGroupKeypress.bind(this);
-            }
-            this.#addEventListener(this.xAxisLabelsGroupElement, 'click', this.#onXAxisLabelGroupClickScoped, false);
-            this.#addEventListener(this.xAxisLabelsGroupElement, 'keypress', this.#onXAxisLabelGroupKeypressScoped, false);
-            // Group element that wraps the rects that indicates a selected column for line and bar charts.
-            this.xAxisGridColumnsSelectableGroupElement = this.svg.appendChild(el('g', {
-                className: prefixed('x-axis-columns-selectable-group')
-            }));
-        }
-        this.svg.appendChild(this.xAxisLabelsGroupElement);
-    }
-
-    /**
-     * Adds x axis title.
-     */
-    #addYAxisTitle() {
-        var yAxisTitleG = el('g');
-        // By default: x is 20 pixels from start border
-        var x = 0;
-        if (this.isLTR) {
-            x = this.config.yAxisTitleStart ? this.config.yAxisTitleStart : this.config.paddingNormal;
-        } else {
-            x = this.config.yAxisTitleStart ? (this.width - this.config.yAxisTitleStart) : (this.width - this.config.paddingNormal);
-        }
-        yAxisTitleG.setAttribute('transform', 'translate(' + x + ', ' + (this.config.padding.top + this.config.yAxisGridPadding) + ')');
-        var yAxisTitleEl = el('text', {
-            direction: this.config.dir,
-            textAnchor: 'end',
-            dominantBaseline: 'hanging',
-            fontFamily: this.config.fontFamily || '',
-            fontSize: this.config.axisTitleFontSize || '',
-            fill: this.config.yAxisTitleColor || '',
-            className: prefixed('text-y-axis-title')
-        }, document.createTextNode(this.config.yAxisTitle));
-        yAxisTitleEl.setAttribute('transform', this.isLTR ? 'rotate(-90)' : 'rotate(90)');
-        yAxisTitleG.appendChild(yAxisTitleEl);
-        this.svg.appendChild(yAxisTitleG);
-    }
-
-    #addXAxisTitle() {
-        var x = this.isLTR ? (this.width - this.config.padding.right - this.config.xAxisGridPadding) : (this.config.padding.left);
-        this.svg.appendChild(el('text', {
-            direction: this.config.dir,
-            x: x,
-            y: this.height - (this.config.xAxisTitleBottom != null ? this.config.xAxisTitleBottom : this.config.paddingNormal),
-            textAnchor: 'end',
-            dominantBaseline: 'auto',
-            fontFamily: this.config.fontFamily || '',
-            fontSize: this.config.axisTitleFontSize || '',
-            fill: this.config.xAxisTitleColor || '',
-            className: prefixed('text-x-axis-title')
-        }, document.createTextNode(this.config.xAxisTitle)));
-    }
-
-    #addYAxisGrid() {
-        var gYAxis = el('g', {
-            className: prefixed('y-axis-group')
-        });
-        var currentYAxisValue = this.config.minValue;
-        var currentYAxisLabelValue = this.config.minValue;
-        while (currentYAxisValue <= this.config.maxValue || currentYAxisLabelValue <= this.config.maxValue) {
-            if (this.config.yAxisGrid && currentYAxisValue <= this.config.maxValue) {
-                let y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (currentYAxisValue * this.lineAndBarValueHeight);
-                gYAxis.appendChild(el('line', {
-                    x1: this.config.padding.left,
-                    y1: y,
-                    x2: this.config.padding.left + this.chartWidth + (this.config.xAxisGridPadding * 2),
-                    y2: y,
-                    className: prefixed('y-axis-grid-line'),
-                    stroke: this.config.yAxisGridLineColor || '',
-                    strokeWidth: this.config.yAxisGridLineWidth || '',
-                    strokeDasharray: this.config.yAxisGridLineDashArray || '',
-                }));
-            }
-            currentYAxisValue += this.config.yAxisStep;
-            if (this.config.yAxisLabels && currentYAxisLabelValue <= this.config.maxValue) {
-                let y = this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight - (currentYAxisLabelValue * this.lineAndBarValueHeight);
-                gYAxis.appendChild(el('text', {
-                    direction: this.config.dir,
-                    x: this.isLTR ? (this.config.padding.left - 10) : (this.config.padding.left + this.chartWidth + 10),
-                    y: y,
-                    textAnchor: 'end',
-                    dominantBaseline: 'middle',
-                    fontFamily: this.config.fontFamily || '',
-                    fontSize: this.config.axisLabelFontSize || '',
-                    className: prefixed('y-axis-label'),
-                    fill: this.config.yAxisLabelColor || ''
-                }, document.createTextNode(currentYAxisLabelValue)));
-            }
-            currentYAxisLabelValue += this.config.yAxisLabelStep;
-        }
-        this.svg.appendChild(gYAxis);
-    }
-
-    #addXAxisLine(parent, x) {
-        parent.appendChild(el('line', {
-            x1: x,
-            y1: this.config.padding.top,
-            x2: x,
-            y2: this.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
-            className: prefixed('x-axis-grid-line'),
-            stroke: this.config.xAxisGridLineColor || '',
-            strokeWidth: this.config.xAxisGridLineWidth || '',
-            strokeDasharray: this.config.xAxisGridLineDashArray || '',
-        }));
-    }
-
-    /**
-     * Helper function to get a curved path from an array of points.
-     * @param {Array} points Array of points.
-     * @returns Array of curved path coordinates.
-     */
-    #getCurvedPathFromPoints(points) {
-        let path = ['M ' + points[0].x + ' ' + points[0].y];
-        for (var i = 0; i < points.length - 1; i++) {
-            var x_mid = (points[i].x + points[i + 1].x) / 2;
-            var y_mid = (points[i].y + points[i + 1].y) / 2;
-            var cp_x1 = (x_mid + points[i].x) / 2;
-            var cp_x2 = (x_mid + points[i + 1].x) / 2;
-            path.push(`Q ${cp_x1} ${points[i].y}, ${x_mid} ${y_mid}`);
-            path.push(`Q ${cp_x2} ${points[i + 1].y} ${points[i + 1].x} ${points[i + 1].y}`);
-        }
-        this.#closePath(path, points);
-        return path;
-    }
-
-    /**
-     * Closes path for filled line charts.
-     * @param {Array} path Array of path coordinates
-     * @param {Array} points Array of points
-     */
-    #closePath(path, points) {
-        if (this.config.lineChartFilled && points.length > 1) {
-            path.push(`L ${points[points.length - 1].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
-            path.push(`L ${points[0].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.chartHeight}`);
-            path.push(`L ${points[0].x} ${points[0].y}`);
-            path.push('Z');
-        }
-    }
-
-    /**
-     * Helper function to get a straight path for line charts.
-     * @param {Array} points Array of points.
-     * @returns Array of path coordinates.
-     */
-    #getStraightPathFromPoints(points) {
-        let path = [];
-        points.forEach(function (point, pointIndex) {
-            if (pointIndex === 0) {
-                path.push(`M ${point.x} ${point.y}`);
-            } else {
-                path.push(`L ${point.x} ${point.y}`);
-            }
-        });
-        this.#closePath(path, points);
-        return path;
-    }
-
-
-
-    #getSeriePropertyColor(props, serie, serieIndex) {
+    getSeriePropertyColor(props, serie, serieIndex) {
         for (var i = 0; i < props.length; i++) {
             var key = props[i];
             if (serie[key]) {
@@ -946,16 +492,16 @@ class SvgChart {
         return SvgChart.#activeColorPalette[serieIndex];
     }
 
-    #getSeriePointColor(serie, serieIndex) {
-        return this.#getSeriePropertyColor(['pointColor', 'strokeColor'], serie, serieIndex);
+    getSeriePointColor(serie, serieIndex) {
+        return this.getSeriePropertyColor(['pointColor', 'strokeColor'], serie, serieIndex);
     }
 
-    #getSerieStrokeColor(serie, serieIndex) {
-        return this.#getSeriePropertyColor(['strokeColor'], serie, serieIndex);
+    getSerieStrokeColor(serie, serieIndex) {
+        return this.getSeriePropertyColor(['strokeColor'], serie, serieIndex);
     }
 
-    #getSerieFill(serie, serieIndex) {
-        return this.#getSeriePropertyColor(['fillGradient'], serie, serieIndex);
+    getSerieFill(serie, serieIndex) {
+        return this.getSeriePropertyColor(['fillGradient'], serie, serieIndex);
     }
 
     /**
@@ -965,7 +511,7 @@ class SvgChart {
      * @param {Function} callback Function that needs to be executed.
      * @param {Boolean} capture Capture or not.
      */
-    #addEventListener(node, eventName, callback, capture) {
+    addEventListener(node, eventName, callback, capture) {
         node.addEventListener(eventName, callback, capture);
         this._listenersToRemoveAfterConfigChange.push([node, eventName, callback, capture]);
     }
@@ -1077,50 +623,6 @@ class SvgChart {
                     break;
             }
             this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
-        }
-    }
-
-    /**
-     * When a label on the x axis receives a keypress when focussed.
-     * @param {Event} e Event object.
-     */
-    #onXAxisLabelGroupKeypress(e) {
-        if (e.keyCode === 13) {
-            this.#onXAxisLabelGroupSelect(e.target);
-        }
-    }
-
-    /**
-     * When a label on the x axis receives a click when focussed.
-     * @param {Event} e Event object.
-     */
-    #onXAxisLabelGroupClick(e) {
-        this.#onXAxisLabelGroupSelect(e.target);
-    }
-
-    /**
-     * Display the selected column indicator and fires the onXAxisLabelGroupSelect callback (if defined).
-     * @param {HTMLElement} label Node (x axis label) that is selected.
-     */
-    #onXAxisLabelGroupSelect(label) {
-        var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
-        var rects = this.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.' + prefixed('x-axis-grid-column-selectable'));
-        for (var i = 0; i < textNodes.length; i++) {
-            if (textNodes[i] === label) {
-                this.lineAndBarSelectedColumnIndex = i;
-                textNodes[i].classList.add(prefixed('selected'));
-                textNodes[i].setAttribute('font-weight', 'bold');
-                rects[i].classList.add(prefixed('selected'));
-                rects[i].setAttribute('fill-opacity', 0.2);
-                if (this.config.onXAxisLabelGroupSelect) {
-                    this.config.onXAxisLabelGroupSelect(this, this.lineAndBarSelectedColumnIndex);
-                }
-            } else {
-                textNodes[i].classList.remove(prefixed('selected'));
-                rects[i].classList.remove(prefixed('selected'));
-                rects[i].setAttribute('fill-opacity', 0);
-                textNodes[i].setAttribute('font-weight', 'normal');
-            }
         }
     }
 
