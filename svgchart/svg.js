@@ -1,6 +1,8 @@
 import { el, parent, prefixed } from "./utils.js";
 import { colors } from "./colors.js";
-import { BarAndLineController } from "./bar_and_line.js";
+import { LineController } from "./line_chart_controller.js";
+import { BarController } from "./bar_chart_controller.js";
+import { BarAndLineController } from "./bar_and_line_chart_controller.js";
 import { DonutController } from "./donut.js";
 import { PieController } from "./pie.js";
 import { SvgChartConfig } from "./config.js";
@@ -106,7 +108,11 @@ class SvgChart {
 
         switch (config.chartType) {
             case 'line':
+                this.controller = new LineController(this);
+                break;
             case 'bar':
+                this.controller = new BarController(this);
+                break;
             case 'lineAndBar':
                 this.controller = new BarAndLineController(this);
                 break;
