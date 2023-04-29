@@ -1,6 +1,6 @@
-import { polarToCartesian } from "./utils.js";
+import { polarToCartesian } from "../utils.js";
 import { Controller } from "./controller.js";
-import { draw as drawPieOrDonut } from "./donut_or_pie_utils.js";
+import { draw as drawPieOrDonut } from "../donut_or_pie_utils.js";
 
 /**
  * Class for displaying pie and donut charts.

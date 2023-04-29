@@ -1,8 +1,8 @@
-import { prefixed, el } from "./utils.js";
+import { prefixed, el } from "../utils.js";
 import { Controller } from "./controller.js";
 import { LineController } from "./line_chart_controller.js";
 import { BarController } from "./bar_chart_controller.js";
-import { SvgChart } from "./svg.js";
+import { SvgChart } from "../svg.js";
 
 /**
  * Controller class for bar and line charts.

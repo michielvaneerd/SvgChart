@@ -1,10 +1,10 @@
 import { el, parent, prefixed } from "./utils.js";
 import { colors } from "./colors.js";
-import { LineController } from "./line_chart_controller.js";
-import { BarController } from "./bar_chart_controller.js";
-import { BarAndLineController } from "./bar_and_line_chart_controller.js";
-import { DonutController } from "./donut.js";
-import { PieController } from "./pie.js";
+import { LineController } from "./charts/line_chart_controller.js";
+import { BarController } from "./charts/bar_chart_controller.js";
+import { BarAndLineController } from "./charts/bar_and_line_chart_controller.js";
+import { DonutController } from "./charts/donut_chart_controller.js";
+import { PieController } from "./charts/pie_chart_controller.js";
 import { SvgChartConfig } from "./config.js";
 
 // Mapper between chart type and some required config properties.

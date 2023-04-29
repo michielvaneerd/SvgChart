@@ -1,5 +1,5 @@
-import { SvgChart } from "./svg.js";
-import { el, prefixed } from "./utils.js";
+import { SvgChart } from "../svg.js";
+import { el, prefixed } from "../utils.js";
 
 /**
  * Abstract Controller class. Reponsible for drawing charts for specific chart types.

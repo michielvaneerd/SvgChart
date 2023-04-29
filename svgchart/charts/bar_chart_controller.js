@@ -1,8 +1,8 @@
-import { prefixed, directionForEach, el } from "./utils.js";
+import { prefixed, directionForEach, el } from "../utils.js";
 import { Controller } from "./controller.js";
-import { SvgChart } from "./svg.js";
-import { AxisController } from "./axis.js";
-import { configBefore as barAndLineConfigBefore, drawStart as barAndLineDrawStart } from "./bar_and_line_utils.js";
+import { SvgChart } from "../svg.js";
+import { AxisController } from "../axis.js";
+import { configBefore as barAndLineConfigBefore, drawStart as barAndLineDrawStart } from "../bar_and_line_utils.js";
 
 /**
  * Controller class for bar and line charts.
