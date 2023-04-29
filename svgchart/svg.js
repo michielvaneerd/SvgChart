@@ -31,6 +31,14 @@ class SvgChart {
     static colorPalettes = colors;
     static #activeColorPalette = colors.dutchFieldColorPalette;
 
+    static chartTypes = {
+        line: 'line',
+        bar: 'bar',
+        pie: 'pie',
+        donut: 'donut',
+        lineAndBar: 'lineAndBar'
+    };
+
     #onLegendClickScoped = null;
     #onLegendKeypressScoped = null;
     #onSerieGroupTransitionendScoped = null;

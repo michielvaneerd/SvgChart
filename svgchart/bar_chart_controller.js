@@ -2,6 +2,7 @@ import { prefixed, directionForEach, el } from "./utils.js";
 import { Controller } from "./controller.js";
 import { SvgChart } from "./svg.js";
 import { AxisController } from "./axis.js";
+import { configBefore as barAndLineConfigBefore, drawStart as barAndLineDrawStart } from "./bar_and_line_utils.js";
 
 /**
  * Controller class for bar and line charts.
@@ -66,73 +67,26 @@ class BarController extends Controller {
     }
 
     drawStart(currentSerieGroupElement) {
-        if (this.svgChart.xAxisGroupElement.firstChild) {
-            this.svgChart.xAxisGroupElement.removeChild(this.svgChart.xAxisGroupElement.firstChild);
-        }
+        
+        barAndLineDrawStart(this.svgChart, this.#axisController, currentSerieGroupElement);
+        const barWidth = (this.svgChart.columnWidth - (this.config.barSpacing * (this.svgChart.barCountPerColumn + 1))) / (this.svgChart.barCountPerColumn || 1);
 
-        if (this.config.xAxisGridColumnsSelectable) {
-            if (this.svgChart.xAxisGridColumnsSelectableGroupElement.firstChild) {
-                this.svgChart.xAxisGridColumnsSelectableGroupElement.firstChild.remove();
-            }
-        }
-
-        if (this.svgChart.xAxisLabelsGroupElement.firstChild) {
-            this.svgChart.xAxisLabelsGroupElement.removeChild(this.svgChart.xAxisLabelsGroupElement.firstChild);
-        }
-
-        // Note that for bar charts to display correctly, this.config.xAxisGridColumns MUST be true!
-        const columnWidth = this.config.xAxisGridColumns
-            ? (this.svgChart.chartWidth / (this.svgChart.data.xAxis.columns.length))
-            : (this.svgChart.chartWidth / (this.svgChart.data.xAxis.columns.length - 1));
-        const barWidth = (columnWidth - (this.config.barSpacing * (this.svgChart.barCountPerColumn + 1))) / (this.svgChart.barCountPerColumn || 1);
-
-        // Make this available on the instance.
-        this.svgChart.columnWidth = columnWidth;
         this.svgChart.barWidth = barWidth;
-
-        this.#axisController.addXAxisLabels(columnWidth);
 
         this.currentBarIndex = 0;
         this.stackedBarValues = []; // value index => current value (steeds optellen)
     }
 
     configBefore() {
-
         super.configBefore();
-
-        this.svgChart.lineAndBarSelectedColumnIndex = null;
-        this.svgChart.lineAndBarValueHeight = this.svgChart.chartHeight / this.config.maxValue;
-        this.svgChart.barCountPerColumn = this.config.barStacked ? 1 : 0;
-
-        if (this.config.yAxis) {
-            this.#axisController.addYAxisGrid();
-        }
-
-        if (this.config.xAxisTitle) {
-            this.#axisController.addXAxisTitle();
-        }
-
-        if (this.config.yAxisTitle) {
-            this.#axisController.addYAxisTitle();
-        }
-
-        if (this.config.xAxisLabels) {
-            this.#axisController.addXAxisLabelsGroup();
-        }
-
-        this.svgChart.xAxisGroupElement = this.svgChart.svg.appendChild(el('g', {
-            className: prefixed('x-axis-group')
-        }));
+        barAndLineConfigBefore(this.svgChart, this.#axisController);
     }
 
     configSerieBefore(serie) {
-
         super.configSerieBefore(serie);
-
-        if (!this.config.barStacked && (serie.type === 'bar' || this.config.chartType === 'bar')) {
+        if (!this.config.barStacked && (serie.type === SvgChart.chartTypes.bar || this.config.chartType === SvgChart.chartTypes.bar)) {
             this.svgChart.barCountPerColumn += 1;
         }
-
     }
 
 }
