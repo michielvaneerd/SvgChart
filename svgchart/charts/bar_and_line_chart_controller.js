@@ -1,4 +1,3 @@
-import { prefixed, el } from "../utils.js";
 import { Controller } from "./controller.js";
 import { LineController } from "./line_chart_controller.js";
 import { BarController } from "./bar_chart_controller.js";

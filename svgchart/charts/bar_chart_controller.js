@@ -13,7 +13,6 @@ class BarController extends Controller {
     #axisController = null;
 
     /**
-     * 
      * @param {SvgChart} svgChart SvgChart instance.
      */
     constructor(svgChart) {
@@ -21,10 +20,19 @@ class BarController extends Controller {
         this.#axisController = new AxisController(svgChart);
     }
 
+    /**
+     * Required config property values for this type of chart.
+     */
     static requiredConfigWithValue = {
         xAxisGridColumns: true
     };
 
+    /**
+     * Draws chart element for this serie and attached it to the serieGroup.
+     * @param {Object} serie Serie object.
+     * @param {Number} serieIndex Serie index.
+     * @param {HTMLElement} serieGroup DOM group element for this serie.
+     */
     drawSerie(serie, serieIndex, serieGroup) {
         directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, function (value, valueIndex) {
 
@@ -66,6 +74,10 @@ class BarController extends Controller {
         this.currentBarIndex += 1;
     }
 
+    /**
+     * Do things at the start of the draw for this chart.
+     * @param {HTMLElement} currentSerieGroupElement DOM group element.
+     */
     drawStart(currentSerieGroupElement) {
         
         barAndLineDrawStart(this.svgChart, this.#axisController, currentSerieGroupElement);
@@ -77,11 +89,18 @@ class BarController extends Controller {
         this.stackedBarValues = []; // value index => current value (steeds optellen)
     }
 
+    /**
+     * Execute config things before global config things are done.
+     */
     configBefore() {
         super.configBefore();
         barAndLineConfigBefore(this.svgChart, this.#axisController);
     }
 
+    /**
+     * Execute serie config things before global config serie things are done.
+     * @param {Object} serie - Serie object
+     */
     configSerieBefore(serie) {
         super.configSerieBefore(serie);
         if (!this.config.barStacked && (serie.type === SvgChart.chartTypes.bar || this.config.chartType === SvgChart.chartTypes.bar)) {

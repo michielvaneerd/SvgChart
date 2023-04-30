@@ -37,14 +37,28 @@ class Controller {
         this.drawEnd(currentSerieGroupElement);
     }
 
+    /**
+     * Do things at the start of the draw for this chart.
+     * @param {HTMLElement} currentSerieGroupElement DOM group element.
+     */
     drawStart(currentSerieGroupElement) {
 
     }
 
+    /**
+     * Do things at the end of the draw for this chart.
+     * @param {HTMLElement} currentSerieGroupElement DOM group element.
+     */
     drawEnd(currentSerieGroupElement) {
 
     }
 
+    /**
+     * Draws chart element for this serie and attached it to the serieGroup.
+     * @param {Object} serie Serie object.
+     * @param {Number} serieIndex Serie index.
+     * @param {HTMLElement} serieGroup DOM group element for this serie.
+     */
     drawSerie(serie, serieIndex, serieGroup) {
 
     }

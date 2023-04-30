@@ -13,7 +13,6 @@ class LineController extends Controller {
     #axisController = null;
 
     /**
-     * 
      * @param {SvgChart} svgChart SvgChart instance.
      */
     constructor(svgChart) {
@@ -21,6 +20,12 @@ class LineController extends Controller {
         this.#axisController = new AxisController(svgChart);
     }
 
+    /**
+     * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
+     * @param {Object} serie Serie object.
+     * @param {Number} serieIndex Serie index.
+     * @param {HTMLElement} serieGroup DOM group element for this serie.
+     */
     drawSerie(serie, serieIndex, serieGroup) {
         var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
         var flatNonNullPoints = [];
@@ -93,7 +98,10 @@ class LineController extends Controller {
         }
     }
 
-    // TODO: many things are the same as for bar charts.
+    /**
+     * Do things at the start of the draw for this chart.
+     * @param {HTMLElement} currentSerieGroupElement DOM group element.
+     */
     drawStart(currentSerieGroupElement) {
         barAndLineDrawStart(this.svgChart, this.#axisController, currentSerieGroupElement);
     }
@@ -151,7 +159,9 @@ class LineController extends Controller {
         return path;
     }
 
-    // TODO: many things are the same as for bar charts.
+    /**
+     * Execute config things before global config things are done.
+     */
     configBefore() {
         super.configBefore();
         barAndLineConfigBefore(this.svgChart, this.#axisController);

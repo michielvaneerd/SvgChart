@@ -1,5 +1,13 @@
+import { AxisController } from "./axis.js";
+import { SvgChart } from "./svg.js";
 import { el, prefixed } from "./utils.js";
 
+/**
+     * Do things at the start of the draw for this chart.
+     * @param {SvgChart} svgChart SvgChart instance.
+     * @param {AxisController} axisController AxisController instance.
+     * @param {HTMLElement} currentSerieGroupElement DOM group element.
+     */
 function drawStart(svgChart, axisController, currentSerieGroupElement) {
     if (svgChart.xAxisGroupElement.firstChild) {
         svgChart.xAxisGroupElement.removeChild(svgChart.xAxisGroupElement.firstChild);
@@ -25,6 +33,11 @@ function drawStart(svgChart, axisController, currentSerieGroupElement) {
     axisController.addXAxisLabels(columnWidth);
 }
 
+/**
+ * Execute config things before global config things are done, like adding the axis lines and labels.
+ * @param {SvgChart} svgChart SvgChart instance.
+ * @param {AxisController} axisController AxisController instance.
+ */
 function configBefore(svgChart, axisController) {
 
     svgChart.lineAndBarSelectedColumnIndex = null;
