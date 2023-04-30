@@ -21,7 +21,7 @@ class Controller {
     }
 
     /**
-     * 
+     * Draws chart.
      * @param {HTMLElement} currentSerieGroupElement Group element where the chart can be appended to.
      */
     draw(currentSerieGroupElement) {

@@ -14,7 +14,6 @@ class BarAndLineController extends Controller {
     #barChartController = null;
 
     /**
-     * 
      * @param {SvgChart} svgChart SvgChart instance.
      */
     constructor(svgChart) {

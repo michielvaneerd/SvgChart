@@ -21,10 +21,6 @@ class LineController extends Controller {
         this.#axisController = new AxisController(svgChart);
     }
 
-    static requiredConfigWithValue = {
-        xAxisGridColumns: true
-    };
-
     drawSerie(serie, serieIndex, serieGroup) {
         var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
         var flatNonNullPoints = [];

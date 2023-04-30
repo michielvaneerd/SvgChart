@@ -9,7 +9,7 @@ import { draw as drawPieOrDonut } from "../donut_or_pie_utils.js";
 class PieController extends Controller {
 
     /**
-     * 
+     * Draws chart.
      * @param {HTMLElement} currentSerieGroupElement Current serie group element.
      */
     draw(currentSerieGroupElement) {

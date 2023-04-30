@@ -7,23 +7,6 @@ import { DonutController } from "./charts/donut_chart_controller.js";
 import { PieController } from "./charts/pie_chart_controller.js";
 import { SvgChartConfig } from "./config.js";
 
-// Mapper between chart type and some required config properties.
-const chartTypeInfo = {
-    line: {},
-    bar: {
-        requiredConfigWithValue: { // Hiermee kun je bepaalde waardes in de config vast zetten bij deze type chart.
-            xAxisGridColumns: true
-        }
-    },
-    lineAndBar: {
-        requiredConfigWithValue: {
-            xAxisGridColumns: true
-        }
-    },
-    pie: {},
-    donut: {}
-};
-
 
 class SvgChart {
 
@@ -37,6 +20,14 @@ class SvgChart {
         pie: 'pie',
         donut: 'donut',
         lineAndBar: 'lineAndBar'
+    };
+
+    static chartTypeControllers = {
+        line: LineController,
+        bar: BarController,
+        lineAndBar: BarAndLineController,
+        pie: PieController,
+        donut: DonutController
     };
 
     #onLegendClickScoped = null;
@@ -104,7 +95,7 @@ class SvgChart {
 
         this.isLTR = this.config.dir === 'ltr';
 
-        this.config = Object.assign(this.config, chartTypeInfo[this.config.chartType].requiredConfigWithValue);
+        this.config = Object.assign(this.config, SvgChart.chartTypeControllers[this.config.chartType].requiredConfigWithValue);
 
         if (this.isLTR) {
             this.config.padding.left = this.config.padding.start;
@@ -114,23 +105,7 @@ class SvgChart {
             this.config.padding.right = this.config.padding.start;
         }
 
-        switch (config.chartType) {
-            case 'line':
-                this.controller = new LineController(this);
-                break;
-            case 'bar':
-                this.controller = new BarController(this);
-                break;
-            case 'lineAndBar':
-                this.controller = new BarAndLineController(this);
-                break;
-            case 'pie':
-                this.controller = new PieController(this);
-                break;
-            case 'donut':
-                this.controller = new DonutController(this);
-                break;
-        }
+        this.controller = new SvgChart.chartTypeControllers[config.chartType](this);
 
         this.svg.setAttribute('direction', this.config.dir);
 
