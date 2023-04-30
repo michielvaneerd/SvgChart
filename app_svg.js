@@ -1,4 +1,4 @@
-import { SvgChart } from "./svgchart/svg.js";
+import { SvgChart } from "./src/svg.js";
 
 //SvgChart.setActiveColorPalette(SvgChart.colorPalettes.springPastelsColorPalette);
 
@@ -73,7 +73,6 @@ var chartInfo = {
             title: 'Basic line chart with many values',
             minValue: 0,
             maxValue: 100,
-            legendPosition: 'end',
             xAxisTitle: 'Days',
             yAxisStep: 10, // real value step
             yAxisLabelStep: 20,
