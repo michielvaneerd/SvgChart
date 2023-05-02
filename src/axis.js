@@ -84,7 +84,7 @@ class AxisController {
             }
             if (this.config.xAxisLabels && ((colIndex + 0) % this.config.xAxisLabelStep === 0)) {
                 var xlg = el('g', {
-                    transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.svgChart.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + (this.config.xAxisLabelTop || 10)})`
+                    transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.svgChart.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + this.config.xAxisLabelTop})`
                 });
                 xlg.appendChild(el('text', {
                     direction: this.config.dir,
@@ -96,7 +96,7 @@ class AxisController {
                     fill: this.config.xAxisLabelColor || '',
                     tabindex: this.config.xAxisGridColumnsSelectable ? 0 : null,
                     className: prefixed('x-axis-label') + ' ' + (this.config.xAxisGridColumnsSelectable ? prefixed('x-axis-grid-column-selectable-label') : ''),
-                    transform: this.config.xAxisLabelRotation ? `rotate(${this.config.xAxisLabelRotation})` : ''
+                    transform: `rotate(${this.config.xAxisLabelRotation})`
                 }, document.createTextNode(colValue)));
                 currentXAxisLabelsGroupElement.appendChild(xlg);
             }
@@ -127,7 +127,7 @@ class AxisController {
         this.svgChart.svg.appendChild(el('text', {
             direction: this.config.dir,
             x: x,
-            y: this.svgChart.height - (this.config.xAxisTitleBottom != null ? this.config.xAxisTitleBottom : this.config.paddingNormal),
+            y: this.svgChart.height - (this.config.xAxisTitleBottom !== null ? this.config.xAxisTitleBottom : this.config.paddingDefault),
             textAnchor: 'end',
             dominantBaseline: 'auto',
             fontFamily: this.config.fontFamily || '',
@@ -139,12 +139,11 @@ class AxisController {
 
     addYAxisTitle() {
         var yAxisTitleG = el('g');
-        // By default: x is 20 pixels from start border
         var x = 0;
         if (this.svgChart.isLTR) {
-            x = this.config.yAxisTitleStart ? this.config.yAxisTitleStart : this.config.paddingNormal;
+            x = this.config.yAxisTitleStart ? this.config.yAxisTitleStart : this.config.paddingDefault;
         } else {
-            x = this.config.yAxisTitleStart ? (this.svgChart.width - this.config.yAxisTitleStart) : (this.svgChart.width - this.config.paddingNormal);
+            x = this.config.yAxisTitleStart ? (this.svgChart.width - this.config.yAxisTitleStart) : (this.svgChart.width - this.config.paddingDefault);
         }
         yAxisTitleG.setAttribute('transform', 'translate(' + x + ', ' + (this.config.padding.top + this.config.yAxisGridPadding) + ')');
         var yAxisTitleEl = el('text', {
@@ -204,7 +203,7 @@ class AxisController {
                 textNodes[i].classList.add(prefixed('selected'));
                 textNodes[i].setAttribute('font-weight', 'bold');
                 rects[i].classList.add(prefixed('selected'));
-                rects[i].setAttribute('fill-opacity', 0.2);
+                rects[i].setAttribute('fill-opacity', this.svgChart.config.xAxisGridSelectedColumnOpacity);
                 if (this.config.onXAxisLabelGroupSelect) {
                     this.config.onXAxisLabelGroupSelect(this.svgChart, this.svgChart.lineAndBarSelectedColumnIndex);
                 }

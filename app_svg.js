@@ -337,15 +337,17 @@ var chartInfo = {
                 });
                 document.getElementById('chartCustomCodeInfo').innerHTML = `Clicked on '${chart.data.xAxis.columns[index]}' with values: ${serieValues.join(", ")}`;
             },
-            drawAfter: function (chart, groupNode) {
+            drawOnData: function (chart, groupNode) {
                 groupNode.appendChild(chart.el('text', {
-                    x: chart.config.padding.left + 100,
-                    y: chart.config.padding.top + 100,
+                    x: chart.width - chart.config.padding.end - 2,
+                    y: chart.config.padding.top + 2,
+                    textAnchor: 'end',
+                    dominantBaseline: 'hanging',
                     fontWeight: 'bold',
                     fontSize: '26px'
-                }, document.createTextNode('TEST!')));
+                }, document.createTextNode(Date.now())));
             },
-            drawBefore: function (chart, groupNode) {
+            drawOnConfig: function (chart, groupNode) {
                 groupNode.appendChild(chart.el('rect', {
                     x: chart.config.padding.left,
                     y: chart.config.padding.top,

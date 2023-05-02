@@ -66,7 +66,7 @@ class BarController extends Controller {
                 strokeWidth: this.config.barStrokeWidth || 0,
                 stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
                 dataValue: value,
-                tabindex: this.config.showValueOnFocus ? 0 : null
+                tabindex: this.config.focusedValueShow ? 0 : null
             }));
 
         });

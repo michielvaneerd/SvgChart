@@ -47,7 +47,7 @@ class SvgChart {
     /**
      * Constructor - create a new chart instance.
      * @param {HTMLElement} parent Parent DOM node the SVG element will be attached to.
-     * @param {Object} config Configuration object.
+     * @param {SvgChartConfig} config Configuration object.
      */
     constructor(parent, config) {
 
@@ -138,11 +138,11 @@ class SvgChart {
             this.#onSerieGroupTransitionendScoped = this.#onSerieGroupTransitionend.bind(this);
         }
 
-        if (this.config.drawBefore) {
-            this.drawBeforeGroup = el('g', {
-                className: prefixed('draw-before-group')
+        if (this.config.drawOnConfig) {
+            this.drawOnConfigGroup = el('g', {
+                className: prefixed('draw-on-config-group')
             });
-            this.svg.appendChild(this.drawBeforeGroup);
+            this.svg.appendChild(this.drawOnConfigGroup);
         }
 
         if (this.config.title) {
@@ -182,18 +182,18 @@ class SvgChart {
 
         }, this);
 
-        if (this.config.drawBefore) {
-            this.config.drawBefore(this, this.drawBeforeGroup);
+        if (this.config.drawOnConfig) {
+            this.config.drawOnConfig(this, this.drawOnConfigGroup);
+        }
+
+        if (this.config.drawOnData) {
+            this.drawOnDataGroup = el('g', {
+                className: prefixed('draw-on-data-group')
+            });
+            this.svg.appendChild(this.drawOnDataGroup);
         }
 
         this.#addSerieGroup();
-
-        if (this.config.drawAfter) {
-            this.drawAfterGroup = el('g', {
-                className: prefixed('draw-after-group')
-            });
-            this.svg.appendChild(this.drawAfterGroup);
-        }
 
         this.controller.configAfter();
 
@@ -215,8 +215,8 @@ class SvgChart {
 
         this.#dataAfter(currentSerieGroupElement);
 
-        if (this.config.drawAfter) {
-            this.config.drawAfter(this, this.drawAfterGroup);
+        if (this.config.drawOnData) {
+            this.config.drawOnData(this, this.drawOnDataGroup);
         }
 
     }
@@ -268,7 +268,7 @@ class SvgChart {
         this.svg.appendChild(this.serieGroupElement);
         this.addEventListener(this.serieGroupElement, 'transitionend', this.#onSerieGroupTransitionendScoped, false);
 
-        if (this.config.showValueOnFocus) {
+        if (this.config.focusedValueShow) {
             if (!this.#onSerieGroupFocusScoped) {
                 this.#onSerieGroupFocusScoped = this.#onSerieGroupFocus.bind(this);
                 this.#onSerieGroupBlurScoped = this.#onSerieGroupBlur.bind(this);
@@ -329,11 +329,11 @@ class SvgChart {
                     break;
                 case 'end':
                     if (this.isLTR) {
-                        x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + this.config.paddingNormal;
-                        y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * this.config.paddingNormal);
+                        x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + this.config.paddingDefault;
+                        y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * this.config.paddingDefault);
                     } else {
-                        x = (this.config.xAxisGridPadding * 2) + this.config.padding.end - this.config.paddingNormal - this.config.legendWidth;
-                        y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * this.config.paddingNormal);
+                        x = (this.config.xAxisGridPadding * 2) + this.config.padding.end - this.config.paddingDefault - this.config.legendWidth;
+                        y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * this.config.paddingDefault);
                     }
                     break;
             }
@@ -383,17 +383,17 @@ class SvgChart {
                 g.querySelector('rect').setAttribute('x', curX);
                 g.querySelector('text').setAttribute('x', this.isLTR ? (curX + (this.config.legendWidth * 2)) : (curX - 10));
                 if (this.isLTR) {
-                    curX += (box.width + this.config.paddingNormal);
+                    curX += (box.width + this.config.paddingDefault);
                 } else {
-                    curX -= (box.width + this.config.paddingNormal);
+                    curX -= (box.width + this.config.paddingDefault);
                 }
-                totalLegendWidth += (box.width + this.config.paddingNormal);
+                totalLegendWidth += (box.width + this.config.paddingDefault);
             }, this);
             if (this.isLTR) {
-                curX -= this.config.paddingNormal;
+                curX -= this.config.paddingDefault;
                 gLegend.setAttribute('transform', 'translate(' + ((this.width / 2) - (curX / 2)) + ', 0)');
             } else {
-                totalLegendWidth -= this.config.paddingNormal;
+                totalLegendWidth -= this.config.paddingDefault;
                 gLegend.setAttribute('transform', 'translate(-' + ((this.width / 2) - (totalLegendWidth / 2)) + ', 0)');
             }
 
@@ -406,11 +406,11 @@ class SvgChart {
         var x, y, dominantBaseline, textAnchor = null;
         switch (this.config.titleHorizontalPosition) {
             case 'end':
-                x = this.width - this.config.paddingNormal;
+                x = this.width - this.config.paddingDefault;
                 textAnchor = this.isLTR ? 'end' : 'start';
                 break;
             case 'start':
-                x = this.config.paddingNormal;
+                x = this.config.paddingDefault;
                 textAnchor = this.isLTR ? 'start' : 'end';
                 break;
             default:
@@ -424,18 +424,18 @@ class SvgChart {
                 dominantBaseline = 'middle';
                 break;
             case 'bottom':
-                y = this.height - this.config.paddingNormal;
+                y = this.height - this.config.paddingDefault;
                 dominantBaseline = 'auto';
                 break;
             default:
-                y = this.config.paddingNormal;
+                y = this.config.paddingDefault;
                 dominantBaseline = 'hanging';
                 break;
         }
         this.svg.appendChild(el('text', {
             direction: this.config.dir,
             x: x,
-            y: this.config.paddingNormal,
+            y: this.config.paddingDefault,
             textAnchor: textAnchor,
             dominantBaseline: dominantBaseline,
             fontFamily: this.config.fontFamily || '',
@@ -621,7 +621,7 @@ class SvgChart {
 }
 
 // Add el function to chart instance, so we can use it in the calling function, for example
-// to use it in the drawBefore or drawAfter callbacks.
+// to use it in the drawOnConfig or drawOnData callbacks.
 SvgChart.prototype.el = el;
 
 export { SvgChart };
