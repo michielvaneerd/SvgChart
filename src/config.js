@@ -285,43 +285,196 @@ class SvgChartConfig {
      * @prop {Number} yAxisTitleStart - Number of pixels the y axis labels should be positioned from the start. If this is null, this will be defaultPadding pixels.
      */
     yAxisTitleStart = null; // if this is <> null; then this will be the X start position of the Y axis title.
+
+    /**
+     * @prop {Number} yAxisGridLineWidth - Line width of the y axis grid.
+     * @default 1
+     */
     yAxisGridLineWidth = 1;
+
+    /**
+     * @prop {String} yAxisGridLineColor - Color of y axis grid lines.
+     * @default #C0C0C0
+     */
     yAxisGridLineColor = '#C0C0C0';
+
+    /**
+     * @prop {String} yAxisGridLineDashArray - Stroke dash array value for the y axis grid lines.
+     * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
+     * @default 1;1
+     */
     yAxisGridLineDashArray = '1;1';
+
+    /**
+     * @prop {String} yAxisLabelColor - Font color of y axis labels.
+     * @default #A0A0A0
+     */
     yAxisLabelColor = '#A0A0A0';
+
+    /**
+     * @prop {String} yAxisTitleColor - Font color of y axis title.
+     * @default #A0A0A0
+     */
     yAxisTitleColor = '#A0A0A0';
+
+    /**
+     * @prop {Number} yAxisStep - Steps between y axis grid lines.
+     * @default 10
+     */
     yAxisStep = 10; // how many steps between y axis grid lines
+
+    /**
+     * @prop {Number} yAxisLabelStep - Steps between y axis labels.
+     * @default 10
+     */
     yAxisLabelStep = 10; // how many steps between labels y axis
-    yAxis = true;
+
+
+    //yAxis = true;
+
+    /**
+     * @prop {Boolean} yAxisGrid - Whether the y axis grid should be displayed.
+     * @default true
+     */
     yAxisGrid = true;
+
+    /**
+     * @prop {Boolean} yAxisLabels - Whether y axis labels should be displayed.
+     * @default true
+     */
     yAxisLabels = true;
+
+    /**
+     * @prop {Number} yAxisGridPadding - Outside padding for y axis grid.
+     * @default 0
+     */
     yAxisGridPadding = 0;
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     // Legend
-    legendFontSize = 'smaller';
-    legendCircle = false;
-    legend = true;
-    legendSelect = true;
-    legendPosition = 'bottom'; // end;  bottom; top ; NOTE no start!
-    legendBottom = null;
-    legendTop = null; // top position; if null; default position for legendPosition is used.
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * @prop {String} legendFontSize - Font size for legend labels.
+     * @default smaller
+     */
+    legendFontSize = 'smaller';
+
+    /**
+     * @prop {Boolean} legendCircle - Whether legends should be squares (false) or circles (true)
+     * @default false
+     */
+    legendCircle = false;
+
+    /**
+     * @prop {Boolean} legend - Whether legends should be displayed.
+     * @default true
+     */
+    legend = true;
+
+    /**
+     * @prop {Boolean} legendSelect - Whether clicking on a legend hides and shows a the serie.
+     * @default true
+     */
+    legendSelect = true;
+
+    /**
+     * @prop {String} legendPosition - Position of legend. Possible values: bottom, top, end.
+     * @default top
+     */
+    legendPosition = 'top';
+
+    /**
+     * @prop {Number} legendBottom - If not null, number of pixels the legend should be positioned from the bottom. Otherwise a default number of pixels will be used.
+     */
+    legendBottom = null;
+
+    /**
+     * @prop {Number} legendTop - If not null, number of pixels the legend should be positioned from the top. Otherwise a default number of pixels will be used.
+     */
+    legendTop = null;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     // Line charts
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @prop {Number} lineWidth - Width of line for line charts.
+     * @default 2
+     */
     lineWidth = 2;
+
+    /**
+     * @prop {Number} pointRadius - Radius of line points for line charts.
+     * @default 2
+     */
     pointRadius = 2;
+
+    /**
+     * @prop {Boolean} connectNullValues - Whether null values should be connected or not.
+     * @default false
+     */
     connectNullValues = false;
+
+    /**
+     * @prop {Boolean} lineCurved - Whether lines should be curved or not.
+     * @default true
+     */
     lineCurved = true;
+
+    /**
+     * @prop {Boolean} lineChartFilled - Whether line charts should be filled or not.
+     * @default false
+     */
     lineChartFilled = false;
+
+    /**
+     * @prop {Boolean} points - Whether the lines should display points or not.
+     * @default true
+     */
     points = true;
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     // Bar charts
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    
+    /**
+     * @prop {Number} barFillOpacity - Opacity of bars.
+     * @default 0.5
+     */
     barFillOpacity = 0.5;
+
+    /**
+     * @prop {Number} barSpacing - Spacing in pixels between bars.
+     * @default 4
+     */
     barSpacing = 4;
+
+    /**
+     * @prop {Number} barStrokeWidth - Width of bar border.
+     * @default 1
+     */
     barStrokeWidth = 1;
+
+    /**
+     * @prop {Boolean} barStacked - Whether bars should be stacked.
+     * @default false
+     */
     barStacked = false;
 
-    // Pie and donut
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Pie and donut charts
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @prop {Number} pieFillOpacity - Opacity of pie and donut charts.
+     * @default 0.6
+     */
     pieFillOpacity = 0.6;
+
+    /**
+     * @prop {Number} donutWidth - With of donuts.
+     * @default 80
+     */
     donutWidth = 80;
 };
 
