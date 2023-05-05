@@ -13,7 +13,7 @@ class DonutController extends Controller {
      * @param {HTMLElement} currentSerieGroupElement Current serie group element.
      */
     draw(currentSerieGroupElement) {
-        const donutWidth = this.config.donutWidth;
+        const donutWidth = this.config.donutWidth || this.svgChart.chartHeight / 4;
         drawPieOrDonut(this.svgChart, currentSerieGroupElement, function(centerX, centerY, radius, startAngle, endAngle) {
             return describeArcDonut(centerX, centerY, radius - donutWidth, donutWidth, startAngle, endAngle);
         });

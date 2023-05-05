@@ -472,10 +472,9 @@ class SvgChartConfig {
     pieFillOpacity = 0.6;
 
     /**
-     * @prop {Number} donutWidth - With of donuts.
-     * @default 80
+     * @prop {Number} donutWidth - With of donuts. Of not given a default value is used.
      */
-    donutWidth = 80;
+    donutWidth = null;
 };
 
 export { SvgChartConfig };
