@@ -354,8 +354,9 @@ class SvgChart {
                 y: y + (this.config.legendWidth / 2) + 1, // + 1 don't know why
                 textAnchor: 'start',
                 dominantBaseline: 'middle',
-                fontFamily: this.config.fontFamily || '',
-                fontSize: this.config.legendFontSize || '',
+                fontFamily: this.config.fontFamily,
+                fill: this.config.legendColor,
+                fontSize: this.config.legendFontSize,
             }, document.createTextNode(serie.title));
 
 
@@ -438,9 +439,9 @@ class SvgChart {
             y: this.config.paddingDefault,
             textAnchor: textAnchor,
             dominantBaseline: dominantBaseline,
-            fontFamily: this.config.fontFamily || '',
-            fontSize: this.config.titleFontSize || '',
-            fill: this.config.titleColor || '',
+            fontFamily: this.config.fontFamily,
+            fontSize: this.config.titleFontSize,
+            fill: this.config.titleColor,
             className: prefixed('text-title'),
         }, document.createTextNode(this.config.title)));
     }

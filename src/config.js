@@ -179,9 +179,9 @@ class SvgChartConfig {
     /**
      * @prop {String} xAxisGridLineDashArray - Stroke dash array value for the x axis grid lines.
      * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
-     * @default 1;1
+     * @default 1 1
      */
-    xAxisGridLineDashArray = '1;1';
+    xAxisGridLineDashArray = '1 1';
 
     /**
      * @prop {String} xAxisLabelColor - Font color of xaxis labels.
@@ -301,9 +301,9 @@ class SvgChartConfig {
     /**
      * @prop {String} yAxisGridLineDashArray - Stroke dash array value for the y axis grid lines.
      * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
-     * @default 1;1
+     * @default 1 1
      */
-    yAxisGridLineDashArray = '1;1';
+    yAxisGridLineDashArray = '1 1';
 
     /**
      * @prop {String} yAxisLabelColor - Font color of y axis labels.
@@ -359,6 +359,12 @@ class SvgChartConfig {
      * @default smaller
      */
     legendFontSize = 'smaller';
+
+    /**
+     * @prop {String} legendColor - Font color of legend labels.
+     * @default black
+     */
+    legendColor = 'black';
 
     /**
      * @prop {Boolean} legendCircle - Whether legends should be squares (false) or circles (true)

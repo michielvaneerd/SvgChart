@@ -33,10 +33,7 @@ var chartInfo = {
             maxValue: 100,
             legendPosition: 'end',
             xAxisTitle: 'Days',
-            //xAxisTitleBottom: 0,
             yAxisTitle: 'Count',
-            //yAxisTitleStart: 40,
-            //legendTop: 60,
             padding: {
                 end: 100,
                 start: 80,
@@ -55,15 +52,57 @@ var chartInfo = {
             ]
         },
         data: null,
-        // data: {
-        //     series: {
-        //         train: Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)),
-        //         car: Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)),
-        //     },
-        //     xAxis: {
-        //         columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
-        //     }
-        // },
+        chart: null
+    },
+    chartBasicLineDark: {
+        config: {
+            chartType: 'line',
+            backgroundColor: 'black',
+            titleColor: 'white',
+            xAxisGridLineColor: 'green',
+            yAxisGridLineColor: 'green',
+            xAxisLabelColor: '#C0C0C0',
+            yAxisLabelColor: '#C0C0C0',
+            xAxisTitleColor: 'white',
+            yAxisTitleColor: 'white',
+            focusedValueFill: 'white',
+            focusedValueColor: 'black',
+            lineChartFilled: true,
+            legendColor: 'white',
+            transition: true,
+            dir: htmlDir,
+            title: 'Basic line chart dark',
+            minValue: 0,
+            maxValue: 100,
+            legendPosition: 'end',
+            xAxisTitle: 'Days',
+            yAxisTitle: 'Count',
+            padding: {
+                end: 100,
+                start: 80,
+                top: 50,
+                bottom: 70
+            },
+            series: [
+                {
+                    id: 'train',
+                    title: 'Train',
+                },
+                {
+                    id: 'car',
+                    title: 'Car',
+                }
+            ]
+        },
+        data: {
+            series: {
+                train: Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)),
+                car: Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)),
+            },
+            xAxis: {
+                columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+            }
+        },
         chart: null
     },
     chartBasicLineBig: {
@@ -79,12 +118,9 @@ var chartInfo = {
             xAxisStep: 2, // step between colums (so 2 means display each second step from first one on)
             xAxisLabelStep: 10,
             lineCurved: false,
-            //xAxisTitleBottom: 0,
             yAxisTitle: 'Count',
             points: false,
             lineWidth: 1,
-            //yAxisTitleStart: 40,
-            //legendTop: 60,
             padding: {
                 end: 100,
                 start: 80,
@@ -144,9 +180,13 @@ var chartInfo = {
             minValue: 0,
             maxValue: 100,
             legendPosition: 'top',
+            xAxisTitle: 'Days',
+            yAxisTitle: 'Count',
             legendTop: 60,
             padding: {
-                end: 40
+                end: 40,
+                start: 80,
+                bottom: 60
             },
             series: [
                 {
@@ -339,8 +379,9 @@ var chartInfo = {
             },
             drawOnData: function (chart, groupNode) {
                 groupNode.appendChild(chart.el('text', {
-                    x: chart.width - chart.config.padding.end - 2,
-                    y: chart.config.padding.top + 2,
+                    x: chart.isLTR ? (chart.width - chart.config.padding.end - 2) : (chart.config.padding.end + 2),
+                    direction: chart.config.dir,
+                    y: chart.config.padding.top + 4,
                     textAnchor: 'end',
                     dominantBaseline: 'hanging',
                     fontWeight: 'bold',
@@ -533,7 +574,7 @@ function doChart(id) {
     //if (!chartInfo[id].data) {
     var csvArea = document.getElementById(id + 'CodeDataCsv');
     if (csvArea && csvArea.value) {
-        csvToData(csvArea.value, id);
+        csvToData(csvArea.value.trim(), id);
     } else {
         chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
     }
@@ -581,6 +622,7 @@ function dynamicChart() {
 }
 
 doChart('chartBasicLine');
+doChart('chartBasicLineDark');
 doChart('chartBasicLineBig');
 doChart('chartBasicBar');
 doChart('chartStackedBar');

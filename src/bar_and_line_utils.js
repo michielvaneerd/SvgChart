@@ -44,7 +44,7 @@ function configBefore(svgChart, axisController) {
     svgChart.lineAndBarValueHeight = svgChart.chartHeight / svgChart.config.maxValue;
     svgChart.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
 
-    if (svgChart.config.yAxis) {
+    if (svgChart.config.yAxisGrid) {
         axisController.addYAxisGrid();
     }
 
