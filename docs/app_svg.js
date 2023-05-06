@@ -1,4 +1,4 @@
-import { SvgChart } from "./src/svg.js";
+import { SvgChart } from "../src/svg.js";
 
 //SvgChart.setActiveColorPalette(SvgChart.colorPalettes.springPastelsColorPalette);
 

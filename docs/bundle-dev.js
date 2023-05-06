@@ -1,0 +1,2570 @@
+(() => {
+  var __defProp = Object.defineProperty;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __esm = (fn, res) => function __init() {
+    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  };
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
+  var __publicField = (obj, key, value) => {
+    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+    return value;
+  };
+  var __accessCheck = (obj, member, msg) => {
+    if (!member.has(obj))
+      throw TypeError("Cannot " + msg);
+  };
+  var __privateGet = (obj, member, getter) => {
+    __accessCheck(obj, member, "read from private field");
+    return getter ? getter.call(obj) : member.get(obj);
+  };
+  var __privateAdd = (obj, member, value) => {
+    if (member.has(obj))
+      throw TypeError("Cannot add the same private member more than once");
+    member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+  };
+  var __privateSet = (obj, member, value, setter) => {
+    __accessCheck(obj, member, "write to private field");
+    setter ? setter.call(obj, value) : member.set(obj, value);
+    return value;
+  };
+  var __privateMethod = (obj, member, method) => {
+    __accessCheck(obj, member, "access private method");
+    return method;
+  };
+
+  // src/utils.js
+  function el(name, attributes = {}, child = null) {
+    var el2 = document.createElementNS(ns, name);
+    Object.keys(attributes).forEach(function(key) {
+      if (attributes[key] === null) {
+        return;
+      }
+      switch (key) {
+        case "className":
+          if (attributes[key]) {
+            el2.classList.add(...attributes[key].trim().split(" "));
+          }
+          break;
+        default:
+          el2.setAttribute(key.replaceAll(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
+          break;
+      }
+    });
+    if (child) {
+      el2.appendChild(child);
+    }
+    return el2;
+  }
+  function parent(currentElement, parentName) {
+    var el2 = currentElement;
+    while (el2 && el2.nodeName.toLowerCase() !== parentName.toLowerCase()) {
+      el2 = el2.parentNode;
+    }
+    return el2;
+  }
+  function prefixed(className) {
+    return classNamePrefix + className;
+  }
+  function directionForEach(instance, items, isRTL, callback) {
+    if (isRTL) {
+      const length = items.length;
+      for (let i = 0; i < length; i++) {
+        callback.call(instance, items[i], i, items);
+      }
+    } else {
+      const maxIndex = items.length - 1;
+      for (let i = maxIndex; i >= 0; i--) {
+        callback.call(instance, items[i], maxIndex - i, items);
+      }
+    }
+  }
+  function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180;
+    return {
+      x: centerX + radius * Math.cos(angleInRadians),
+      y: centerY + radius * Math.sin(angleInRadians)
+    };
+  }
+  var ns, attributesCamelCaseToDashRegex, classNamePrefix;
+  var init_utils = __esm({
+    "src/utils.js"() {
+      ns = "http://www.w3.org/2000/svg";
+      attributesCamelCaseToDashRegex = /[A-Z]/g;
+      classNamePrefix = "svg-chart-";
+    }
+  });
+
+  // src/colors.js
+  var colors;
+  var init_colors = __esm({
+    "src/colors.js"() {
+      colors = {
+        dutchFieldColorPalette: ["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"],
+        retroMetroColorPalette: ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"],
+        riverNightsColorPalette: ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e", "#ebdc78"],
+        springPastelsColorPalette: ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"]
+      };
+    }
+  });
+
+  // src/charts/controller.js
+  var _Controller, Controller;
+  var init_controller = __esm({
+    "src/charts/controller.js"() {
+      init_svg();
+      init_utils();
+      _Controller = class {
+        /**
+         * Create new Controller class.
+         * @param {SvgChart} svgChart SvgChart instance.
+         */
+        constructor(svgChart) {
+          if (new.target === _Controller) {
+            throw new Error("Controller class cannot be directly instanstiated.");
+          }
+          this.svgChart = svgChart;
+          this.config = this.svgChart.config;
+        }
+        /**
+         * Draws chart.
+         * @param {HTMLElement} currentSerieGroupElement Group element where the chart can be appended to.
+         */
+        draw(currentSerieGroupElement) {
+          this.drawStart(currentSerieGroupElement);
+          this.config.series.forEach(function(serie, serieIndex) {
+            const serieGroup = el("g", {
+              dataSerie: serie.id,
+              className: this.svgChart.unselectedSeries[serie.id] ? prefixed("unselected") : ""
+            });
+            this.drawSerie(serie, serieIndex, serieGroup);
+            currentSerieGroupElement.appendChild(serieGroup);
+          }, this);
+          this.drawEnd(currentSerieGroupElement);
+        }
+        /**
+         * Do things at the start of the draw for this chart.
+         * @param {HTMLElement} currentSerieGroupElement DOM group element.
+         */
+        drawStart(currentSerieGroupElement) {
+        }
+        /**
+         * Do things at the end of the draw for this chart.
+         * @param {HTMLElement} currentSerieGroupElement DOM group element.
+         */
+        drawEnd(currentSerieGroupElement) {
+        }
+        /**
+         * Draws chart element for this serie and attached it to the serieGroup.
+         * @param {Object} serie Serie object.
+         * @param {Number} serieIndex Serie index.
+         * @param {HTMLElement} serieGroup DOM group element for this serie.
+         */
+        drawSerie(serie, serieIndex, serieGroup) {
+        }
+        /**
+         * Execute config things before global config things are done.
+         */
+        configBefore() {
+        }
+        /**
+         * Execute config things after global config things are done.
+         */
+        configAfter() {
+        }
+        /**
+         * Execute serie config things before global config serie things are done.
+         * @param {Object} serie - Serie object
+         */
+        configSerieBefore(serie) {
+        }
+        /**
+         * Execute config things after global config things are done.
+         * @param {Object} serie - Serie object
+         */
+        configSerieAfter(serie) {
+        }
+      };
+      Controller = _Controller;
+      __publicField(Controller, "requiredConfigWithValue", {});
+    }
+  });
+
+  // src/axis.js
+  var AxisController;
+  var init_axis = __esm({
+    "src/axis.js"() {
+      init_svg();
+      init_utils();
+      AxisController = class {
+        #onXAxisLabelGroupClickScoped = null;
+        #onXAxisLabelGroupKeypressScoped = null;
+        /**
+         * 
+         * @param {SvgChart} svgChart SvgChart instance.
+         */
+        constructor(svgChart) {
+          this.svgChart = svgChart;
+          this.config = svgChart.config;
+        }
+        addYAxisGrid() {
+          var gYAxis = el("g", {
+            className: prefixed("y-axis-group")
+          });
+          var currentYAxisValue = this.config.minValue;
+          var currentYAxisLabelValue = this.config.minValue;
+          while (currentYAxisValue <= this.config.maxValue || currentYAxisLabelValue <= this.config.maxValue) {
+            if (this.config.yAxisGrid && currentYAxisValue <= this.config.maxValue) {
+              let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - currentYAxisValue * this.svgChart.lineAndBarValueHeight;
+              gYAxis.appendChild(el("line", {
+                x1: this.config.padding.left,
+                y1: y,
+                x2: this.config.padding.left + this.svgChart.chartWidth + this.config.xAxisGridPadding * 2,
+                y2: y,
+                className: prefixed("y-axis-grid-line"),
+                stroke: this.config.yAxisGridLineColor || "",
+                strokeWidth: this.config.yAxisGridLineWidth || "",
+                strokeDasharray: this.config.yAxisGridLineDashArray || ""
+              }));
+            }
+            currentYAxisValue += this.config.yAxisStep;
+            if (this.config.yAxisLabels && currentYAxisLabelValue <= this.config.maxValue) {
+              let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - currentYAxisLabelValue * this.svgChart.lineAndBarValueHeight;
+              gYAxis.appendChild(el("text", {
+                direction: this.config.dir,
+                x: this.svgChart.isLTR ? this.config.padding.left - 10 : this.config.padding.left + this.svgChart.chartWidth + 10,
+                y,
+                textAnchor: "end",
+                dominantBaseline: "middle",
+                fontFamily: this.config.fontFamily || "",
+                fontSize: this.config.axisLabelFontSize || "",
+                className: prefixed("y-axis-label"),
+                fill: this.config.yAxisLabelColor || ""
+              }, document.createTextNode(currentYAxisLabelValue)));
+            }
+            currentYAxisLabelValue += this.config.yAxisLabelStep;
+          }
+          this.svgChart.svg.appendChild(gYAxis);
+        }
+        addXAxisLabels(columnWidth) {
+          var currentXAxisGroupElement = el("g");
+          var currentXAxisLabelsGroupElement = el("g", {
+            className: prefixed("x-axis-label-group-current")
+          });
+          var currentXAxisGridColumnsSelectableGroupElement = this.config.xAxisGridColumnsSelectable ? el("g") : null;
+          directionForEach(this, this.svgChart.data.xAxis.columns, this.svgChart.isLTR, function(colValue, colIndex) {
+            if (this.config.xAxisGrid) {
+              const x = this.config.padding.left + this.config.xAxisGridPadding + colIndex * columnWidth;
+              if (colIndex === 0 || (colIndex + 0) % this.config.xAxisStep === 0) {
+                this.#addXAxisLine(currentXAxisGroupElement, x);
+              }
+              if (this.config.xAxisGridColumnsSelectable) {
+                currentXAxisGridColumnsSelectableGroupElement.appendChild(el("rect", {
+                  x,
+                  y: this.config.padding.top + this.config.yAxisGridPadding,
+                  width: columnWidth,
+                  height: this.svgChart.chartHeight,
+                  className: prefixed("x-axis-grid-column-selectable"),
+                  fillOpacity: 0,
+                  fill: this.config.xAxisGridColumnsSelectableColor
+                }));
+              }
+            }
+            if (this.config.xAxisLabels && (colIndex + 0) % this.config.xAxisLabelStep === 0) {
+              var xlg = el("g", {
+                transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + colIndex * columnWidth + (this.config.xAxisGridColumns ? columnWidth / 2 : 0)} ${this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding * 2 + this.config.xAxisLabelTop})`
+              });
+              xlg.appendChild(el("text", {
+                direction: this.config.dir,
+                textAnchor: this.config.textAnchorXAxisLabels || "middle",
+                dominantBaseline: "hanging",
+                fontFamily: this.config.fontFamily || "",
+                fontSize: this.config.axisLabelFontSize || "",
+                fontWeight: "normal",
+                fill: this.config.xAxisLabelColor || "",
+                tabindex: this.config.xAxisGridColumnsSelectable ? 0 : null,
+                className: prefixed("x-axis-label") + " " + (this.config.xAxisGridColumnsSelectable ? prefixed("x-axis-grid-column-selectable-label") : ""),
+                transform: `rotate(${this.config.xAxisLabelRotation})`
+              }, document.createTextNode(colValue)));
+              currentXAxisLabelsGroupElement.appendChild(xlg);
+            }
+          });
+          if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
+            this.#addXAxisLine(currentXAxisGroupElement, this.config.padding.left + this.config.xAxisGridPadding + this.svgChart.data.xAxis.columns.length * columnWidth);
+          }
+          this.svgChart.xAxisGroupElement.appendChild(currentXAxisGroupElement);
+          this.config.xAxisGridColumnsSelectable && this.svgChart.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
+          this.svgChart.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
+        }
+        #addXAxisLine(parent2, x) {
+          parent2.appendChild(el("line", {
+            x1: x,
+            y1: this.config.padding.top,
+            x2: x,
+            y2: this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding * 2,
+            className: prefixed("x-axis-grid-line"),
+            stroke: this.config.xAxisGridLineColor || "",
+            strokeWidth: this.config.xAxisGridLineWidth || "",
+            strokeDasharray: this.config.xAxisGridLineDashArray || ""
+          }));
+        }
+        addXAxisTitle() {
+          var x = this.svgChart.isLTR ? this.svgChart.width - this.config.padding.right - this.config.xAxisGridPadding : this.config.padding.left;
+          this.svgChart.svg.appendChild(el("text", {
+            direction: this.config.dir,
+            x,
+            y: this.svgChart.height - (this.config.xAxisTitleBottom !== null ? this.config.xAxisTitleBottom : this.config.paddingDefault),
+            textAnchor: "end",
+            dominantBaseline: "auto",
+            fontFamily: this.config.fontFamily || "",
+            fontSize: this.config.axisTitleFontSize || "",
+            fill: this.config.xAxisTitleColor || "",
+            className: prefixed("text-x-axis-title")
+          }, document.createTextNode(this.config.xAxisTitle)));
+        }
+        addYAxisTitle() {
+          var yAxisTitleG = el("g");
+          var x = 0;
+          if (this.svgChart.isLTR) {
+            x = this.config.yAxisTitleStart ? this.config.yAxisTitleStart : this.config.paddingDefault;
+          } else {
+            x = this.config.yAxisTitleStart ? this.svgChart.width - this.config.yAxisTitleStart : this.svgChart.width - this.config.paddingDefault;
+          }
+          yAxisTitleG.setAttribute("transform", "translate(" + x + ", " + (this.config.padding.top + this.config.yAxisGridPadding) + ")");
+          var yAxisTitleEl = el("text", {
+            direction: this.config.dir,
+            textAnchor: "end",
+            dominantBaseline: "hanging",
+            fontFamily: this.config.fontFamily || "",
+            fontSize: this.config.axisTitleFontSize || "",
+            fill: this.config.yAxisTitleColor || "",
+            className: prefixed("text-y-axis-title")
+          }, document.createTextNode(this.config.yAxisTitle));
+          yAxisTitleEl.setAttribute("transform", this.svgChart.isLTR ? "rotate(-90)" : "rotate(90)");
+          yAxisTitleG.appendChild(yAxisTitleEl);
+          this.svgChart.svg.appendChild(yAxisTitleG);
+        }
+        /**
+         * Adds group for x axis labels.
+         */
+        addXAxisLabelsGroup() {
+          this.svgChart.xAxisLabelsGroupElement = el("g", {
+            className: prefixed("x-axis-label-group")
+          });
+          if (this.config.xAxisGridColumnsSelectable) {
+            if (!this.#onXAxisLabelGroupClickScoped) {
+              this.#onXAxisLabelGroupClickScoped = this.#onXAxisLabelGroupClick.bind(this);
+              this.#onXAxisLabelGroupKeypressScoped = this.#onXAxisLabelGroupKeypress.bind(this);
+            }
+            this.svgChart.addEventListener(this.svgChart.xAxisLabelsGroupElement, "click", this.#onXAxisLabelGroupClickScoped, false);
+            this.svgChart.addEventListener(this.svgChart.xAxisLabelsGroupElement, "keypress", this.#onXAxisLabelGroupKeypressScoped, false);
+            this.svgChart.xAxisGridColumnsSelectableGroupElement = this.svgChart.svg.appendChild(el("g", {
+              className: prefixed("x-axis-columns-selectable-group")
+            }));
+          }
+          this.svgChart.svg.appendChild(this.svgChart.xAxisLabelsGroupElement);
+        }
+        /**
+         * When a label on the x axis receives a click when focussed.
+         * @param {Event} e Event object.
+         */
+        #onXAxisLabelGroupClick(e) {
+          this.#onXAxisLabelGroupSelect(e.target);
+        }
+        /**
+         * Display the selected column indicator and fires the onXAxisLabelGroupSelect callback (if defined).
+         * @param {HTMLElement} label Node (x axis label) that is selected.
+         */
+        #onXAxisLabelGroupSelect(label) {
+          var textNodes = this.svgChart.xAxisLabelsGroupElement.querySelectorAll("text." + prefixed("x-axis-grid-column-selectable-label"));
+          var rects = this.svgChart.xAxisGridColumnsSelectableGroupElement.querySelectorAll("rect." + prefixed("x-axis-grid-column-selectable"));
+          for (var i = 0; i < textNodes.length; i++) {
+            if (textNodes[i] === label) {
+              this.svgChart.lineAndBarSelectedColumnIndex = i;
+              textNodes[i].classList.add(prefixed("selected"));
+              textNodes[i].setAttribute("font-weight", "bold");
+              rects[i].classList.add(prefixed("selected"));
+              rects[i].setAttribute("fill-opacity", this.svgChart.config.xAxisGridSelectedColumnOpacity);
+              if (this.config.onXAxisLabelGroupSelect) {
+                this.config.onXAxisLabelGroupSelect(this.svgChart, this.svgChart.lineAndBarSelectedColumnIndex);
+              }
+            } else {
+              textNodes[i].classList.remove(prefixed("selected"));
+              rects[i].classList.remove(prefixed("selected"));
+              rects[i].setAttribute("fill-opacity", 0);
+              textNodes[i].setAttribute("font-weight", "normal");
+            }
+          }
+        }
+        #onXAxisLabelGroupKeypress(e) {
+          if (e.keyCode === 13) {
+            this.#onXAxisLabelGroupSelect(e.target);
+          }
+        }
+      };
+    }
+  });
+
+  // src/bar_and_line_utils.js
+  function drawStart(svgChart, axisController, currentSerieGroupElement) {
+    if (svgChart.xAxisGroupElement.firstChild) {
+      svgChart.xAxisGroupElement.removeChild(svgChart.xAxisGroupElement.firstChild);
+    }
+    if (svgChart.config.xAxisGridColumnsSelectable) {
+      if (svgChart.xAxisGridColumnsSelectableGroupElement.firstChild) {
+        svgChart.xAxisGridColumnsSelectableGroupElement.firstChild.remove();
+      }
+    }
+    if (svgChart.xAxisLabelsGroupElement.firstChild) {
+      svgChart.xAxisLabelsGroupElement.removeChild(svgChart.xAxisLabelsGroupElement.firstChild);
+    }
+    const columnWidth = svgChart.config.xAxisGridColumns ? svgChart.chartWidth / svgChart.data.xAxis.columns.length : svgChart.chartWidth / (svgChart.data.xAxis.columns.length - 1);
+    svgChart.columnWidth = columnWidth;
+    axisController.addXAxisLabels(columnWidth);
+  }
+  function configBefore(svgChart, axisController) {
+    svgChart.lineAndBarSelectedColumnIndex = null;
+    svgChart.lineAndBarValueHeight = svgChart.chartHeight / svgChart.config.maxValue;
+    svgChart.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
+    if (svgChart.config.yAxisGrid) {
+      axisController.addYAxisGrid();
+    }
+    if (svgChart.config.xAxisTitle) {
+      axisController.addXAxisTitle();
+    }
+    if (svgChart.config.yAxisTitle) {
+      axisController.addYAxisTitle();
+    }
+    if (svgChart.config.xAxisLabels) {
+      axisController.addXAxisLabelsGroup();
+    }
+    svgChart.xAxisGroupElement = svgChart.svg.appendChild(el("g", {
+      className: prefixed("x-axis-group")
+    }));
+  }
+  var init_bar_and_line_utils = __esm({
+    "src/bar_and_line_utils.js"() {
+      init_axis();
+      init_svg();
+      init_utils();
+    }
+  });
+
+  // src/charts/line_chart_controller.js
+  var LineController;
+  var init_line_chart_controller = __esm({
+    "src/charts/line_chart_controller.js"() {
+      init_utils();
+      init_controller();
+      init_svg();
+      init_axis();
+      init_bar_and_line_utils();
+      LineController = class extends Controller {
+        #axisController = null;
+        /**
+         * @param {SvgChart} svgChart SvgChart instance.
+         */
+        constructor(svgChart) {
+          super(svgChart);
+          this.#axisController = new AxisController(svgChart);
+        }
+        /**
+         * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
+         * @param {Object} serie Serie object.
+         * @param {Number} serieIndex Serie index.
+         * @param {HTMLElement} serieGroup DOM group element for this serie.
+         */
+        drawSerie(serie, serieIndex, serieGroup) {
+          var nonNullPoints = [[]];
+          var flatNonNullPoints = [];
+          directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, function(value, valueIndex, values) {
+            var x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.svgChart.columnWidth + (this.config.xAxisGridColumns ? this.svgChart.columnWidth / 2 : 0);
+            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight;
+            if (value === null) {
+              if (nonNullPoints[nonNullPoints.length - 1].length > 0 && valueIndex + 1 < values.length) {
+                nonNullPoints.push([]);
+              }
+            } else {
+              nonNullPoints[nonNullPoints.length - 1].push({ x, y, value });
+              flatNonNullPoints.push({ x, y, value });
+            }
+          });
+          var paths = [];
+          if (this.config.connectNullValues) {
+            let path = this.config.lineCurved ? this.#getCurvedPathFromPoints(flatNonNullPoints) : this.#getStraightPathFromPoints(flatNonNullPoints);
+            if (path.length > 0) {
+              paths.push(path);
+            }
+          } else {
+            nonNullPoints.forEach(function(currentNonNullPoints) {
+              if (currentNonNullPoints.length > 0) {
+                let path = this.config.lineCurved ? this.#getCurvedPathFromPoints(currentNonNullPoints) : this.#getStraightPathFromPoints(currentNonNullPoints);
+                if (path.length > 0) {
+                  paths.push(path);
+                }
+              }
+            }, this);
+          }
+          paths.forEach(function(path) {
+            serieGroup.appendChild(el("path", {
+              d: path.join(" "),
+              fill: this.config.lineChartFilled ? this.svgChart.getSerieFill(serie, serieIndex) : "none",
+              fillOpacity: 0.4,
+              stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
+              strokeWidth: this.config.lineWidth || "",
+              className: prefixed("line")
+            }));
+          }, this);
+          if (this.config.points) {
+            flatNonNullPoints.forEach(function(point) {
+              serieGroup.appendChild(el("circle", {
+                cx: point.x,
+                cy: point.y,
+                r: this.config.pointRadius,
+                zIndex: 1,
+                fill: this.svgChart.getSeriePointColor(serie, serieIndex),
+                stroke: this.svgChart.getSeriePointColor(serie, serieIndex),
+                dataValue: point.value,
+                className: prefixed("line-point"),
+                tabindex: this.config.focusedValueShow ? 0 : null
+              }));
+            }, this);
+          }
+        }
+        /**
+         * Do things at the start of the draw for this chart.
+         * @param {HTMLElement} currentSerieGroupElement DOM group element.
+         */
+        drawStart(currentSerieGroupElement) {
+          drawStart(this.svgChart, this.#axisController, currentSerieGroupElement);
+        }
+        /**
+         * Helper function to get a curved path from an array of points.
+         * @param {Array} points Array of points.
+         * @returns Array of curved path coordinates.
+         */
+        #getCurvedPathFromPoints(points) {
+          let path = ["M " + points[0].x + " " + points[0].y];
+          for (var i = 0; i < points.length - 1; i++) {
+            var x_mid = (points[i].x + points[i + 1].x) / 2;
+            var y_mid = (points[i].y + points[i + 1].y) / 2;
+            var cp_x1 = (x_mid + points[i].x) / 2;
+            var cp_x2 = (x_mid + points[i + 1].x) / 2;
+            path.push(`Q ${cp_x1} ${points[i].y}, ${x_mid} ${y_mid}`);
+            path.push(`Q ${cp_x2} ${points[i + 1].y} ${points[i + 1].x} ${points[i + 1].y}`);
+          }
+          this.#closePath(path, points);
+          return path;
+        }
+        /**
+         * Closes path for filled line charts.
+         * @param {Array} path Array of path coordinates
+         * @param {Array} points Array of points
+         */
+        #closePath(path, points) {
+          if (this.config.lineChartFilled && points.length > 1) {
+            path.push(`L ${points[points.length - 1].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight}`);
+            path.push(`L ${points[0].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight}`);
+            path.push(`L ${points[0].x} ${points[0].y}`);
+            path.push("Z");
+          }
+        }
+        /**
+         * Helper function to get a straight path for line charts.
+         * @param {Array} points Array of points.
+         * @returns Array of path coordinates.
+         */
+        #getStraightPathFromPoints(points) {
+          let path = [];
+          points.forEach(function(point, pointIndex) {
+            if (pointIndex === 0) {
+              path.push(`M ${point.x} ${point.y}`);
+            } else {
+              path.push(`L ${point.x} ${point.y}`);
+            }
+          });
+          this.#closePath(path, points);
+          return path;
+        }
+        /**
+         * Execute config things before global config things are done.
+         */
+        configBefore() {
+          super.configBefore();
+          configBefore(this.svgChart, this.#axisController);
+        }
+      };
+    }
+  });
+
+  // src/charts/bar_chart_controller.js
+  var _axisController, BarController;
+  var init_bar_chart_controller = __esm({
+    "src/charts/bar_chart_controller.js"() {
+      init_utils();
+      init_controller();
+      init_svg();
+      init_axis();
+      init_bar_and_line_utils();
+      BarController = class extends Controller {
+        /**
+         * @param {SvgChart} svgChart SvgChart instance.
+         */
+        constructor(svgChart) {
+          super(svgChart);
+          __privateAdd(this, _axisController, null);
+          __privateSet(this, _axisController, new AxisController(svgChart));
+        }
+        /**
+         * Draws chart element for this serie and attached it to the serieGroup.
+         * @param {Object} serie Serie object.
+         * @param {Number} serieIndex Serie index.
+         * @param {HTMLElement} serieGroup DOM group element for this serie.
+         */
+        drawSerie(serie, serieIndex, serieGroup) {
+          directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, function(value, valueIndex) {
+            var x = null;
+            var y = null;
+            var height = null;
+            if (this.config.barStacked) {
+              if (!this.stackedBarValues[valueIndex]) {
+                this.stackedBarValues[valueIndex] = this.config.minValue;
+              }
+              ;
+              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.svgChart.columnWidth + this.config.barSpacing;
+              y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight - this.stackedBarValues[valueIndex] * this.svgChart.lineAndBarValueHeight;
+              height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight;
+              this.stackedBarValues[valueIndex] = this.stackedBarValues[valueIndex] += value;
+            } else {
+              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.svgChart.columnWidth + this.svgChart.barWidth * this.currentBarIndex + this.config.barSpacing * (this.currentBarIndex + 1);
+              if (isNaN(x)) {
+                console.log(this.currentBarIndex);
+              }
+              height = y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight;
+            }
+            serieGroup.appendChild(el("rect", {
+              x,
+              y,
+              width: this.svgChart.barWidth,
+              height: this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
+              fill: this.svgChart.getSerieFill(serie, serieIndex),
+              className: prefixed("bar"),
+              fillOpacity: this.config.barFillOpacity || "",
+              strokeWidth: this.config.barStrokeWidth || 0,
+              stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
+              dataValue: value,
+              tabindex: this.config.focusedValueShow ? 0 : null
+            }));
+          });
+          this.currentBarIndex += 1;
+        }
+        /**
+         * Do things at the start of the draw for this chart.
+         * @param {HTMLElement} currentSerieGroupElement DOM group element.
+         */
+        drawStart(currentSerieGroupElement) {
+          drawStart(this.svgChart, __privateGet(this, _axisController), currentSerieGroupElement);
+          const barWidth = (this.svgChart.columnWidth - this.config.barSpacing * (this.svgChart.barCountPerColumn + 1)) / (this.svgChart.barCountPerColumn || 1);
+          this.svgChart.barWidth = barWidth;
+          this.currentBarIndex = 0;
+          this.stackedBarValues = [];
+        }
+        /**
+         * Execute config things before global config things are done.
+         */
+        configBefore() {
+          super.configBefore();
+          configBefore(this.svgChart, __privateGet(this, _axisController));
+        }
+        /**
+         * Execute serie config things before global config serie things are done.
+         * @param {Object} serie - Serie object
+         */
+        configSerieBefore(serie) {
+          super.configSerieBefore(serie);
+          if (!this.config.barStacked && (serie.type === SvgChart.chartTypes.bar || this.config.chartType === SvgChart.chartTypes.bar)) {
+            this.svgChart.barCountPerColumn += 1;
+          }
+        }
+      };
+      _axisController = new WeakMap();
+      /**
+       * Required config property values for this type of chart.
+       */
+      __publicField(BarController, "requiredConfigWithValue", {
+        xAxisGridColumns: true
+      });
+    }
+  });
+
+  // src/charts/bar_and_line_chart_controller.js
+  var _lineChartController, _barChartController, BarAndLineController;
+  var init_bar_and_line_chart_controller = __esm({
+    "src/charts/bar_and_line_chart_controller.js"() {
+      init_controller();
+      init_line_chart_controller();
+      init_bar_chart_controller();
+      init_svg();
+      BarAndLineController = class extends Controller {
+        /**
+         * @param {SvgChart} svgChart SvgChart instance.
+         */
+        constructor(svgChart) {
+          super(svgChart);
+          __privateAdd(this, _lineChartController, null);
+          __privateAdd(this, _barChartController, null);
+          __privateSet(this, _barChartController, new BarController(svgChart));
+          __privateSet(this, _lineChartController, new LineController(svgChart));
+        }
+        drawSerie(serie, serieIndex, serieGroup) {
+          const serieType = serie.type || (this.config.chartType === SvgChart.chartTypes.lineAndBar ? SvgChart.chartTypes.line : this.config.chartType);
+          switch (serieType) {
+            case SvgChart.chartTypes.line:
+              __privateGet(this, _lineChartController).drawSerie(serie, serieIndex, serieGroup);
+              break;
+            case SvgChart.chartTypes.bar:
+              __privateGet(this, _barChartController).drawSerie(serie, serieIndex, serieGroup);
+              break;
+          }
+        }
+        drawStart(currentSerieGroupElement) {
+          __privateGet(this, _barChartController).drawStart(currentSerieGroupElement);
+        }
+        configBefore() {
+          __privateGet(this, _barChartController).configBefore();
+        }
+        configSerieBefore(serie) {
+          __privateGet(this, _barChartController).configSerieBefore(serie);
+        }
+      };
+      _lineChartController = new WeakMap();
+      _barChartController = new WeakMap();
+      __publicField(BarAndLineController, "requiredConfigWithValue", {
+        xAxisGridColumns: true
+      });
+    }
+  });
+
+  // src/donut_or_pie_utils.js
+  function draw(svgChart, currentSerieGroupElement, describeArcCallback) {
+    var radius = svgChart.chartHeight / 2;
+    var centerX = svgChart.width / 2;
+    var centerY = svgChart.chartHeight / 2 + svgChart.config.padding.top;
+    var total = 0;
+    for (let key in svgChart.data.series) {
+      total += svgChart.data.series[key];
+    }
+    var totalToDegree = 360 / total;
+    var currentTotal = 0;
+    svgChart.config.series.forEach(function(serie, serieIndex) {
+      var serieGroup = el("g", {
+        dataSerie: serie.id,
+        className: svgChart.unselectedSeries[serie.id] ? prefixed("unselected") : ""
+      });
+      const value = svgChart.data.series[serie.id];
+      var startAngle = currentTotal * totalToDegree;
+      currentTotal += value;
+      var endAngle = currentTotal * totalToDegree;
+      var path = describeArcCallback(centerX, centerY, radius, startAngle, endAngle);
+      serieGroup.appendChild(el("path", {
+        d: path.join(" "),
+        fill: svgChart.getSerieFill(serie, serieIndex),
+        fillOpacity: svgChart.config.pieFillOpacity || 1,
+        className: prefixed("pie-piece"),
+        tabindex: 0,
+        stroke: svgChart.config[svgChart.config.chartType + "Stroke"],
+        strokeWidth: svgChart.config[svgChart.config.chartType + "StrokeWidth"],
+        dataValue: value
+      }));
+      currentSerieGroupElement.appendChild(serieGroup);
+    });
+  }
+  var init_donut_or_pie_utils = __esm({
+    "src/donut_or_pie_utils.js"() {
+      init_utils();
+      init_svg();
+    }
+  });
+
+  // src/charts/donut_chart_controller.js
+  function describeArcDonut(x, y, radius, spread, startAngle, endAngle) {
+    var innerStart = polarToCartesian(x, y, radius, endAngle);
+    var innerEnd = polarToCartesian(x, y, radius, startAngle);
+    var outerStart = polarToCartesian(x, y, radius + spread, endAngle);
+    var outerEnd = polarToCartesian(x, y, radius + spread, startAngle);
+    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    var d = [
+      "M",
+      outerStart.x,
+      outerStart.y,
+      "A",
+      radius + spread,
+      radius + spread,
+      0,
+      largeArcFlag,
+      0,
+      outerEnd.x,
+      outerEnd.y,
+      "L",
+      innerEnd.x,
+      innerEnd.y,
+      "A",
+      radius,
+      radius,
+      0,
+      largeArcFlag,
+      1,
+      innerStart.x,
+      innerStart.y,
+      "L",
+      outerStart.x,
+      outerStart.y,
+      "Z"
+    ];
+    return d;
+  }
+  var DonutController;
+  var init_donut_chart_controller = __esm({
+    "src/charts/donut_chart_controller.js"() {
+      init_utils();
+      init_controller();
+      init_donut_or_pie_utils();
+      DonutController = class extends Controller {
+        /**
+         * 
+         * @param {HTMLElement} currentSerieGroupElement Current serie group element.
+         */
+        draw(currentSerieGroupElement) {
+          const donutWidth = this.config.donutWidth || this.svgChart.chartHeight / 4;
+          draw(this.svgChart, currentSerieGroupElement, function(centerX, centerY, radius, startAngle, endAngle) {
+            return describeArcDonut(centerX, centerY, radius - donutWidth, donutWidth, startAngle, endAngle);
+          });
+        }
+      };
+    }
+  });
+
+  // src/charts/pie_chart_controller.js
+  function describeArcPie(x, y, radius, startAngle, endAngle) {
+    var start = polarToCartesian(x, y, radius, endAngle);
+    var end = polarToCartesian(x, y, radius, startAngle);
+    var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
+    var d = [
+      "M",
+      start.x,
+      start.y,
+      "A",
+      radius,
+      radius,
+      0,
+      arcSweep,
+      0,
+      end.x,
+      end.y,
+      "L",
+      x,
+      y,
+      "L",
+      start.x,
+      start.y
+    ];
+    return d;
+  }
+  var PieController;
+  var init_pie_chart_controller = __esm({
+    "src/charts/pie_chart_controller.js"() {
+      init_utils();
+      init_controller();
+      init_donut_or_pie_utils();
+      PieController = class extends Controller {
+        /**
+         * Draws chart.
+         * @param {HTMLElement} currentSerieGroupElement Current serie group element.
+         */
+        draw(currentSerieGroupElement) {
+          draw(this.svgChart, currentSerieGroupElement, function(centerX, centerY, radius, startAngle, endAngle) {
+            return describeArcPie(centerX, centerY, radius, startAngle, endAngle);
+          });
+        }
+      };
+    }
+  });
+
+  // src/config.js
+  var SvgChartConfig;
+  var init_config = __esm({
+    "src/config.js"() {
+      SvgChartConfig = class {
+        /**
+         * @prop {String} dir - Language direction.
+         * @default ltr
+         */
+        dir = "ltr";
+        /**
+         * @prop {String} chartType - Chart type. Required. Possible values: line, bar, lineAndBar, pie, donut.
+         */
+        chartType = null;
+        /**
+         * @prop {Object} padding - Padding object.
+         * @example {start: 40, end: 20, top: 100, bottom: 40}
+         */
+        padding = {
+          start: 40,
+          end: 20,
+          top: 100,
+          bottom: 40
+        };
+        /**
+         * @prop {Number} paddingDefault - Default padding for space between elements.
+         * @default 20
+         */
+        paddingDefault = 20;
+        /**
+         * @prop {Number} legendWidth - Width of legend squares or circles.
+         * @default 10
+         */
+        legendWidth = 10;
+        /**
+         * @prop {Boolean} focusedValueShow - Whether the value box should be displayed when an element has focus.
+         * @default true
+         */
+        focusedValueShow = true;
+        /**
+         * @prop {String} focusedValueFill - Fill color of focused value box.
+         * @default black
+         */
+        focusedValueFill = "black";
+        /**
+         * @prop {String} focusedValueColor - Font color of focused value box.
+         * @default white
+         */
+        focusedValueColor = "white";
+        /**
+         * @prop {Number} focusedValuePadding - Padding of focused value box.
+         * @default 6
+         */
+        focusedValuePadding = 6;
+        /**
+         * @prop {Function} drawOnConfig - Draw function to execute in the config phase. It receives a SvgChart and HTMLElement parameter.
+         * @example function(svgChart, groupNode) {
+         *     groupNode.appendChild(svgChart.el('rect', {
+         *         x: 10,
+         *         y: 10
+         *     }));
+         * }
+         */
+        drawOnConfig = null;
+        /**
+         * @prop {Function} drawOnData - Draw function to execute in the chart phase. It receives a SvgChart and HTMLElement parameter.
+         * @example function(svgChart, groupNode) {
+         *     groupNode.appendChild(svgChart.el('rect', {
+         *         x: 10,
+         *         y: 10
+         *     }));
+         * }
+         */
+        drawOnData = null;
+        /**
+         * @prop {Boolean} transition - Whether the chart elements should be faded in or nor.
+         * @default true
+         */
+        transition = true;
+        /**
+         * @prop {String} backgroundColor - Background color of the SVG element.
+         * @default white
+         */
+        backgroundColor = "white";
+        /**
+         * @prop {String} fontFamily - Font fanily for all text elements.
+         * @default sans-serif
+         */
+        fontFamily = "sans-serif";
+        /**
+         * @prop {String|Number} titleFontSize - Fontsize for the title.
+         * @default normal
+         * 
+         */
+        titleFontSize = "normal";
+        /**
+         * @prop {String} titleColor - Font color of title.
+         * @default black
+         */
+        titleColor = "black";
+        /**
+         * @prop {String} titleHorizontalPosition - Horizontal position of title. Can be one of: center, start, end.
+         * @default center
+         */
+        titleHorizontalPosition = "center";
+        // center (default); start; end
+        /**
+         * @prop {String} titleVerticalPosition - Vertical position of title. Can be one of: top, bottom, center.
+         * @default top
+         */
+        titleVerticalPosition = "top";
+        // top (default); bottom; center
+        /**
+         * @prop {Number} maxValue - Maximum value. Required for charts with Y-axes.
+         */
+        maxValue = null;
+        /**
+         * @prop {Number} minValue - Minumum value of Y axis. Required for charts with Y-axes.
+         */
+        minValue = null;
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        // X Axis
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /**
+         * @prop {String} axisTitleFontSize - Font size of axes titles.
+         * @default smaller
+         */
+        axisTitleFontSize = "smaller";
+        /**
+         * @prop {String} axisLabelFontSize - Font size of axes labels.
+         * @default small
+         */
+        axisLabelFontSize = "small";
+        // X axis
+        /**
+         * @prop {String} xAxisTitle - X axis title.
+         */
+        xAxisTitle = null;
+        /**
+         * @prop {Number} xAxisTitleBottom - If this is a number X, than the x axis title will be positioned X pixels from the bottom.
+         * If this is null, then the title will be positioned paddingDefault pixesl from the bottom.
+         */
+        xAxisTitleBottom = null;
+        /**
+         * @prop {Number} xAxisGridLineWidth - Line width of the x axis grid.
+         * @default 1
+         */
+        xAxisGridLineWidth = 1;
+        /**
+         * @prop {String} xAxisGridLineColor - Color of x axis grid lines.
+         * @default #C0C0C0
+         */
+        xAxisGridLineColor = "#C0C0C0";
+        /**
+         * @prop {String} xAxisGridLineDashArray - Stroke dash array value for the x axis grid lines.
+         * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
+         * @default 1 1
+         */
+        xAxisGridLineDashArray = "1 1";
+        /**
+         * @prop {String} xAxisLabelColor - Font color of xaxis labels.
+         * @default #A0A0A0
+         */
+        xAxisLabelColor = "#A0A0A0";
+        /**
+         * @prop {String} xAxisTitleColor - Font color of x axis title.
+         * @default #A0A0A0
+         */
+        xAxisTitleColor = "#A0A0A0";
+        /**
+         * @prop {Boolean} xAxisGrid - Whether the xaxis grid should be displayed.
+         * @default true
+         */
+        xAxisGrid = true;
+        /**
+         * @prop {Number} xAxisGridPadding - Outside padding for x axis grid.
+         * @default 0
+         */
+        xAxisGridPadding = 0;
+        /**
+         * @prop {Boolean} xAxisLabels - Whether x axis labels should be displayed.
+         * @default true
+         */
+        xAxisLabels = true;
+        /**
+         * @prop {Boolean} xAxisGridColumns - Whether the x axis labels should be below (false)
+         * or between (true) the x axis grid lines. For bar charts this will always be set to true.
+         * @default false
+         */
+        xAxisGridColumns = false;
+        /**
+         * @prop {Boolean} xAxisGridColumnsSelectable - Whether xAxisGridColumns should be selectable.
+         * If this is true, the x axis labels can be clicked and selected.
+         * @default false
+         */
+        xAxisGridColumnsSelectable = false;
+        /**
+         * @prop {Number} xAxisGridSelectedColumnOpacity - Opacity value for the selected xAxisGridColumn.
+         * @default 0.2
+         */
+        xAxisGridSelectedColumnOpacity = 0.2;
+        /**
+         * @prop {String} xAxisGridColumnsSelectableColor - Background color for a selected xAxisGridColumn.
+         * @default black
+         */
+        xAxisGridColumnsSelectableColor = "black";
+        /**
+         * @prop {String} textAnchorXAxisLabels - The text anchor value for x axis labels.
+         * For example if you want vertical labels that should be aligned to the x axis, you can set this to 'start'.
+         * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/text-anchor}.
+         * @default middle
+         */
+        textAnchorXAxisLabels = "middle";
+        /**
+         * @prop {Number} xAxisLabelTop - Number of pixels that the x axsis labels will be positioned from the bottom x axis grid line.
+         * @default 10
+         */
+        xAxisLabelTop = 10;
+        /**
+         * @prop {Number} rotate - degrees for the x axis labels.
+         * @default 0
+         */
+        xAxisLabelRotation = 0;
+        /**
+         * @prop {Number} xAxisStep - Steps between x axis grid lines.
+         * @default 1
+         */
+        xAxisStep = 1;
+        /**
+         * @prop {Number} xAxisLabelStep - Steps between x axis labels.
+         * @default 1
+         */
+        xAxisLabelStep = 1;
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        // Y Axis
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /**
+         * @prop {String} yAxisTitle - Y axis title.
+         */
+        yAxisTitle = null;
+        /**
+         * @prop {Number} yAxisTitleStart - Number of pixels the y axis labels should be positioned from the start. If this is null, this will be defaultPadding pixels.
+         */
+        yAxisTitleStart = null;
+        // if this is <> null; then this will be the X start position of the Y axis title.
+        /**
+         * @prop {Number} yAxisGridLineWidth - Line width of the y axis grid.
+         * @default 1
+         */
+        yAxisGridLineWidth = 1;
+        /**
+         * @prop {String} yAxisGridLineColor - Color of y axis grid lines.
+         * @default #C0C0C0
+         */
+        yAxisGridLineColor = "#C0C0C0";
+        /**
+         * @prop {String} yAxisGridLineDashArray - Stroke dash array value for the y axis grid lines.
+         * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
+         * @default 1 1
+         */
+        yAxisGridLineDashArray = "1 1";
+        /**
+         * @prop {String} yAxisLabelColor - Font color of y axis labels.
+         * @default #A0A0A0
+         */
+        yAxisLabelColor = "#A0A0A0";
+        /**
+         * @prop {String} yAxisTitleColor - Font color of y axis title.
+         * @default #A0A0A0
+         */
+        yAxisTitleColor = "#A0A0A0";
+        /**
+         * @prop {Number} yAxisStep - Steps between y axis grid lines.
+         * @default 10
+         */
+        yAxisStep = 10;
+        // how many steps between y axis grid lines
+        /**
+         * @prop {Number} yAxisLabelStep - Steps between y axis labels.
+         * @default 10
+         */
+        yAxisLabelStep = 10;
+        // how many steps between labels y axis
+        //yAxis = true;
+        /**
+         * @prop {Boolean} yAxisGrid - Whether the y axis grid should be displayed.
+         * @default true
+         */
+        yAxisGrid = true;
+        /**
+         * @prop {Boolean} yAxisLabels - Whether y axis labels should be displayed.
+         * @default true
+         */
+        yAxisLabels = true;
+        /**
+         * @prop {Number} yAxisGridPadding - Outside padding for y axis grid.
+         * @default 0
+         */
+        yAxisGridPadding = 0;
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        // Legend
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /**
+         * @prop {String} legendFontSize - Font size for legend labels.
+         * @default smaller
+         */
+        legendFontSize = "smaller";
+        /**
+         * @prop {String} legendColor - Font color of legend labels.
+         * @default black
+         */
+        legendColor = "black";
+        /**
+         * @prop {Boolean} legendCircle - Whether legends should be squares (false) or circles (true)
+         * @default false
+         */
+        legendCircle = false;
+        /**
+         * @prop {Boolean} legend - Whether legends should be displayed.
+         * @default true
+         */
+        legend = true;
+        /**
+         * @prop {Boolean} legendSelect - Whether clicking on a legend hides and shows a the serie.
+         * @default true
+         */
+        legendSelect = true;
+        /**
+         * @prop {String} legendPosition - Position of legend. Possible values: bottom, top, end.
+         * @default top
+         */
+        legendPosition = "top";
+        /**
+         * @prop {Number} legendBottom - If not null, number of pixels the legend should be positioned from the bottom. Otherwise a default number of pixels will be used.
+         */
+        legendBottom = null;
+        /**
+         * @prop {Number} legendTop - If not null, number of pixels the legend should be positioned from the top. Otherwise a default number of pixels will be used.
+         */
+        legendTop = null;
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        // Line charts
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /**
+         * @prop {Number} lineWidth - Width of line for line charts.
+         * @default 2
+         */
+        lineWidth = 2;
+        /**
+         * @prop {Number} pointRadius - Radius of line points for line charts.
+         * @default 2
+         */
+        pointRadius = 2;
+        /**
+         * @prop {Boolean} connectNullValues - Whether null values should be connected or not.
+         * @default false
+         */
+        connectNullValues = false;
+        /**
+         * @prop {Boolean} lineCurved - Whether lines should be curved or not.
+         * @default true
+         */
+        lineCurved = true;
+        /**
+         * @prop {Boolean} lineChartFilled - Whether line charts should be filled or not.
+         * @default false
+         */
+        lineChartFilled = false;
+        /**
+         * @prop {Boolean} points - Whether the lines should display points or not.
+         * @default true
+         */
+        points = true;
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        // Bar charts
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /**
+         * @prop {Number} barFillOpacity - Opacity of bars.
+         * @default 0.5
+         */
+        barFillOpacity = 0.5;
+        /**
+         * @prop {Number} barSpacing - Spacing in pixels between bars.
+         * @default 4
+         */
+        barSpacing = 4;
+        /**
+         * @prop {Number} barStrokeWidth - Width of bar border.
+         * @default 1
+         */
+        barStrokeWidth = 1;
+        /**
+         * @prop {Boolean} barStacked - Whether bars should be stacked.
+         * @default false
+         */
+        barStacked = false;
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        // Pie and donut charts
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        /**
+         * @prop {Number} pieFillOpacity - Opacity of pie and donut charts.
+         * @default 0.6
+         */
+        pieFillOpacity = 0.6;
+        /**
+         * @prop {Number} donutWidth - With of donuts. Of not given a default value is used.
+         */
+        donutWidth = null;
+        /**
+         * @prop {String} pieStroke - Stroke color for pie charts.
+         * @default white
+         */
+        pieStroke = "white";
+        /**
+         * @prop {Number} pieStrokeWidth - Width of stroke for pie charts. If this is 0, no stroke is painted.
+         * @default 2
+         */
+        pieStrokeWidth = 2;
+        /**
+         * @prop {String} donutStroke - Stroke color for donut charts.
+         * @default white
+         */
+        donutStroke = "white";
+        /**
+         * @prop {Number} donutStrokeWidth - Width of stroke for donut charts. If this is 0, no stroke is painted.
+         * @default 2
+         */
+        donutStrokeWidth = 2;
+      };
+    }
+  });
+
+  // src/svg.js
+  var _cssAdded, _activeColorPalette, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
+  var init_svg = __esm({
+    "src/svg.js"() {
+      init_utils();
+      init_colors();
+      init_line_chart_controller();
+      init_bar_chart_controller();
+      init_bar_and_line_chart_controller();
+      init_donut_chart_controller();
+      init_pie_chart_controller();
+      init_config();
+      _SvgChart = class {
+        /**
+         * Constructor - create a new chart instance.
+         * @param {HTMLElement} parent Parent DOM node the SVG element will be attached to.
+         * @param {SvgChartConfig} config Configuration object.
+         */
+        constructor(parent2, config2) {
+          __privateAdd(this, _addSerieGroup);
+          __privateAdd(this, _addLegend);
+          __privateAdd(this, _addTitle);
+          /**
+           * Things we need to do for all chart types before we start visualise the data.
+           * @returns {HTMLElement} The current serie group element.
+           */
+          __privateAdd(this, _dataBefore);
+          /**
+           * Things we need to do for all chart types after we visualised the data.
+           * @param {HTMLElement} currentSerieGroupElement The current serie group element we got from #dataBefore().
+           */
+          __privateAdd(this, _dataAfter);
+          /**
+           * When legend gets toggled (selected / deselected).
+           * @param {Node} target Legend node that gets toggled.
+           */
+          __privateAdd(this, _onLegendToggle);
+          /**
+           * When a key is pressed on a focussed legend node.
+           * @param {Event} e Event object.
+           */
+          __privateAdd(this, _onLegendKeypress);
+          /**
+           * When a focussed legend node is clicked.
+           * @param {Event} e Event object.
+           */
+          __privateAdd(this, _onLegendClick);
+          /**
+           * When the tranisiton of a serie group has ended.
+           * @param {Event} e Event object.
+           */
+          __privateAdd(this, _onSerieGroupTransitionend);
+          /**
+           * When a serie group node is blurred (this means loses focus).
+           * @param {Event} e Event object.
+           */
+          __privateAdd(this, _onSerieGroupBlur);
+          /**
+           * When a serie group node gets focussed.
+           * @param {Event} e Event object.
+           */
+          __privateAdd(this, _onSerieGroupFocus);
+          __privateAdd(this, _onLegendClickScoped, null);
+          __privateAdd(this, _onLegendKeypressScoped, null);
+          __privateAdd(this, _onSerieGroupTransitionendScoped, null);
+          __privateAdd(this, _onSerieGroupFocusScoped, null);
+          __privateAdd(this, _onSerieGroupBlurScoped, null);
+          if (!__privateGet(_SvgChart, _cssAdded)) {
+            __privateSet(_SvgChart, _cssAdded, true);
+            const cssRules = [
+              "." + prefixed("line-point") + ", g." + prefixed("legend-group") + " g, ." + prefixed("x-axis-grid-column-selectable-label") + " { cursor: pointer; }",
+              "." + prefixed("line-point") + ":hover, circle." + prefixed("line-point") + ":focus { stroke-width: 6; outline: none; }",
+              "#" + prefixed("serie-group") + " g { transition: opacity 0.6s; }",
+              "#" + prefixed("serie-group") + " g." + prefixed("unselected") + " { opacity: 0; }",
+              "#" + prefixed("serie-group-current") + " { transition: opacity 1s; opacity: 1; }",
+              "#" + prefixed("serie-group-current") + "." + prefixed("unattached") + " { opacity: 0; }",
+              "g." + prefixed("legend-group") + " g." + prefixed("unselected") + " { opacity: 0.4; }",
+              "rect." + prefixed("bar") + ":hover, path." + prefixed("pie-piece") + ":hover { fill-opacity: 0.7; }",
+              //'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; fill-opacity:1; }'
+              "path." + prefixed("pie-piece") + ":focus, rect." + prefixed("bar") + ":focus { outline: none; fill-opacity:1; }"
+            ];
+            parent2.ownerDocument.head.appendChild(document.createElement("style")).innerHTML = cssRules.join("\n");
+          }
+          const parentRect = parent2.getBoundingClientRect();
+          this.width = parentRect.width;
+          this.height = parentRect.height;
+          this.svg = el("svg", {
+            width: this.width,
+            height: this.height
+          });
+          parent2.appendChild(this.svg);
+          this.setConfig(config2);
+        }
+        /**
+         * Set a color palette for all chart instances.
+         * @param {Array} colors Array of colors.
+         */
+        static setActiveColorPalette(colors2) {
+          __privateSet(_SvgChart, _activeColorPalette, colors2);
+        }
+        /**
+         * Set the configuration for this chart instance.
+         * @param {Object} config Configuration object.
+         */
+        setConfig(config2) {
+          const newConfig = new SvgChartConfig();
+          this.config = Object.assign({}, newConfig, config2);
+          this.config.padding = Object.assign({}, newConfig.padding, this.config.padding);
+          this.isLTR = this.config.dir === "ltr";
+          this.config = Object.assign(this.config, _SvgChart.chartTypeControllers[this.config.chartType].requiredConfigWithValue);
+          if (this.isLTR) {
+            this.config.padding.left = this.config.padding.start;
+            this.config.padding.right = this.config.padding.end;
+          } else {
+            this.config.padding.left = this.config.padding.end;
+            this.config.padding.right = this.config.padding.start;
+          }
+          this.controller = new _SvgChart.chartTypeControllers[config2.chartType](this);
+          this.svg.setAttribute("direction", this.config.dir);
+          if (this._listenersToRemoveAfterConfigChange && this._listenersToRemoveAfterConfigChange.length) {
+            this._listenersToRemoveAfterConfigChange.forEach(function(item) {
+              item[0].removeEventListener(item[1], item[2], item[3]);
+            });
+          }
+          this._listenersToRemoveAfterConfigChange = [];
+          while (this.svg.childNodes.length) {
+            this.svg.firstChild.remove();
+          }
+          this.data = null;
+          this.unselectedSeries = {};
+          this.chartWidth = this.width - this.config.padding.start - this.config.padding.end - this.config.xAxisGridPadding * 2;
+          this.chartHeight = this.height - this.config.padding.top - this.config.padding.bottom - this.config.yAxisGridPadding * 2;
+          if (this.config.backgroundColor) {
+            this.svg.style.backgroundColor = this.config.backgroundColor;
+          }
+          this.defsElement = el("defs");
+          this.svg.appendChild(this.defsElement);
+          if (!__privateGet(this, _onSerieGroupTransitionendScoped)) {
+            __privateSet(this, _onSerieGroupTransitionendScoped, __privateMethod(this, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn).bind(this));
+          }
+          if (this.config.drawOnConfig) {
+            this.drawOnConfigGroup = el("g", {
+              className: prefixed("draw-on-config-group")
+            });
+            this.svg.appendChild(this.drawOnConfigGroup);
+          }
+          if (this.config.title) {
+            __privateMethod(this, _addTitle, addTitle_fn).call(this);
+          }
+          if (this.config.legend) {
+            __privateMethod(this, _addLegend, addLegend_fn).call(this);
+          }
+          this.controller.configBefore();
+          this.config.series.forEach(function(serie) {
+            this.controller.configSerieBefore(serie);
+            if (serie.fillGradient) {
+              var lg = el("linearGradient", {
+                id: serie.id + "-gradient",
+                x1: 0,
+                x2: 0,
+                y1: 0,
+                y2: 1
+              });
+              lg.appendChild(el("stop", {
+                offset: "0%",
+                stopColor: serie.fillGradient[0]
+              }));
+              lg.appendChild(el("stop", {
+                offset: "100%",
+                stopColor: serie.fillGradient[1]
+              }));
+              this.defsElement.appendChild(lg);
+            }
+            this.controller.configSerieAfter(serie);
+          }, this);
+          if (this.config.drawOnConfig) {
+            this.config.drawOnConfig(this, this.drawOnConfigGroup);
+          }
+          if (this.config.drawOnData) {
+            this.drawOnDataGroup = el("g", {
+              className: prefixed("draw-on-data-group")
+            });
+            this.svg.appendChild(this.drawOnDataGroup);
+          }
+          __privateMethod(this, _addSerieGroup, addSerieGroup_fn).call(this);
+          this.controller.configAfter();
+        }
+        /**
+         * Writing the charts.
+         * @param {Object} data Data object.
+         */
+        chart(data2 = null) {
+          if (data2 !== null) {
+            this.data = data2;
+          }
+          const currentSerieGroupElement = __privateMethod(this, _dataBefore, dataBefore_fn).call(this);
+          this.controller.draw(currentSerieGroupElement);
+          __privateMethod(this, _dataAfter, dataAfter_fn).call(this, currentSerieGroupElement);
+          if (this.config.drawOnData) {
+            this.config.drawOnData(this, this.drawOnDataGroup);
+          }
+        }
+        // setSelectedIndex(index) {
+        //     var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
+        //     return this.#onXAxisLabelGroupSelect(textNodes.item(index));
+        // }
+        /**
+         * Saves chart as PNG file.
+         * @param {String} filename Filename.
+         */
+        saveAsPng(filename) {
+          var rect = this.svg.getBoundingClientRect();
+          var canvas = document.createElement("canvas");
+          canvas.setAttribute("width", rect.width);
+          canvas.setAttribute("height", rect.height);
+          var ctx = canvas.getContext("2d");
+          ctx.fillStyle = this.svg.style.backgroundColor;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          var img = new Image();
+          var data2 = '<svg xmlns="http://www.w3.org/2000/svg">' + this.svg.innerHTML + "</svg>";
+          var parser = new DOMParser();
+          var result = parser.parseFromString(data2, "text/xml");
+          var inlineSVG = result.getElementsByTagName("svg")[0];
+          inlineSVG.setAttribute("width", rect.width);
+          inlineSVG.setAttribute("height", rect.height);
+          var svg64 = btoa(new XMLSerializer().serializeToString(inlineSVG));
+          var image64 = "data:image/svg+xml;base64," + svg64;
+          img.onload = function() {
+            ctx.drawImage(img, 0, 0, rect.width, rect.height);
+            window.URL.revokeObjectURL(image64);
+            var png_img = canvas.toDataURL("image/png");
+            const createEl = document.createElement("a");
+            createEl.href = png_img;
+            createEl.download = filename;
+            createEl.click();
+            createEl.remove();
+          };
+          img.src = image64;
+        }
+        getSeriePropertyColor(props, serie, serieIndex) {
+          for (var i = 0; i < props.length; i++) {
+            var key = props[i];
+            if (serie[key]) {
+              return key === "fillGradient" ? `url(#${serie.id}-gradient)` : serie[key];
+            }
+          }
+          if (serie.color) {
+            return serie.color;
+          }
+          return __privateGet(_SvgChart, _activeColorPalette)[serieIndex];
+        }
+        getSeriePointColor(serie, serieIndex) {
+          return this.getSeriePropertyColor(["pointColor", "strokeColor"], serie, serieIndex);
+        }
+        getSerieStrokeColor(serie, serieIndex) {
+          return this.getSeriePropertyColor(["strokeColor"], serie, serieIndex);
+        }
+        getSerieFill(serie, serieIndex) {
+          return this.getSeriePropertyColor(["fillGradient"], serie, serieIndex);
+        }
+        /**
+         * Adds an event listener to a node and adds it to the _listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
+         * @param {Node} node Node to add the listener to.
+         * @param {String} eventName Name of event.
+         * @param {Function} callback Function that needs to be executed.
+         * @param {Boolean} capture Capture or not.
+         */
+        addEventListener(node, eventName, callback, capture) {
+          node.addEventListener(eventName, callback, capture);
+          this._listenersToRemoveAfterConfigChange.push([node, eventName, callback, capture]);
+        }
+      };
+      SvgChart = _SvgChart;
+      _cssAdded = new WeakMap();
+      _activeColorPalette = new WeakMap();
+      _onLegendClickScoped = new WeakMap();
+      _onLegendKeypressScoped = new WeakMap();
+      _onSerieGroupTransitionendScoped = new WeakMap();
+      _onSerieGroupFocusScoped = new WeakMap();
+      _onSerieGroupBlurScoped = new WeakMap();
+      _addSerieGroup = new WeakSet();
+      addSerieGroup_fn = function() {
+        this.serieGroupElement = el("g", {
+          id: prefixed("serie-group")
+        });
+        this.svg.appendChild(this.serieGroupElement);
+        this.addEventListener(this.serieGroupElement, "transitionend", __privateGet(this, _onSerieGroupTransitionendScoped), false);
+        if (this.config.focusedValueShow) {
+          if (!__privateGet(this, _onSerieGroupFocusScoped)) {
+            __privateSet(this, _onSerieGroupFocusScoped, __privateMethod(this, _onSerieGroupFocus, onSerieGroupFocus_fn).bind(this));
+            __privateSet(this, _onSerieGroupBlurScoped, __privateMethod(this, _onSerieGroupBlur, onSerieGroupBlur_fn).bind(this));
+          }
+          this.addEventListener(this.serieGroupElement, "focus", __privateGet(this, _onSerieGroupFocusScoped), true);
+          this.addEventListener(this.serieGroupElement, "blur", __privateGet(this, _onSerieGroupBlurScoped), true);
+          this.valueElGroup = el("g", {
+            className: prefixed("value-element-group")
+          });
+          this.valueElRect = el("rect", {
+            fill: this.config.focusedValueFill || "black"
+          });
+          this.valueElText = el("text", {
+            direction: this.config.dir,
+            textAnchor: "middle",
+            dominantBaseline: "middle",
+            fontFamily: this.config.fontFamily,
+            fontSize: "smaller",
+            fill: this.config.focusedValueColor || "white"
+          }, document.createTextNode(""));
+          this.valueElGroup.appendChild(this.valueElRect);
+          this.valueElGroup.appendChild(this.valueElText);
+        }
+      };
+      _addLegend = new WeakSet();
+      addLegend_fn = function() {
+        const gLegend = el("g", {
+          className: prefixed("legend-group")
+        });
+        if (this.config.legendSelect) {
+          if (!__privateGet(this, _onLegendClickScoped)) {
+            __privateSet(this, _onLegendClickScoped, __privateMethod(this, _onLegendClick, onLegendClick_fn).bind(this));
+            __privateSet(this, _onLegendKeypressScoped, __privateMethod(this, _onLegendKeypress, onLegendKeypress_fn).bind(this));
+          }
+          this.addEventListener(gLegend, "keypress", __privateGet(this, _onLegendKeypressScoped), false);
+          this.addEventListener(gLegend, "click", __privateGet(this, _onLegendClickScoped), false);
+        }
+        this.config.series.forEach(function(serie, serieIndex) {
+          const gSerie = el("g", {
+            dataSerie: serie.id,
+            tabindex: this.config.legendSelect ? 0 : null
+          });
+          let x = 0, y = 0;
+          switch (this.config.legendPosition) {
+            case "top":
+              y = this.config.legendTop ? this.config.legendTop : this.config.padding.top / 2;
+              break;
+            case "bottom":
+              y = this.config.legendBottom ? this.config.legendBottom : this.height - this.config.padding.bottom / 2;
+              break;
+            case "end":
+              if (this.isLTR) {
+                x = this.config.padding.start + this.chartWidth + this.config.xAxisGridPadding * 2 + this.config.paddingDefault;
+                y = this.config.padding.top + this.config.yAxisGridPadding + serieIndex * this.config.paddingDefault;
+              } else {
+                x = this.config.xAxisGridPadding * 2 + this.config.padding.end - this.config.paddingDefault - this.config.legendWidth;
+                y = this.config.padding.top + this.config.yAxisGridPadding + serieIndex * this.config.paddingDefault;
+              }
+              break;
+          }
+          const rect = el("rect", {
+            x,
+            y,
+            rx: this.config.legendCircle ? this.config.legendWidth : 0,
+            ry: this.config.legendCircle ? this.config.legendWidth : 0,
+            width: this.config.legendWidth,
+            height: this.config.legendWidth,
+            fill: this.getSerieFill(serie, serieIndex)
+          });
+          const text = el("text", {
+            direction: this.config.dir,
+            x: this.isLTR ? x + this.config.legendWidth * 2 : x - this.config.legendWidth,
+            y: y + this.config.legendWidth / 2 + 1,
+            // + 1 don't know why
+            textAnchor: "start",
+            dominantBaseline: "middle",
+            fontFamily: this.config.fontFamily,
+            fill: this.config.legendColor,
+            fontSize: this.config.legendFontSize
+          }, document.createTextNode(serie.title));
+          if (this.isLTR) {
+            gSerie.appendChild(rect);
+            gSerie.appendChild(text);
+          } else {
+            gSerie.appendChild(text);
+            gSerie.appendChild(rect);
+          }
+          gLegend.appendChild(gSerie);
+        }, this);
+        this.svg.appendChild(gLegend);
+        if (["top", "bottom"].indexOf(this.config.legendPosition) > -1) {
+          let totalLegendWidth = 0;
+          let curX = this.isLTR ? 0 : this.width - this.config.legendWidth;
+          gLegend.querySelectorAll("g").forEach(function(g) {
+            const box = g.getBBox();
+            g.querySelector("rect").setAttribute("x", curX);
+            g.querySelector("text").setAttribute("x", this.isLTR ? curX + this.config.legendWidth * 2 : curX - 10);
+            if (this.isLTR) {
+              curX += box.width + this.config.paddingDefault;
+            } else {
+              curX -= box.width + this.config.paddingDefault;
+            }
+            totalLegendWidth += box.width + this.config.paddingDefault;
+          }, this);
+          if (this.isLTR) {
+            curX -= this.config.paddingDefault;
+            gLegend.setAttribute("transform", "translate(" + (this.width / 2 - curX / 2) + ", 0)");
+          } else {
+            totalLegendWidth -= this.config.paddingDefault;
+            gLegend.setAttribute("transform", "translate(-" + (this.width / 2 - totalLegendWidth / 2) + ", 0)");
+          }
+        }
+      };
+      _addTitle = new WeakSet();
+      addTitle_fn = function() {
+        var x, y, dominantBaseline, textAnchor = null;
+        switch (this.config.titleHorizontalPosition) {
+          case "end":
+            x = this.width - this.config.paddingDefault;
+            textAnchor = this.isLTR ? "end" : "start";
+            break;
+          case "start":
+            x = this.config.paddingDefault;
+            textAnchor = this.isLTR ? "start" : "end";
+            break;
+          default:
+            x = this.width / 2;
+            textAnchor = "middle";
+            break;
+        }
+        switch (this.config.titleVerticalPosition) {
+          case "center":
+            y = this.height / 2;
+            dominantBaseline = "middle";
+            break;
+          case "bottom":
+            y = this.height - this.config.paddingDefault;
+            dominantBaseline = "auto";
+            break;
+          default:
+            y = this.config.paddingDefault;
+            dominantBaseline = "hanging";
+            break;
+        }
+        this.svg.appendChild(el("text", {
+          direction: this.config.dir,
+          x,
+          y: this.config.paddingDefault,
+          textAnchor,
+          dominantBaseline,
+          fontFamily: this.config.fontFamily,
+          fontSize: this.config.titleFontSize,
+          fill: this.config.titleColor,
+          className: prefixed("text-title")
+        }, document.createTextNode(this.config.title)));
+      };
+      _dataBefore = new WeakSet();
+      dataBefore_fn = function() {
+        if (this.serieGroupElement.firstChild) {
+          this.serieGroupElement.firstChild.remove();
+        }
+        var currentSerieGroupElement = el("g", {
+          id: prefixed("serie-group-current"),
+          className: this.config.transition ? prefixed("unattached") : ""
+        });
+        return currentSerieGroupElement;
+      };
+      _dataAfter = new WeakSet();
+      dataAfter_fn = function(currentSerieGroupElement) {
+        this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect();
+        if (this.config.transition) {
+          currentSerieGroupElement.classList.remove(prefixed("unattached"));
+        }
+      };
+      _onLegendToggle = new WeakSet();
+      onLegendToggle_fn = function(target) {
+        var g = parent(target, "g");
+        if (g && g.dataset.serie) {
+          var sg = this.serieGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
+          if (this.unselectedSeries[g.dataset.serie]) {
+            if (sg) {
+              sg.setAttribute("display", "inline");
+              sg.classList.remove(prefixed("unselected"));
+            }
+            g.classList.remove(prefixed("unselected"));
+            delete this.unselectedSeries[g.dataset.serie];
+          } else {
+            g.classList.add(prefixed("unselected"));
+            if (sg) {
+              sg.classList.add(prefixed("unselected"));
+            }
+            this.unselectedSeries[g.dataset.serie] = true;
+          }
+        }
+      };
+      _onLegendKeypress = new WeakSet();
+      onLegendKeypress_fn = function(e) {
+        if (e.keyCode === 13) {
+          __privateMethod(this, _onLegendToggle, onLegendToggle_fn).call(this, e.target);
+        }
+      };
+      _onLegendClick = new WeakSet();
+      onLegendClick_fn = function(e) {
+        __privateMethod(this, _onLegendToggle, onLegendToggle_fn).call(this, e.target);
+      };
+      _onSerieGroupTransitionend = new WeakSet();
+      onSerieGroupTransitionend_fn = function(e) {
+        if (e.target.classList.contains(prefixed("unselected"))) {
+          e.target.setAttribute("display", "none");
+        }
+      };
+      _onSerieGroupBlur = new WeakSet();
+      onSerieGroupBlur_fn = function(e) {
+        var circle = e.target;
+        var g = parent(circle, "g");
+        var serie = g.dataset.serie;
+        if (serie) {
+          this.serieGroupElement.removeChild(this.valueElGroup);
+        }
+      };
+      _onSerieGroupFocus = new WeakSet();
+      onSerieGroupFocus_fn = function(e) {
+        var circle = e.target;
+        var g = parent(circle, "g");
+        var serie = g.dataset.serie;
+        if (serie) {
+          var serieItem = this.config.series.find((item) => item.id === serie);
+          this.valueElText.replaceChild(document.createTextNode(serieItem.title + ": " + circle.dataset.value), this.valueElText.firstChild);
+          this.serieGroupElement.appendChild(this.valueElGroup);
+          var box = this.valueElText.getBBox();
+          var width = box.width + this.config.focusedValuePadding * 2;
+          var height = box.height + this.config.focusedValuePadding * 2;
+          this.valueElRect.setAttribute("width", width);
+          this.valueElRect.setAttribute("height", height);
+          this.valueElText.setAttribute("x", width / 2);
+          this.valueElText.setAttribute("y", height / 2);
+          var type = serieItem.type || this.config.chartType;
+          var x, y = null;
+          switch (type) {
+            case "line":
+            case "bar":
+            case "lineAndBar":
+              x = (circle.getAttribute("cx") || parseFloat(circle.getAttribute("x")) + circle.getAttribute("width") / 2) - width / 2;
+              y = (circle.getAttribute("cy") || circle.getAttribute("y")) - 10 - height;
+              break;
+            case "pie":
+            case "donut":
+              var d = circle.getAttribute("d").split(" ");
+              x = d[1].trim();
+              y = d[2].trim();
+              break;
+          }
+          this.valueElGroup.setAttribute("transform", "translate(" + x + ", " + y + ")");
+        }
+      };
+      __privateAdd(SvgChart, _cssAdded, false);
+      __publicField(SvgChart, "colorPalettes", colors);
+      __privateAdd(SvgChart, _activeColorPalette, colors.dutchFieldColorPalette);
+      __publicField(SvgChart, "chartTypes", {
+        line: "line",
+        bar: "bar",
+        pie: "pie",
+        donut: "donut",
+        lineAndBar: "lineAndBar"
+      });
+      __publicField(SvgChart, "chartTypeControllers", {
+        line: LineController,
+        bar: BarController,
+        lineAndBar: BarAndLineController,
+        pie: PieController,
+        donut: DonutController
+      });
+      SvgChart.prototype.el = el;
+    }
+  });
+
+  // docs/app_svg.js
+  var require_app_svg = __commonJS({
+    "docs/app_svg.js"(exports, module) {
+      init_svg();
+      function getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min);
+      }
+      function getRandomNumbersSummedUpTo(count, maxSum) {
+        let sum = maxSum;
+        const numbers = [];
+        for (let i = 0; i < count - 1; i++) {
+          const randomNumber = Math.floor(Math.random() * sum);
+          sum -= randomNumber < 0 ? 0 : randomNumber;
+          numbers.push(randomNumber < 0 ? 0 : randomNumber);
+        }
+        numbers.push(sum);
+        return numbers;
+      }
+      var htmlDir = document.documentElement.getAttribute("dir") || "ltr";
+      var chartInfo = {
+        chartBasicLine: {
+          config: {
+            chartType: "line",
+            transition: true,
+            dir: htmlDir,
+            title: "Basic line chart",
+            minValue: 0,
+            maxValue: 100,
+            legendPosition: "end",
+            xAxisTitle: "Days",
+            yAxisTitle: "Count",
+            padding: {
+              end: 100,
+              start: 80,
+              top: 50,
+              bottom: 70
+            },
+            series: [
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              }
+            ]
+          },
+          data: null,
+          chart: null
+        },
+        chartBasicLineDark: {
+          config: {
+            chartType: "line",
+            backgroundColor: "black",
+            titleColor: "white",
+            xAxisGridLineColor: "green",
+            yAxisGridLineColor: "green",
+            xAxisLabelColor: "#C0C0C0",
+            yAxisLabelColor: "#C0C0C0",
+            xAxisTitleColor: "white",
+            yAxisTitleColor: "white",
+            focusedValueFill: "white",
+            focusedValueColor: "black",
+            lineChartFilled: true,
+            legendColor: "white",
+            transition: true,
+            dir: htmlDir,
+            title: "Basic line chart dark",
+            minValue: 0,
+            maxValue: 100,
+            legendPosition: "end",
+            xAxisTitle: "Days",
+            yAxisTitle: "Count",
+            padding: {
+              end: 100,
+              start: 80,
+              top: 50,
+              bottom: 70
+            },
+            series: [
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              }
+            ]
+          },
+          data: {
+            series: {
+              train: Array(7).fill(1).map((item) => getRandomIntInclusive(0, 100)),
+              car: Array(7).fill(1).map((item) => getRandomIntInclusive(0, 100))
+            },
+            xAxis: {
+              columns: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+            }
+          },
+          chart: null
+        },
+        chartBasicLineBig: {
+          config: {
+            chartType: "line",
+            dir: htmlDir,
+            title: "Basic line chart with many values",
+            minValue: 0,
+            maxValue: 100,
+            xAxisTitle: "Days",
+            yAxisStep: 10,
+            // real value step
+            yAxisLabelStep: 20,
+            xAxisStep: 2,
+            // step between colums (so 2 means display each second step from first one on)
+            xAxisLabelStep: 10,
+            lineCurved: false,
+            yAxisTitle: "Count",
+            points: false,
+            lineWidth: 1,
+            padding: {
+              end: 100,
+              start: 80,
+              top: 100,
+              bottom: 100
+            },
+            series: [
+              {
+                id: "car",
+                title: "Car",
+                color: "blue"
+              },
+              {
+                id: "bike",
+                title: "Bike",
+                color: "green"
+              }
+            ],
+            xAxisLabelRotation: 45,
+            xAxisLabelTop: 30,
+            xAxisGridPadding: 20,
+            yAxisGridPadding: 20,
+            legendPosition: "top",
+            legendTop: 60
+          },
+          dataFunc: function(id) {
+            const total = 100;
+            var numbers = [];
+            var serieData = {};
+            for (let i = 0; i < total; i++) {
+              numbers.push(getRandomNumbersSummedUpTo(4, 100));
+            }
+            ;
+            chartInfo[id].config.series.forEach(function(serie) {
+              serieData[serie.id] = [];
+            });
+            numbers.forEach(function(numberArray) {
+              chartInfo[id].config.series.forEach(function(serie, serieIndex) {
+                serieData[serie.id].push(numberArray[serieIndex]);
+              });
+            });
+            chartInfo[id].data = {
+              series: serieData,
+              xAxis: {
+                columns: Array(total).fill(1).map(function(value, index) {
+                  return "Item " + (index + 1);
+                })
+              }
+            };
+          },
+          chart: null
+        },
+        chartBasicBar: {
+          config: {
+            chartType: "bar",
+            dir: htmlDir,
+            title: "Basic bar chart",
+            minValue: 0,
+            maxValue: 100,
+            legendPosition: "top",
+            xAxisTitle: "Days",
+            yAxisTitle: "Count",
+            legendTop: 60,
+            padding: {
+              end: 40,
+              start: 80,
+              bottom: 60
+            },
+            series: [
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              }
+            ]
+          },
+          data: null,
+          chart: null
+        },
+        chartStackedBar: {
+          config: {
+            chartType: "bar",
+            dir: htmlDir,
+            title: "Stacked bar chart",
+            legendPosition: "top",
+            minValue: 0,
+            maxValue: 100,
+            legendTop: 60,
+            barSpacing: 20,
+            barStacked: true,
+            series: [
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              },
+              {
+                id: "bike",
+                title: "Bike"
+              },
+              {
+                id: "feet",
+                title: "Feet"
+              }
+            ]
+          },
+          data: null,
+          chart: null,
+          dataFunc: function(id) {
+            var numbers = [];
+            var serieData = {};
+            for (let i = 0; i < 7; i++) {
+              numbers.push(getRandomNumbersSummedUpTo(4, 100));
+            }
+            ;
+            chartInfo[id].config.series.forEach(function(serie) {
+              serieData[serie.id] = [];
+            });
+            numbers.forEach(function(numberArray) {
+              chartInfo[id].config.series.forEach(function(serie, serieIndex) {
+                serieData[serie.id].push(numberArray[serieIndex]);
+              });
+            });
+            chartInfo[id].data = {
+              series: serieData,
+              xAxis: {
+                columns: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+              }
+            };
+          }
+        },
+        chartBasicPie: {
+          config: {
+            chartType: "pie",
+            dir: htmlDir,
+            title: "Basic pie chart",
+            legendPosition: "top",
+            legendTop: 60,
+            series: [
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              },
+              {
+                id: "bike",
+                title: "Bike"
+              },
+              {
+                id: "feet",
+                title: "Feet"
+              }
+            ]
+          },
+          data: null,
+          chart: null
+        },
+        chartBasicDonut: {
+          config: {
+            chartType: "donut",
+            dir: htmlDir,
+            title: "Basic donut chart",
+            legendPosition: "top",
+            legendTop: 60,
+            series: [
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              },
+              {
+                id: "bike",
+                title: "Bike"
+              },
+              {
+                id: "feet",
+                title: "Feet"
+              }
+            ]
+          },
+          data: null,
+          chart: null
+        },
+        chartBarAndLine: {
+          config: {
+            chartType: "lineAndBar",
+            dir: htmlDir,
+            title: "Bar and line chart",
+            legendPosition: "top",
+            legendTop: 60,
+            minValue: 0,
+            maxValue: 100,
+            barSpacing: 10,
+            series: [
+              {
+                id: "bike",
+                title: "Bike",
+                type: "bar"
+              },
+              {
+                id: "feet",
+                title: "Feet",
+                type: "bar"
+              },
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              }
+            ]
+          },
+          data: null,
+          chart: null
+        },
+        chartCustom: {
+          config: {
+            padding: {
+              bottom: 70,
+              start: 80
+            },
+            chartType: "line",
+            dir: htmlDir,
+            title: "Custom line chart",
+            legendPosition: "top",
+            legendTop: 60,
+            xAxisTitle: "Days",
+            yAxisTitle: "Count",
+            xAxisTitleColor: "black",
+            yAxisTitleColor: "black",
+            minValue: 0,
+            maxValue: 100,
+            barSpacing: 10,
+            xAxisGridColumnsSelectable: true,
+            xAxisGridColumnsSelectableColor: "red",
+            xAxisGridColumns: true,
+            lineCurved: false,
+            onXAxisLabelGroupSelect: function(chart, index) {
+              var serieValues = [];
+              Object.keys(chart.data.series).forEach(function(serie) {
+                serieValues.push(`${serie} = ${chart.data.series[serie][index]}`);
+              });
+              document.getElementById("chartCustomCodeInfo").innerHTML = `Clicked on '${chart.data.xAxis.columns[index]}' with values: ${serieValues.join(", ")}`;
+            },
+            drawOnData: function(chart, groupNode) {
+              groupNode.appendChild(chart.el("text", {
+                x: chart.isLTR ? chart.width - chart.config.padding.end - 2 : chart.config.padding.end + 2,
+                direction: chart.config.dir,
+                y: chart.config.padding.top + 4,
+                textAnchor: "end",
+                dominantBaseline: "hanging",
+                fontWeight: "bold",
+                fontSize: "26px"
+              }, document.createTextNode(Date.now())));
+            },
+            drawOnConfig: function(chart, groupNode) {
+              groupNode.appendChild(chart.el("rect", {
+                x: chart.config.padding.left,
+                y: chart.config.padding.top,
+                width: chart.chartWidth,
+                height: chart.lineAndBarValueHeight * 20,
+                fill: "darkgreen",
+                fillOpacity: 0.2
+              }));
+              groupNode.appendChild(chart.el("rect", {
+                x: chart.config.padding.left,
+                y: chart.config.padding.top + chart.lineAndBarValueHeight * 20,
+                width: chart.chartWidth,
+                height: chart.lineAndBarValueHeight * 40,
+                fill: "orange",
+                fillOpacity: 0.2
+              }));
+              groupNode.appendChild(chart.el("rect", {
+                x: chart.config.padding.left,
+                y: chart.config.padding.top + chart.lineAndBarValueHeight * 60,
+                width: chart.chartWidth,
+                height: chart.lineAndBarValueHeight * 40,
+                fill: "red",
+                fillOpacity: 0.2
+              }));
+            },
+            series: [
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              },
+              {
+                id: "bike",
+                title: "Bike"
+              }
+            ]
+          },
+          data: null,
+          chart: null,
+          onNewDataFunc: function() {
+            document.getElementById("chartCustomCodeInfo").innerHTML = "Click a day to see details! ";
+          }
+        },
+        chartDynamic: {
+          config: {
+            padding: {
+              bottom: 70,
+              start: 80
+            },
+            chartType: "line",
+            dir: htmlDir,
+            title: "Dynamic chart",
+            legendPosition: "top",
+            legendTop: 60,
+            xAxisTitle: "Days",
+            yAxisTitle: "Count",
+            xAxisTitleColor: "black",
+            yAxisTitleColor: "black",
+            minValue: 0,
+            maxValue: 100,
+            barSpacing: 10,
+            xAxisGridColumnsSelectable: true,
+            xAxisGridColumnsSelectableColor: "red",
+            xAxisGridColumns: true,
+            lineCurved: true,
+            series: [
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              },
+              {
+                id: "bike",
+                title: "Bike"
+              }
+            ]
+          },
+          data: {
+            series: {
+              train: Array(7).fill(1).map((item) => getRandomIntInclusive(0, 100)),
+              car: Array(7).fill(1).map((item) => getRandomIntInclusive(0, 100)),
+              bike: Array(7).fill(1).map((item) => getRandomIntInclusive(0, 100))
+            },
+            xAxis: {
+              columns: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+            }
+          },
+          chart: null
+        }
+      };
+      Function.prototype.toJSON = function() {
+        return this.toString().replace(/\n/g, "<br>").replace("function(", "FUNC[");
+      };
+      function setChartData(id) {
+        var isPieOrDonut = ["pie", "donut"].indexOf(chartInfo[id].config.chartType) !== -1;
+        var serieData = {};
+        chartInfo[id].config.series.forEach(function(serie) {
+          serieData[serie.id] = !isPieOrDonut ? Array(7).fill(1).map((item) => getRandomIntInclusive(0, 100)) : getRandomIntInclusive(0, 100);
+        });
+        chartInfo[id].data = {
+          series: serieData,
+          xAxis: {
+            columns: isPieOrDonut ? ["mon"] : ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+          }
+        };
+      }
+      function csvToData(csv, id) {
+        let data2 = {
+          series: {},
+          xAxis: {
+            columns: null
+          }
+        };
+        const lines = csv.split("\n");
+        lines.forEach(function(line, lineIndex) {
+          const columns = line.split(",");
+          const firstColumn = columns.shift();
+          if (lineIndex === 0) {
+            data2.xAxis.columns = columns;
+            return;
+          }
+          data2.series[firstColumn] = columns;
+        });
+        chartInfo[id].data = data2;
+      }
+      function stringifyObject(ob) {
+        let s = [];
+        Object.keys(ob).forEach(function(key) {
+          const value = ob[key];
+          switch (typeof value) {
+            case "object":
+              s.push('    "' + key + '": ' + JSON.stringify(value));
+              break;
+            case "number":
+              s.push('    "' + key + '": ' + value);
+              break;
+            case "string":
+              s.push('    "' + key + '": "' + value + '"');
+              break;
+            case "function":
+              s.push('    "' + key + '": ' + value.toString());
+              break;
+            case "boolean":
+              s.push('    "' + key + '": ' + value);
+              break;
+          }
+        });
+        return "{\n" + s.join(",\n") + "\n}";
+      }
+      function doChart(id) {
+        if (chartInfo[id].onNewDataFunc) {
+          chartInfo[id].onNewDataFunc();
+        }
+        var csvArea = document.getElementById(id + "CodeDataCsv");
+        if (csvArea && csvArea.value) {
+          csvToData(csvArea.value.trim(), id);
+        } else {
+          chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
+        }
+        if (chartInfo[id].chart === null) {
+          chartInfo[id].chart = new SvgChart(document.getElementById(id), chartInfo[id].config);
+          document.getElementById(id + "RandomDataButton").addEventListener("click", function() {
+            doChart(id);
+          });
+          document.getElementById(id + "PngButton").addEventListener("click", function() {
+            chartInfo[id].chart.saveAsPng(id + ".png");
+          });
+        } else {
+          chartInfo[id].chart.setConfig(chartInfo[id].config);
+        }
+        chartInfo[id].chart.chart(chartInfo[id].data);
+        var codeConfig = document.getElementById(id + "CodeConfig").querySelector("code");
+        var codeData = document.getElementById(id + "CodeData").querySelector("code");
+        codeConfig.innerHTML = stringifyObject(chartInfo[id].config);
+        codeData.innerHTML = JSON.stringify(chartInfo[id].data, null, 2);
+        hljs.highlightElement(codeConfig);
+        hljs.highlightElement(codeData);
+      }
+      function dynamicChart() {
+        if (!chartInfo["chartDynamic"].chart) {
+          document.getElementById("chartDynamicCodeConfig").value = JSON.stringify(chartInfo["chartDynamic"].config, null, 2);
+          document.getElementById("chartDynamicCodeData").value = JSON.stringify(chartInfo["chartDynamic"].data, null, 2);
+          document.getElementById("chartDynamicExecuteButton").addEventListener("click", dynamicChart);
+          document.getElementById("chartDynamicPngButton").addEventListener("click", function() {
+            chartInfo["chartDynamic"].chart.saveAsPng("chartDynamic.png");
+          });
+        }
+        const config = eval("(" + document.getElementById("chartDynamicCodeConfig").value + ")");
+        const data = eval("(" + document.getElementById("chartDynamicCodeData").value + ")");
+        if (!chartInfo["chartDynamic"].chart) {
+          chartInfo["chartDynamic"].chart = new SvgChart(document.getElementById("chartDynamic"), config);
+        } else {
+          chartInfo["chartDynamic"].chart.setConfig(config);
+        }
+        chartInfo["chartDynamic"].chart.chart(data);
+      }
+      doChart("chartBasicLine");
+      doChart("chartBasicLineDark");
+      doChart("chartBasicLineBig");
+      doChart("chartBasicBar");
+      doChart("chartStackedBar");
+      doChart("chartBasicPie");
+      doChart("chartBasicDonut");
+      doChart("chartBarAndLine");
+      doChart("chartCustom");
+      dynamicChart();
+      createToc();
+      function createToc() {
+        const toc = [];
+        document.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(function(h, index) {
+          const level = h.tagName.toLowerCase().substring(1);
+          if (level == 1) {
+            return;
+          }
+          if (!h.id) {
+            h.id = "my-header-" + index;
+          }
+          toc.push('<div class="my-header-level-' + level + '"><a href="#' + h.id + '">' + h.innerText + "</a></div>");
+        });
+        document.getElementById("toc").innerHTML = toc.join("\n");
+      }
+      function getParent(el2, parentTagName) {
+        let parent2 = el2;
+        while (parent2 && parent2.tagName.toLowerCase() !== parentTagName) {
+          parent2 = parent2.parentNode;
+        }
+        return parent2;
+      }
+      document.documentElement.addEventListener("click", function(e) {
+        const target = e.target;
+        if (target.dataset.toggle) {
+          const targetId = target.dataset.targetId;
+          const csvEl = document.getElementById(targetId + "CodeDataCsv");
+          const toggle = target.dataset.toggle;
+          switch (toggle) {
+            case "chart":
+              document.getElementById(targetId).classList.remove("my-hidden");
+              document.getElementById(targetId + "CodeConfig").classList.add("my-hidden");
+              document.getElementById(targetId + "CodeData").classList.add("my-hidden");
+              if (csvEl)
+                csvEl.classList.add("my-hidden");
+              break;
+            case "config":
+              document.getElementById(targetId).classList.add("my-hidden");
+              document.getElementById(targetId + "CodeConfig").classList.remove("my-hidden");
+              document.getElementById(targetId + "CodeData").classList.add("my-hidden");
+              if (csvEl)
+                csvEl.classList.add("my-hidden");
+              break;
+            case "data":
+              document.getElementById(targetId).classList.add("my-hidden");
+              document.getElementById(targetId + "CodeConfig").classList.add("my-hidden");
+              document.getElementById(targetId + "CodeData").classList.remove("my-hidden");
+              if (csvEl)
+                csvEl.classList.add("my-hidden");
+              break;
+            case "data-csv":
+              document.getElementById(targetId).classList.add("my-hidden");
+              document.getElementById(targetId + "CodeConfig").classList.add("my-hidden");
+              document.getElementById(targetId + "CodeData").classList.add("my-hidden");
+              if (csvEl)
+                csvEl.classList.remove("my-hidden");
+              break;
+          }
+          document.querySelectorAll('button[data-target-id="' + targetId + '"]').forEach(function(el2) {
+            if (el2 === target) {
+              el2.classList.add("my-active-tab");
+            } else {
+              el2.classList.remove("my-active-tab");
+            }
+          });
+        } else if (target.classList.contains("my-copy-button")) {
+          var pre = getParent(target, "pre");
+          navigator.clipboard.writeText(pre.querySelector("code").innerText);
+        }
+      });
+    }
+  });
+  require_app_svg();
+})();
+//# sourceMappingURL=bundle-dev.js.map

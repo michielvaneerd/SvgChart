@@ -5,9 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-dev": "esbuild ./app_svg.js --bundle --sourcemap --outfile=./dist/bundle-dev.js",
+    "build-dev": "esbuild ./docs/app_svg.js --bundle --sourcemap --outfile=./docs/bundle-dev.js",
     "build-watch": "esbuild ./app_svg.js --bundle --sourcemap --outfile=./dist/bundle-dev.js --watch",
-    "build-prod": "esbuild ./src/svg.js --bundle --minify --outfile=./dist/bundle-prod.js"
+    "build-prod": "esbuild ./docs/app_svg.js --bundle --minify --outfile=./docs/bundle-prod.js"
   },
   "keywords": [],
   "author": "",
