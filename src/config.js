@@ -481,6 +481,30 @@ class SvgChartConfig {
      * @prop {Number} donutWidth - With of donuts. Of not given a default value is used.
      */
     donutWidth = null;
+
+    /**
+     * @prop {String} pieStroke - Stroke color for pie charts.
+     * @default white
+     */
+    pieStroke = 'white';
+
+    /**
+     * @prop {Number} pieStrokeWidth - Width of stroke for pie charts. If this is 0, no stroke is painted.
+     * @default 2
+     */
+    pieStrokeWidth = 2;
+
+    /**
+     * @prop {String} donutStroke - Stroke color for donut charts.
+     * @default white
+     */
+    donutStroke = 'white';
+
+    /**
+     * @prop {Number} donutStrokeWidth - Width of stroke for donut charts. If this is 0, no stroke is painted.
+     * @default 2
+     */
+    donutStrokeWidth = 2;
 };
 
 export { SvgChartConfig };

@@ -326,14 +326,6 @@ var chartInfo = {
             barSpacing: 10,
             series: [
                 {
-                    id: 'train',
-                    title: 'Train',
-                },
-                {
-                    id: 'car',
-                    title: 'Car',
-                },
-                {
                     id: 'bike',
                     title: 'Bike',
                     type: 'bar'
@@ -342,6 +334,14 @@ var chartInfo = {
                     id: 'feet',
                     title: 'Feet',
                     type: 'bar'
+                },
+                {
+                    id: 'train',
+                    title: 'Train',
+                },
+                {
+                    id: 'car',
+                    title: 'Car',
                 }
             ]
         },
@@ -631,6 +631,22 @@ doChart('chartBasicDonut');
 doChart('chartBarAndLine');
 doChart('chartCustom');
 dynamicChart();
+createToc();
+
+function createToc() {
+    const toc = [];
+    document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(function(h, index) {
+        const level = h.tagName.toLowerCase().substring(1);
+        if (level == 1) {
+            return;
+        }
+        if (!h.id) {
+            h.id = 'my-header-' + index;
+        }
+        toc.push('<div class="my-header-level-' + level + '"><a href="#' + h.id + '">' + h.innerText + '</a></div>');
+    });
+    document.getElementById('toc').innerHTML = toc.join("\n");
+}
 
 function getParent(el, parentTagName) {
     let parent = el;

@@ -10,14 +10,18 @@
 
 <body>
 
-    <h1>SvgChart</h1>
+    <div id="mainContent">
 
-    <p>SVG Chart library. Below you'll find the documentation. For examples see the <a href="./index.html">examples</a>
-        page.</p>
+        <h1>SvgChart</h1>
 
-    <p>First create a SvgChart instance by setting a parent DOM element and a config object. Next display the chart by
-        calling the chart() method with the data.</p>
-    <pre><code>var chart = new SvgChart(document.getElementById(id), {
+        <p>SVG Chart library. Below you'll find the documentation. For examples see the <a
+                href="./index.html">examples</a>
+            page.</p>
+
+        <p>First create a SvgChart instance by setting a parent DOM element and a config object. Next display the chart
+            by
+            calling the chart() method with the data.</p>
+        <pre><code class="language-javascript">var chart = new SvgChart(document.getElementById(id), {
     chartType: 'line',
     dir: document.documentElement.getAttribute('dir') || 'ltr',
     title: 'My chart',
@@ -44,247 +48,14 @@ chart.chart({
   }
 });</code></pre>
 
-    <h2>Configuration</h2>
+        <h2>Configuration object</h2>
 
-    <p>Below you find all possible properties of the <code>config</code> object. This is one object, but below it is
-        separated into separate parts for convenience.</p>
+        <p>See for all possible values the <a target="_blank" href="./src/out/SvgChartConfig.html">Config object documentation</a>.</p>
 
-    <h3>Global</h3>
-    <dl>
-        <dt data-type="string" data-required>chartType</dt>
-        <dd>
-            <p>Type of chart.</p>
-            <p>One of: line, bar, lineAndBar, pie, donut.</p>
-            <p>Default: line.</p>
-        </dd>
-        <dt data-type="string">dir</dt>
-        <dd>
-            <p>Writing direction.</p>
-            <p>One of: <code>ltr</code>, <code>rtl</code>.</p>
-            <p>Default: <code>ltr</code>.</p>
-        </dd>
-        <dt data-type="object">padding</dt>
-        <dd>
-            Object that describes the padding.<br>
-            Default:
-            <pre class="my-hlj-no-padding-and-bg"><code>{
-  start: 40,
-  end: 20,
-  top: 100,
-  bottom: 40
-}</code></pre>
-        </dd>
-        <dt data-type="string">backgroundColor</dt>
-        <dd>
-            Background color of the chart.<br>
-            Default: <code>'white'</code>
-        </dd>
-
-        <dt data-type="bool">transition</dt>
-        <dd>
-            Whether the chart sould be faded into view.<br>
-            Default: <code>true</code>
-        </dd>
-
-        <dt data-type="string">fontFamily</dt>
-        <dd>
-            <p>Font family</p>
-            <p>Allowed values are all family families. Examples are: <code>Arial</code> and <code>Verdana</code></p>
-            <p>Default: <code>sans-serif</code></p>
-        </dd>
-
-        <dt data-type="bool">focusedValue</dt>
-        <dd>
-            <p>Whether the value should be displayed in a box after focussing a segment.</p>
-            <p>Default: <code>true</code></p>
-        </dd>
-
-        <dt data-type="string">focusedValueFill</dt>
-        <dd>
-            <p>Fill color of focused value box</p>
-            <p>Default: <code>black</code></p>
-        </dd>
-
-        <dt data-type="string">focusedValueColor</dt>
-        <dd>
-            <p>Color of focused value text</p>
-            <p>Default: <code>white</code></p>
-        </dd>
-
-        <dt data-type="number" data-required>maxValue</dt>
-        <dd>
-            <p>Maximum value for Y axis</p>
-            <p>Default: <code>null</code></p>
-            <p>Required for: <code>line</code> and <code>bar</code> charts</p>
-        </dd>
-
-        <dt data-type="number" data-required>minValue</dt>
-        <dd>
-            <p>Minimum value for Y axis</p>
-            <p>Default: <code>null</code></p>
-        </dd>
-
-    </dl>
-
-    <h3>Title</h3>
-    <dl>
-        <dt data-type="string">titleFontSize</dt>
-        <dd>
-            <p>Font size of label</p>
-            <p>Default: <code>normal</code></p>
-        </dd>
-
-        <dt data-type="string">titleColor</dt>
-        <dd>
-            <p>Color of title</p>
-            <p>Default: <code>black</code></p>
-        </dd>
-
-        <dt data-type="string">titleHorizontalPosition</dt>
-        <dd>
-            <p>Horizontal position of the title</p>
-            <p>One of: <code>center</code>, <code>start</code>, <code>end</code>.</p>
-            <p>Default: <code>center</code></p>
-        </dd>
-
-        <dt data-type="string">titleVerticalPosition</dt>
-        <dd>
-            <p>Vertical position of the title</p>
-            <p>One of: <code>center</code>, <code>top</code>, <code>bottom</code>.</p>
-            <p>Default: <code>top</code></p>
-        </dd>
-    </dl>
-
-    <h3>Axis</h3>
-
-    <dt data-type="string">axisTitleFontSize</dt>
-    <dd>
-        <p>Font size of Y and X axis title</p>
-        <p>Default: <code>smaller</code></p>
-    </dd>
-
-    <dt data-type="string">axisLabelFontSize</dt>
-    <dd>
-        <p>Font size of Y and X axis labels.</p>
-        <p>Default: <code>small</code></p>
-    </dd>
-
-    <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-    <h3>Legend</h3>
-
-    <h3>Line and bar charts</h3>
-
-    <h3>Line charts</h3>
-
-    <h3>Bar charts</h3>
-
-    <h3>Pie and donut charts</h3>
-
-    <dl>
-
-
-
-
-
-
-
-
-
-
-        
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-        <dt data-type="string"></dt>
-        <dd>
-            <p></p>
-            <p>Default: <code></code></p>
-        </dd>
-
-    </dl>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="./doc.js"></script>
 </body>
 
 </html>

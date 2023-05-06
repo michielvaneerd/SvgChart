@@ -1,6 +1,15 @@
+/**
+ * @module
+ * @ignore
+ */
+
 import { SvgChart } from "./svg.js";
 import { el, prefixed, directionForEach } from "./utils.js";
 
+/**
+ * @class
+ * @ignore
+ */
 class AxisController {
 
     #onXAxisLabelGroupClickScoped = null;

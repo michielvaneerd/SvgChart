@@ -10,224 +10,249 @@
 
 <body>
 
-    <h1>SvgChart</h1>
+    <div id="toc"></div>
 
-    <p>SVG Chart library. Below you'll find some examples and for details see the <a href="./doc.html">documentation</a> page.</p>
+    <div id="mainContent">
 
-    <h2>Examples</h2>
+        <h1>SvgChart</h1>
 
-    <h3>Basic line chart</h3>
-    <div class="chartRow">
-        <div class="chartTools">
-            <div>
-                <button class="chartToolsButton" id="chartBasicLineRandomDataButton">Update data</button>
-                <button class="chartToolsButton" id="chartBasicLinePngButton">Download</button>
+        <p>SVG Chart library. Below you'll find some examples and for details see the <a
+                href="./doc.html">documentation</a>
+            page.</p>
+
+        <h2>Examples</h2>
+
+        <h3>Basic line chart</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartBasicLineRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartBasicLinePngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartBasicLine" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartBasicLine" data-toggle="config">Config</button>
+                    <button data-target-id="chartBasicLine" data-toggle="data">Data</button>
+                    <button data-target-id="chartBasicLine" data-toggle="data-csv">Data CSV</button>
+                </div>
             </div>
-            <div>
-                <button class="my-active-tab" data-target-id="chartBasicLine" data-toggle="chart">Chart</button>
-                <button data-target-id="chartBasicLine" data-toggle="config">Config</button>
-                <button data-target-id="chartBasicLine" data-toggle="data">Data</button>
-                <button data-target-id="chartBasicLine" data-toggle="data-csv">Data CSV</button>
-            </div>
-        </div>
-        <div class="chartDivsWrapper">
-            <div class="chartDiv" id="chartBasicLine"></div>
-            <pre class="chartCodeConfig my-hidden" id="chartBasicLineCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-            <pre class="chartCodeData my-hidden" id="chartBasicLineCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-            <textarea class="chartCodeData my-hidden" id="chartBasicLineCodeDataCsv">,mon,tue,wed,thu,fri,sat,sun
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartBasicLine"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartBasicLineCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartBasicLineCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <textarea class="chartCodeData my-hidden" id="chartBasicLineCodeDataCsv">,mon,tue,wed,thu,fri,sat,sun
 train,45,98,45,45,56,67,89
-car,55,4,7,6,8,9,0
-            </textarea>
-        </div>
-    </div>
-
-    <h3>Basic line chart dark</h3>
-    <div class="chartRow">
-        <div class="chartTools">
-            <div>
-                <button class="chartToolsButton" id="chartBasicLineDarkRandomDataButton">Update data</button>
-                <button class="chartToolsButton" id="chartBasicLineDarkPngButton">Download</button>
+car,55,4,7,6,8,9,0</textarea>
             </div>
-            <div>
-                <button class="my-active-tab" data-target-id="chartBasicLineDark" data-toggle="chart">Chart</button>
-                <button data-target-id="chartBasicLineDark" data-toggle="config">Config</button>
-                <button data-target-id="chartBasicLineDark" data-toggle="data">Data</button>
-            </div>
-        </div>
-        <div class="chartDivsWrapper">
-            <div class="chartDiv" id="chartBasicLineDark"></div>
-            <pre class="chartCodeConfig my-hidden" id="chartBasicLineDarkCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-            <pre class="chartCodeData my-hidden" id="chartBasicLineDarkCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-        </div>
-    </div>
-
-    <h3>Basic line chart many values</h3>
-    <div class="chartRow">
-        <div class="chartTools">
-            <div>
-                <button class="chartToolsButton" id="chartBasicLineBigRandomDataButton">Update data</button>
-                <button class="chartToolsButton" id="chartBasicLineBigPngButton">Download</button>
-            </div>
-            <div>
-                <button class="my-active-tab" data-target-id="chartBasicLineBig" data-toggle="chart">Chart</button>
-                <button data-target-id="chartBasicLineBig" data-toggle="config">Config</button>
-                <button data-target-id="chartBasicLineBig" data-toggle="data">Data</button>
-            </div>
-        </div>
-        <div class="chartDivsWrapper">
-            <div class="chartDiv" id="chartBasicLineBig"></div>
-            <pre class="chartCodeConfig my-hidden" id="chartBasicLineBigCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-            <pre class="chartCodeData my-hidden" id="chartBasicLineBigCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-        </div>
-    </div>
-
-    <h3>Basic bar chart</h3>
-    <div class="chartRow">
-        <div class="chartTools">
-            <div>
-                <button class="chartToolsButton" id="chartBasicBarRandomDataButton">Update data</button>
-                <button class="chartToolsButton" id="chartBasicBarPngButton">Download</button>
-            </div>
-            <div>
-                <button class="my-active-tab" data-target-id="chartBasicBar" data-toggle="chart">Chart</button>
-                <button data-target-id="chartBasicBar" data-toggle="config">Config</button>
-                <button data-target-id="chartBasicBar" data-toggle="data">Data</button>
-            </div>
-        </div>
-        <div class="chartDivsWrapper">
-            <div class="chartDiv" id="chartBasicBar"></div>
-            <pre class="chartCodeConfig my-hidden" id="chartBasicBarCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-            <pre class="chartCodeData my-hidden" id="chartBasicBarCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-        </div>
-    </div>
-
-    <h3>Stacked bar chart</h3>
-    <div class="chartRow">
-        <div class="chartTools">
-            <div>
-                <button class="chartToolsButton" id="chartStackedBarRandomDataButton">Update data</button>
-                <button class="chartToolsButton" id="chartStackedBarPngButton">Download</button>
-            </div>
-            <div>
-                <button class="my-active-tab" data-target-id="chartStackedBar" data-toggle="chart">Chart</button>
-                <button data-target-id="chartStackedBar" data-toggle="config">Config</button>
-                <button data-target-id="chartStackedBar" data-toggle="data">Data</button>
-            </div>
-        </div>
-        <div class="chartDivsWrapper">
-            <div class="chartDiv" id="chartStackedBar"></div>
-            <pre class="chartCodeConfig my-hidden" id="chartStackedBarCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-            <pre class="chartCodeData my-hidden" id="chartStackedBarCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-        </div>
-    </div>
-
-    <h3>Bar and line chart</h3>
-    <div class="chartRow">
-        <div class="chartTools">
-            <div>
-                <button class="chartToolsButton" id="chartBarAndLineRandomDataButton">Update data</button>
-                <button class="chartToolsButton" id="chartBarAndLinePngButton">Download</button>
-            </div>
-            <div>
-                <button class="my-active-tab" data-target-id="chartBarAndLine" data-toggle="chart">Chart</button>
-                <button data-target-id="chartBarAndLine" data-toggle="config">Config</button>
-                <button data-target-id="chartBarAndLine" data-toggle="data">Data</button>
-            </div>
-        </div>
-        <div class="chartDivsWrapper">
-            <div class="chartDiv" id="chartBarAndLine"></div>
-            <pre class="chartCodeConfig my-hidden" id="chartBarAndLineCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-            <pre class="chartCodeData my-hidden" id="chartBarAndLineCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-        </div>
-    </div>
-
-    <h3>Basic pie chart</h3>
-    <div class="chartRow">
-        <div class="chartTools">
-            <div>
-                <button class="chartToolsButton" id="chartBasicPieRandomDataButton">Update data</button>
-                <button class="chartToolsButton" id="chartBasicPiePngButton">Download</button>
-            </div>
-            <div>
-                <button class="my-active-tab" data-target-id="chartBasicPie" data-toggle="chart">Chart</button>
-                <button data-target-id="chartBasicPie" data-toggle="config">Config</button>
-                <button data-target-id="chartBasicPie" data-toggle="data">Data</button>
-            </div>
-        </div>
-        <div class="chartDivsWrapper">
-            <div class="chartDiv" id="chartBasicPie"></div>
-            <pre class="chartCodeConfig my-hidden" id="chartBasicPieCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-            <pre class="chartCodeData my-hidden" id="chartBasicPieCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-        </div>
-    </div>
-
-
-    <h3>Basic donut chart</h3>
-    <div class="chartRow">
-        <div class="chartTools">
-            <div>
-                <button class="chartToolsButton" id="chartBasicDonutRandomDataButton">Update data</button>
-                <button class="chartToolsButton" id="chartBasicDonutPngButton">Download</button>
-            </div>
-            <div>
-                <button class="my-active-tab" data-target-id="chartBasicDonut" data-toggle="chart">Chart</button>
-                <button data-target-id="chartBasicDonut" data-toggle="config">Config</button>
-                <button data-target-id="chartBasicDonut" data-toggle="data">Data</button>
-            </div>
-        </div>
-        <div class="chartDivsWrapper">
-            <div class="chartDiv" id="chartBasicDonut"></div>
-            <pre class="chartCodeConfig my-hidden" id="chartBasicDonutCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-            <pre class="chartCodeData my-hidden" id="chartBasicDonutCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
         </div>
 
-    </div>
+        <h3>Basic line chart dark</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartBasicLineDarkRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartBasicLineDarkPngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartBasicLineDark" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartBasicLineDark" data-toggle="config">Config</button>
+                    <button data-target-id="chartBasicLineDark" data-toggle="data">Data</button>
+                </div>
+            </div>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartBasicLineDark"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartBasicLineDarkCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartBasicLineDarkCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+            </div>
+        </div>
 
-    <h3>Custom chart</h3>
-    <p id="chartCustomCodeInfo">...</p>
-    <div class="chartRow">
-        <div class="chartTools">
-            <div>
-                <button class="chartToolsButton" id="chartCustomRandomDataButton">Update data</button>
-                <button class="chartToolsButton" id="chartCustomPngButton">Download</button>
+        <h3>Basic line chart many values</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartBasicLineBigRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartBasicLineBigPngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartBasicLineBig" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartBasicLineBig" data-toggle="config">Config</button>
+                    <button data-target-id="chartBasicLineBig" data-toggle="data">Data</button>
+                </div>
             </div>
-            <div>
-                <button class="my-active-tab" data-target-id="chartCustom" data-toggle="chart">Chart</button>
-                <button data-target-id="chartCustom" data-toggle="config">Config</button>
-                <button data-target-id="chartCustom" data-toggle="data">Data</button>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartBasicLineBig"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartBasicLineBigCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartBasicLineBigCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
             </div>
         </div>
-        <div class="chartDivsWrapper">
-            <div class="chartDiv" id="chartCustom"></div>
-            <pre class="chartCodeConfig my-hidden" id="chartCustomCodeConfig"><button class="my-copy-button">Copy</button><code class="language-javascript"></code></pre>
-            <pre class="chartCodeData my-hidden" id="chartCustomCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
-        </div>
-    </div>
 
-    <h3>Dynamic chart</h3>
-    <div class="chartRow">
-        <div class="chartTools">
-            <div>
-                <button class="chartToolsButton" id="chartDynamicExecuteButton">Execute chart</button>
-                <button class="chartToolsButton" id="chartDynamicPngButton">Download</button>
+        <h3>Basic bar chart</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartBasicBarRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartBasicBarPngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartBasicBar" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartBasicBar" data-toggle="config">Config</button>
+                    <button data-target-id="chartBasicBar" data-toggle="data">Data</button>
+                </div>
             </div>
-            <div>
-                <button class="my-active-tab" data-target-id="chartDynamic" data-toggle="chart">Chart</button>
-                <button data-target-id="chartDynamic" data-toggle="config">Config</button>
-                <button data-target-id="chartDynamic" data-toggle="data">Data</button>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartBasicBar"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartBasicBarCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartBasicBarCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
             </div>
         </div>
-        <div class="chartDivsWrapper">
-            <div class="chartDiv" id="chartDynamic"></div>
-            <textarea class="chartCodeConfig my-hidden" id="chartDynamicCodeConfig"></textarea>
-            <textarea class="chartCodeData my-hidden" id="chartDynamicCodeData"></textarea>
+
+        <h3>Stacked bar chart</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartStackedBarRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartStackedBarPngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartStackedBar" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartStackedBar" data-toggle="config">Config</button>
+                    <button data-target-id="chartStackedBar" data-toggle="data">Data</button>
+                </div>
+            </div>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartStackedBar"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartStackedBarCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartStackedBarCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+            </div>
+        </div>
+
+        <h3>Bar and line chart</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartBarAndLineRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartBarAndLinePngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartBarAndLine" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartBarAndLine" data-toggle="config">Config</button>
+                    <button data-target-id="chartBarAndLine" data-toggle="data">Data</button>
+                </div>
+            </div>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartBarAndLine"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartBarAndLineCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartBarAndLineCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+            </div>
+        </div>
+
+        <h3>Basic pie chart</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartBasicPieRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartBasicPiePngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartBasicPie" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartBasicPie" data-toggle="config">Config</button>
+                    <button data-target-id="chartBasicPie" data-toggle="data">Data</button>
+                </div>
+            </div>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartBasicPie"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartBasicPieCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartBasicPieCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+            </div>
+        </div>
+
+
+        <h3>Basic donut chart</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartBasicDonutRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartBasicDonutPngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartBasicDonut" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartBasicDonut" data-toggle="config">Config</button>
+                    <button data-target-id="chartBasicDonut" data-toggle="data">Data</button>
+                </div>
+            </div>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartBasicDonut"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartBasicDonutCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartBasicDonutCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+            </div>
+
+        </div>
+
+        <h3>Custom chart</h3>
+        <p id="chartCustomCodeInfo">...</p>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartCustomRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartCustomPngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartCustom" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartCustom" data-toggle="config">Config</button>
+                    <button data-target-id="chartCustom" data-toggle="data">Data</button>
+                </div>
+            </div>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartCustom"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartCustomCodeConfig"><button class="my-copy-button">Copy</button><code class="language-javascript"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartCustomCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+            </div>
+        </div>
+
+        <h3>Dynamic chart</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartDynamicExecuteButton">Execute chart</button>
+                    <button class="chartToolsButton" id="chartDynamicPngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartDynamic" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartDynamic" data-toggle="config">Config</button>
+                    <button data-target-id="chartDynamic" data-toggle="data">Data</button>
+                </div>
+            </div>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartDynamic"></div>
+                <textarea class="chartCodeConfig my-hidden" id="chartDynamicCodeConfig"></textarea>
+                <textarea class="chartCodeData my-hidden" id="chartDynamicCodeData"></textarea>
+            </div>
+
         </div>
 
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <!--<script type="module" src="./svgchart/svg.js"></script>-->
-    <!--<script type="module" src="./dist/bundle-dev.js"></script>-->
+    <!--<script src="./dist/bundle-dev.js"></script>-->
     <script type="module" src="./app_svg.js"></script>
 </body>
 

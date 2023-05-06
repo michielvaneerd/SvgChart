@@ -1,3 +1,8 @@
+/**
+ * @module
+ * @ignore
+ */
+
 import { AxisController } from "./axis.js";
 import { SvgChart } from "./svg.js";
 import { el, prefixed } from "./utils.js";

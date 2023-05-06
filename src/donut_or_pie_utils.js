@@ -1,3 +1,8 @@
+/**
+ * @module
+ * @ignore
+ */
+
 import { el, prefixed } from "./utils.js";
 import { SvgChart } from "./svg.js";
 
@@ -39,6 +44,8 @@ function draw(svgChart, currentSerieGroupElement, describeArcCallback) {
             fillOpacity: svgChart.config.pieFillOpacity || 1,
             className: prefixed('pie-piece'),
             tabindex: 0,
+            stroke: svgChart.config[svgChart.config.chartType + 'Stroke'],
+            strokeWidth: svgChart.config[svgChart.config.chartType + 'StrokeWidth'],
             dataValue: value
         }));
 
