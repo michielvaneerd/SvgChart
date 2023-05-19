@@ -6,17 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-dev": "esbuild ./docs/app_svg.js --bundle --sourcemap --outfile=./docs/bundle-dev.js",
-    "build-watch": "esbuild ./app_svg.js --bundle --sourcemap --outfile=./dist/bundle-dev.js --watch",
+    "build-watch": "esbuild ./docs/app_svg.js --bundle --sourcemap --outfile=./docs/bundle-dev.js --watch",
     "build-prod": "esbuild ./docs/app_svg.js --bundle --minify --outfile=./docs/bundle-prod.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^5.0.4",
     "esbuild": "0.17.18"
-  },
-  "dependencies": {
-    
   }
 }

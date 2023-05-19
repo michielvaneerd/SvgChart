@@ -1,4 +1,5 @@
 import { SvgChart } from "../src/svg.js";
+import { SvgChartConfig } from "../src/config.js";
 
 //SvgChart.setActiveColorPalette(SvgChart.colorPalettes.springPastelsColorPalette);
 
@@ -20,7 +21,9 @@ function getRandomNumbersSummedUpTo(count, maxSum) {
     return numbers;
 }
 
-var htmlDir = document.documentElement.getAttribute('dir') || 'ltr';
+var htmlDir = (document.documentElement.getAttribute('dir') in SvgChartConfig.directions)
+    ? SvgChartConfig.directions[document.documentElement.getAttribute('dir')]
+    : SvgChartConfig.directions.ltr;
 
 var chartInfo = {
     chartBasicLine: {
@@ -635,7 +638,7 @@ createToc();
 
 function createToc() {
     const toc = [];
-    document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(function(h, index) {
+    document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(function (h, index) {
         const level = h.tagName.toLowerCase().substring(1);
         if (level == 1) {
             return;

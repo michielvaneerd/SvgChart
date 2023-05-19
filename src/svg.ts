@@ -5,22 +5,44 @@ import { BarController } from "./charts/bar_chart_controller.js";
 import { BarAndLineController } from "./charts/bar_and_line_chart_controller.js";
 import { DonutController } from "./charts/donut_chart_controller.js";
 import { PieController } from "./charts/pie_chart_controller.js";
-import { SvgChartConfig } from "./config.js";
+import { SvgChartConfig } from "./config";
+import { Controller } from "./charts/controller.js";
 
+interface ChartData {
+    series: {};
+    xAxis: { columns: [] };
+};
 
 class SvgChart {
 
-    static #cssAdded = false;
-    static colorPalettes = colors;
-    static #activeColorPalette = colors.dutchFieldColorPalette;
+    width: number;
+    height: number;
+    chartWidth: number;
+    chartHeight: number;
+    svg: SVGElement;
+    config: SvgChartConfig;
+    isLTR: boolean;
+    controller: Controller;
+    _listenersToRemoveAfterConfigChange: Array<{node: Node, eventName: any, callback: any, capture: boolean}>;
+    unselectedSeries: Object;
+    data: ChartData;
+    defsElement: SVGElement;
+    drawOnConfigGroup: SVGElement;
+    drawOnDataGroup: SVGElement;
+    serieGroupElement: SVGElement;
+    valueElGroup: SVGElement;
+    valueElRect: SVGElement;
+    valueElText: SVGGraphicsElement;
+    el: Function;
+    lineAndBarValueHeight: number;
+    xAxisGroupElement: SVGElement;
+    xAxisLabelsGroupElement: SVGElement;
+    xAxisGridColumnsSelectableGroupElement: SVGElement;
+    lineAndBarSelectedColumnIndex: number;
 
-    static chartTypes = {
-        line: 'line',
-        bar: 'bar',
-        pie: 'pie',
-        donut: 'donut',
-        lineAndBar: 'lineAndBar'
-    };
+    static cssAdded = false;
+    static colorPalettes = colors;
+    static activeColorPalette: Array<string> = colors.dutchFieldColorPalette;
 
     static chartTypeControllers = {
         line: LineController,
@@ -30,18 +52,18 @@ class SvgChart {
         donut: DonutController
     };
 
-    #onLegendClickScoped = null;
-    #onLegendKeypressScoped = null;
-    #onSerieGroupTransitionendScoped = null;
-    #onSerieGroupFocusScoped = null;
-    #onSerieGroupBlurScoped = null;
+    onLegendClickScoped = null;
+    onLegendKeypressScoped = null;
+    onSerieGroupTransitionendScoped = null;
+    onSerieGroupFocusScoped = null;
+    onSerieGroupBlurScoped = null;
 
     /**
      * Set a color palette for all chart instances.
-     * @param {Array} colors Array of colors.
+     * @param {Array<string>} colors Array of colors.
      */
-    static setActiveColorPalette(colors) {
-        SvgChart.#activeColorPalette = colors;
+    static setActiveColorPalette(colors: Array<string>) {
+        SvgChart.activeColorPalette = colors;
     }
 
     /**
@@ -49,10 +71,10 @@ class SvgChart {
      * @param {HTMLElement} parent Parent DOM node the SVG element will be attached to.
      * @param {SvgChartConfig} config Configuration object.
      */
-    constructor(parent, config) {
+    constructor(parent: HTMLElement, config: SvgChartConfig) {
 
-        if (!SvgChart.#cssAdded) {
-            SvgChart.#cssAdded = true;
+        if (!SvgChart.cssAdded) {
+            SvgChart.cssAdded = true;
             // TODO: split between chart types.
             const cssRules = [
                 '.' + prefixed('line-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
@@ -87,23 +109,23 @@ class SvgChart {
      * Set the configuration for this chart instance.
      * @param {Object} config Configuration object.
      */
-    setConfig(config) {
+    setConfig(config: SvgChartConfig) {
 
         const newConfig = new SvgChartConfig();
 
         this.config = Object.assign({}, newConfig, config);
         this.config.padding = Object.assign({}, newConfig.padding, this.config.padding);
 
-        this.isLTR = this.config.dir === 'ltr';
+        this.isLTR = this.config.dir === SvgChartConfig.directions.ltr;
 
         this.config = Object.assign(this.config, SvgChart.chartTypeControllers[this.config.chartType].requiredConfigWithValue);
 
         if (this.isLTR) {
-            this.config.padding.left = this.config.padding.start;
-            this.config.padding.right = this.config.padding.end;
+            this.config.padding._left = this.config.padding.start;
+            this.config.padding._right = this.config.padding.end;
         } else {
-            this.config.padding.left = this.config.padding.end;
-            this.config.padding.right = this.config.padding.start;
+            this.config.padding._left = this.config.padding.end;
+            this.config.padding._right = this.config.padding.start;
         }
 
         this.controller = new SvgChart.chartTypeControllers[config.chartType](this);
@@ -113,7 +135,7 @@ class SvgChart {
         // First remove event listener from a previous config if they exist.
         if (this._listenersToRemoveAfterConfigChange && this._listenersToRemoveAfterConfigChange.length) {
             this._listenersToRemoveAfterConfigChange.forEach(function (item) {
-                item[0].removeEventListener(item[1], item[2], item[3]);
+                item.node.removeEventListener(item.eventName, item.callback, item.capture);
             });
         }
         this._listenersToRemoveAfterConfigChange = [];
@@ -135,8 +157,8 @@ class SvgChart {
         this.defsElement = el('defs');
         this.svg.appendChild(this.defsElement);
 
-        if (!this.#onSerieGroupTransitionendScoped) {
-            this.#onSerieGroupTransitionendScoped = this.#onSerieGroupTransitionend.bind(this);
+        if (!this.onSerieGroupTransitionendScoped) {
+            this.onSerieGroupTransitionendScoped = this.#onSerieGroupTransitionend.bind(this);
         }
 
         if (this.config.drawOnConfig) {
@@ -156,7 +178,7 @@ class SvgChart {
 
         this.controller.configBefore();
 
-        this.config.series.forEach(function (serie) {
+        this.config.series.forEach(function (serie: {id: string, fillGradient: string}) {
 
             this.controller.configSerieBefore(serie);
 
@@ -202,9 +224,9 @@ class SvgChart {
 
     /**
      * Writing the charts.
-     * @param {Object} data Data object.
+     * @param {ChartData} data Data object.
      */
-    chart(data = null) {
+    chart(data: ChartData = null) {
 
         if (data !== null) {
             this.data = data;
@@ -231,11 +253,11 @@ class SvgChart {
      * Saves chart as PNG file.
      * @param {String} filename Filename.
      */
-    saveAsPng(filename) {
+    saveAsPng(filename: string) {
         var rect = this.svg.getBoundingClientRect();
         var canvas = document.createElement('canvas');
-        canvas.setAttribute('width', rect.width);
-        canvas.setAttribute('height', rect.height);
+        canvas.setAttribute('width', rect.width.toString());
+        canvas.setAttribute('height', rect.height.toString());
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = this.svg.style.backgroundColor;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -245,8 +267,8 @@ class SvgChart {
         var parser = new DOMParser();
         var result = parser.parseFromString(data, 'text/xml');
         var inlineSVG = result.getElementsByTagName("svg")[0];
-        inlineSVG.setAttribute('width', rect.width);
-        inlineSVG.setAttribute('height', rect.height);
+        inlineSVG.setAttribute('width', rect.width.toString());
+        inlineSVG.setAttribute('height', rect.height.toString());
         var svg64 = btoa(new XMLSerializer().serializeToString(inlineSVG));
         var image64 = 'data:image/svg+xml;base64,' + svg64;
         img.onload = function () {
@@ -267,16 +289,16 @@ class SvgChart {
             id: prefixed('serie-group')
         });
         this.svg.appendChild(this.serieGroupElement);
-        this.addEventListener(this.serieGroupElement, 'transitionend', this.#onSerieGroupTransitionendScoped, false);
+        this.addEventListener(this.serieGroupElement, 'transitionend', this.onSerieGroupTransitionendScoped, false);
 
         if (this.config.focusedValueShow) {
-            if (!this.#onSerieGroupFocusScoped) {
-                this.#onSerieGroupFocusScoped = this.#onSerieGroupFocus.bind(this);
-                this.#onSerieGroupBlurScoped = this.#onSerieGroupBlur.bind(this);
+            if (!this.onSerieGroupFocusScoped) {
+                this.onSerieGroupFocusScoped = this.#onSerieGroupFocus.bind(this);
+                this.onSerieGroupBlurScoped = this.#onSerieGroupBlur.bind(this);
             }
 
-            this.addEventListener(this.serieGroupElement, 'focus', this.#onSerieGroupFocusScoped, true);
-            this.addEventListener(this.serieGroupElement, 'blur', this.#onSerieGroupBlurScoped, true);
+            this.addEventListener(this.serieGroupElement, 'focus', this.onSerieGroupFocusScoped, true);
+            this.addEventListener(this.serieGroupElement, 'blur', this.onSerieGroupBlurScoped, true);
 
             this.valueElGroup = el('g', {
                 className: prefixed('value-element-group')
@@ -291,7 +313,7 @@ class SvgChart {
                 fontFamily: this.config.fontFamily,
                 fontSize: 'smaller',
                 fill: this.config.focusedValueColor || 'white'
-            }, document.createTextNode(''));
+            }, document.createTextNode('')) as SVGGraphicsElement;
             this.valueElGroup.appendChild(this.valueElRect);
             this.valueElGroup.appendChild(this.valueElText);
         }
@@ -304,12 +326,12 @@ class SvgChart {
         });
 
         if (this.config.legendSelect) {
-            if (!this.#onLegendClickScoped) {
-                this.#onLegendClickScoped = this.#onLegendClick.bind(this);
-                this.#onLegendKeypressScoped = this.#onLegendKeypress.bind(this);
+            if (!this.onLegendClickScoped) {
+                this.onLegendClickScoped = this.#onLegendClick.bind(this);
+                this.onLegendKeypressScoped = this.#onLegendKeypress.bind(this);
             }
-            this.addEventListener(gLegend, 'keypress', this.#onLegendKeypressScoped, false);
-            this.addEventListener(gLegend, 'click', this.#onLegendClickScoped, false);
+            this.addEventListener(gLegend, 'keydown', this.onLegendKeypressScoped, false);
+            this.addEventListener(gLegend, 'click', this.onLegendClickScoped, false);
         }
 
         this.config.series.forEach(function (serie, serieIndex) {
@@ -382,8 +404,8 @@ class SvgChart {
             let curX = this.isLTR ? 0 : (this.width - this.config.legendWidth);
             gLegend.querySelectorAll('g').forEach(function (g) {
                 const box = g.getBBox();
-                g.querySelector('rect').setAttribute('x', curX);
-                g.querySelector('text').setAttribute('x', this.isLTR ? (curX + (this.config.legendWidth * 2)) : (curX - 10));
+                g.querySelector('rect').setAttribute('x', curX.toString());
+                g.querySelector('text').setAttribute('x', (this.isLTR ? (curX + (this.config.legendWidth * 2)) : (curX - 10)).toString());
                 if (this.isLTR) {
                     curX += (box.width + this.config.paddingDefault);
                 } else {
@@ -405,7 +427,7 @@ class SvgChart {
 
     #addTitle() {
 
-        var x, y, dominantBaseline, textAnchor = null;
+        var x: number, y: number, dominantBaseline: string, textAnchor: string = null;
         switch (this.config.titleHorizontalPosition) {
             case 'end':
                 x = this.width - this.config.paddingDefault;
@@ -449,9 +471,9 @@ class SvgChart {
 
     /**
      * Things we need to do for all chart types before we start visualise the data.
-     * @returns {HTMLElement} The current serie group element.
+     * @returns {SVGElement} The current serie group element.
      */
-    #dataBefore() {
+    #dataBefore(): SVGElement {
         if (this.serieGroupElement.firstChild) {
             this.serieGroupElement.firstChild.remove();
         }
@@ -464,16 +486,16 @@ class SvgChart {
 
     /**
      * Things we need to do for all chart types after we visualised the data.
-     * @param {HTMLElement} currentSerieGroupElement The current serie group element we got from #dataBefore().
+     * @param {SVGElement} currentSerieGroupElement The current serie group element we got from #dataBefore().
      */
-    #dataAfter(currentSerieGroupElement) {
+    #dataAfter(currentSerieGroupElement: SVGElement) {
         this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect(); // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
         if (this.config.transition) {
             currentSerieGroupElement.classList.remove(prefixed('unattached'));
         }
     }
 
-    getSeriePropertyColor(props, serie, serieIndex) {
+    getSeriePropertyColor(props: Array<any>, serie: {id: string, color: string}, serieIndex: number) {
         for (var i = 0; i < props.length; i++) {
             var key = props[i];
             if (serie[key]) {
@@ -483,7 +505,7 @@ class SvgChart {
         if (serie.color) {
             return serie.color;
         }
-        return SvgChart.#activeColorPalette[serieIndex];
+        return SvgChart.activeColorPalette[serieIndex];
     }
 
     getSeriePointColor(serie, serieIndex) {
@@ -501,13 +523,18 @@ class SvgChart {
     /**
      * Adds an event listener to a node and adds it to the _listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
      * @param {Node} node Node to add the listener to.
-     * @param {String} eventName Name of event.
+     * @param {string} eventName Name of event.
      * @param {Function} callback Function that needs to be executed.
-     * @param {Boolean} capture Capture or not.
+     * @param {boolean} capture Capture or not.
      */
-    addEventListener(node, eventName, callback, capture) {
+    addEventListener(node: Node, eventName: string, callback: any, capture: boolean) {
         node.addEventListener(eventName, callback, capture);
-        this._listenersToRemoveAfterConfigChange.push([node, eventName, callback, capture]);
+        this._listenersToRemoveAfterConfigChange.push({
+            node: node,
+            eventName: eventName,
+            callback: callback,
+            capture: capture
+        });
     }
 
 
@@ -515,7 +542,7 @@ class SvgChart {
      * When legend gets toggled (selected / deselected).
      * @param {Node} target Legend node that gets toggled.
      */
-    #onLegendToggle(target) {
+    #onLegendToggle(target: SVGElement) {
         var g = parent(target, 'g');
         if (g && g.dataset.serie) {
             var sg = this.serieGroupElement.querySelector('g[data-serie="' + g.dataset.serie + '"]');
@@ -540,9 +567,9 @@ class SvgChart {
      * When a key is pressed on a focussed legend node.
      * @param {Event} e Event object.
      */
-    #onLegendKeypress(e) {
-        if (e.keyCode === 13) {
-            this.#onLegendToggle(e.target);
+    #onLegendKeypress(e: KeyboardEvent) {
+        if (e.key === 'Enter') {
+            this.#onLegendToggle(e.target as SVGElement);
         }
     }
 
@@ -550,8 +577,8 @@ class SvgChart {
      * When a focussed legend node is clicked.
      * @param {Event} e Event object.
      */
-    #onLegendClick(e) {
-        this.#onLegendToggle(e.target);
+    #onLegendClick(e: Event) {
+        this.#onLegendToggle(e.target as SVGElement);
     }
 
     /**
@@ -595,10 +622,10 @@ class SvgChart {
             var box = this.valueElText.getBBox();
             var width = box.width + (this.config.focusedValuePadding * 2);
             var height = box.height + (this.config.focusedValuePadding * 2);
-            this.valueElRect.setAttribute('width', width);
-            this.valueElRect.setAttribute('height', height);
-            this.valueElText.setAttribute('x', width / 2);
-            this.valueElText.setAttribute('y', height / 2);
+            this.valueElRect.setAttribute('width', width.toString());
+            this.valueElRect.setAttribute('height', height.toString());
+            this.valueElText.setAttribute('x', (width / 2).toString());
+            this.valueElText.setAttribute('y', (height / 2).toString());
 
             var type = serieItem.type || this.config.chartType;
             var x, y = null;

@@ -2,6 +2,7 @@ import { Controller } from "./controller.js";
 import { LineController } from "./line_chart_controller.js";
 import { BarController } from "./bar_chart_controller.js";
 import { SvgChart } from "../svg.js";
+import { SvgChartConfig } from "../config";
 
 /**
  * Controller class for bar and line charts.
@@ -26,12 +27,12 @@ class BarAndLineController extends Controller {
     };
 
     drawSerie(serie, serieIndex, serieGroup) {
-        const serieType = serie.type || (this.config.chartType === SvgChart.chartTypes.lineAndBar ? SvgChart.chartTypes.line : this.config.chartType);
+        const serieType = serie.type || (this.config.chartType === SvgChartConfig.chartTypes.lineAndBar ? SvgChartConfig.chartTypes.line : this.config.chartType);
         switch (serieType) {
-            case SvgChart.chartTypes.line:
+            case SvgChartConfig.chartTypes.line:
                 this.#lineChartController.drawSerie(serie, serieIndex, serieGroup);
                 break;
-            case SvgChart.chartTypes.bar:
+            case SvgChartConfig.chartTypes.bar:
                 this.#barChartController.drawSerie(serie, serieIndex, serieGroup);
                 break;
         }
