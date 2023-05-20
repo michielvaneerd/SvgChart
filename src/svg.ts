@@ -1,12 +1,12 @@
-import { el, parent, prefixed } from "./utils.js";
-import { colors } from "./colors.js";
-import { LineController } from "./charts/line_chart_controller.js";
-import { BarController } from "./charts/bar_chart_controller.js";
-import { BarAndLineController } from "./charts/bar_and_line_chart_controller.js";
-import { DonutController } from "./charts/donut_chart_controller.js";
-import { PieController } from "./charts/pie_chart_controller.js";
+import { el, parent, prefixed } from "./utils";
+import { colors } from "./colors";
+import { LineController } from "./charts/line_chart_controller";
+import { BarController } from "./charts/bar_chart_controller";
+import { BarAndLineController } from "./charts/bar_and_line_chart_controller";
+import { DonutController } from "./charts/donut_chart_controller";
+import { PieController } from "./charts/pie_chart_controller";
 import { SvgChartConfig } from "./config";
-import { Controller } from "./charts/controller.js";
+import { Controller } from "./charts/controller";
 
 interface ChartData {
     series: { string: Array<number> };
@@ -18,11 +18,29 @@ interface ChartPoint {
     y: number;
 }
 
+/**
+ * SvgChart class.
+ */
 class SvgChart {
 
+    /**
+     * Width of parent element.
+     */
     width: number;
+
+    /**
+     * Height of parent element.
+     */
     height: number;
+
+    /**
+     * Width of chart without paddings.
+     */
     chartWidth: number;
+
+    /**
+     * Height of chart without paddings.s
+     */
     chartHeight: number;
     svg: SVGElement;
     config: SvgChartConfig;
@@ -660,4 +678,4 @@ class SvgChart {
 // to use it in the drawOnConfig or drawOnData callbacks.
 SvgChart.prototype.el = el;
 
-export { SvgChart, ChartPoint };
+export { SvgChart, ChartPoint, ChartData };

@@ -1,0 +1,1034 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>SvgChartConfig | charted</title><meta name="description" content="Documentation for charted"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base="..">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">charted</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb">
+<li><a href="../index.html">charted</a></li>
+<li><a href="../modules/config.html">config</a></li>
+<li><a href="config.SvgChartConfig.html">SvgChartConfig</a></li></ul>
+<h1>Class SvgChartConfig</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>SvgChart config class.</p>
+</div></section>
+<section class="tsd-panel tsd-hierarchy">
+<h4>Hierarchy</h4>
+<ul class="tsd-hierarchy">
+<li><span class="target">SvgChartConfig</span></li></ul></section><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L11">config.ts:11</a></li></ul></aside>
+<section class="tsd-panel-group tsd-index-group">
+<section class="tsd-panel tsd-index-panel">
+<details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
+<h5 class="tsd-index-heading uppercase" role="button" aria-expanded="false" tabIndex=0><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1.5 5.50969L8 11.6609L14.5 5.50969L12.5466 3.66086L8 7.96494L3.45341 3.66086L1.5 5.50969Z" fill="var(--color-text)"></path></svg> Index</h5></summary>
+<div class="tsd-accordion-details">
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Constructors</h3>
+<div class="tsd-index-list"><a href="config.SvgChartConfig.html#constructor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#4D7FFF" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-512-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-512-text"></path></svg><span>constructor</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Properties</h3>
+<div class="tsd-index-list"><a href="config.SvgChartConfig.html#axisLabelFontSize" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-1024-path"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)" id="icon-1024-text"></path></svg><span>axis<wbr/>Label<wbr/>Font<wbr/>Size</span></a>
+<a href="config.SvgChartConfig.html#axisTitleFontSize" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>axis<wbr/>Title<wbr/>Font<wbr/>Size</span></a>
+<a href="config.SvgChartConfig.html#backgroundColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>background<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#barFillOpacity" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>bar<wbr/>Fill<wbr/>Opacity</span></a>
+<a href="config.SvgChartConfig.html#barSpacing" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>bar<wbr/>Spacing</span></a>
+<a href="config.SvgChartConfig.html#barStacked" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>bar<wbr/>Stacked</span></a>
+<a href="config.SvgChartConfig.html#barStrokeWidth" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>bar<wbr/>Stroke<wbr/>Width</span></a>
+<a href="config.SvgChartConfig.html#chartType" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>chart<wbr/>Type</span></a>
+<a href="config.SvgChartConfig.html#connectNullValues" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>connect<wbr/>Null<wbr/>Values</span></a>
+<a href="config.SvgChartConfig.html#dir" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>dir</span></a>
+<a href="config.SvgChartConfig.html#donutStroke" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>donut<wbr/>Stroke</span></a>
+<a href="config.SvgChartConfig.html#donutStrokeWidth" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>donut<wbr/>Stroke<wbr/>Width</span></a>
+<a href="config.SvgChartConfig.html#donutWidth" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>donut<wbr/>Width</span></a>
+<a href="config.SvgChartConfig.html#drawOnConfig" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>draw<wbr/>On<wbr/>Config</span></a>
+<a href="config.SvgChartConfig.html#drawOnData" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>draw<wbr/>On<wbr/>Data</span></a>
+<a href="config.SvgChartConfig.html#focusedValueColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>focused<wbr/>Value<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#focusedValueFill" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>focused<wbr/>Value<wbr/>Fill</span></a>
+<a href="config.SvgChartConfig.html#focusedValuePadding" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>focused<wbr/>Value<wbr/>Padding</span></a>
+<a href="config.SvgChartConfig.html#focusedValueShow" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>focused<wbr/>Value<wbr/>Show</span></a>
+<a href="config.SvgChartConfig.html#fontFamily" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>font<wbr/>Family</span></a>
+<a href="config.SvgChartConfig.html#legend" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend</span></a>
+<a href="config.SvgChartConfig.html#legendBottom" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Bottom</span></a>
+<a href="config.SvgChartConfig.html#legendCircle" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Circle</span></a>
+<a href="config.SvgChartConfig.html#legendColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#legendFontSize" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Font<wbr/>Size</span></a>
+<a href="config.SvgChartConfig.html#legendPosition" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Position</span></a>
+<a href="config.SvgChartConfig.html#legendSelect" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Select</span></a>
+<a href="config.SvgChartConfig.html#legendTop" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Top</span></a>
+<a href="config.SvgChartConfig.html#legendWidth" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Width</span></a>
+<a href="config.SvgChartConfig.html#lineChartFilled" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>line<wbr/>Chart<wbr/>Filled</span></a>
+<a href="config.SvgChartConfig.html#lineCurved" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>line<wbr/>Curved</span></a>
+<a href="config.SvgChartConfig.html#lineWidth" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>line<wbr/>Width</span></a>
+<a href="config.SvgChartConfig.html#maxValue" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>max<wbr/>Value</span></a>
+<a href="config.SvgChartConfig.html#minValue" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>min<wbr/>Value</span></a>
+<a href="config.SvgChartConfig.html#onXAxisLabelGroupSelect" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>onXAxis<wbr/>Label<wbr/>Group<wbr/>Select</span></a>
+<a href="config.SvgChartConfig.html#padding" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>padding</span></a>
+<a href="config.SvgChartConfig.html#paddingDefault" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>padding<wbr/>Default</span></a>
+<a href="config.SvgChartConfig.html#pieFillOpacity" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>pie<wbr/>Fill<wbr/>Opacity</span></a>
+<a href="config.SvgChartConfig.html#pieStroke" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>pie<wbr/>Stroke</span></a>
+<a href="config.SvgChartConfig.html#pieStrokeWidth" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>pie<wbr/>Stroke<wbr/>Width</span></a>
+<a href="config.SvgChartConfig.html#pointRadius" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>point<wbr/>Radius</span></a>
+<a href="config.SvgChartConfig.html#points" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>points</span></a>
+<a href="config.SvgChartConfig.html#series" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>series</span></a>
+<a href="config.SvgChartConfig.html#textAnchorXAxisLabels" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>text<wbr/>AnchorXAxis<wbr/>Labels</span></a>
+<a href="config.SvgChartConfig.html#title" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>title</span></a>
+<a href="config.SvgChartConfig.html#titleColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>title<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#titleFontSize" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>title<wbr/>Font<wbr/>Size</span></a>
+<a href="config.SvgChartConfig.html#titleHorizontalPosition" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>title<wbr/>Horizontal<wbr/>Position</span></a>
+<a href="config.SvgChartConfig.html#titleVerticalPosition" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>title<wbr/>Vertical<wbr/>Position</span></a>
+<a href="config.SvgChartConfig.html#transition" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>transition</span></a>
+<a href="config.SvgChartConfig.html#xAxisGrid" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid</span></a>
+<a href="config.SvgChartConfig.html#xAxisGridColumns" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Columns</span></a>
+<a href="config.SvgChartConfig.html#xAxisGridColumnsSelectable" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Columns<wbr/>Selectable</span></a>
+<a href="config.SvgChartConfig.html#xAxisGridColumnsSelectableColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Columns<wbr/>Selectable<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#xAxisGridLineColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#xAxisGridLineDashArray" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Dash<wbr/>Array</span></a>
+<a href="config.SvgChartConfig.html#xAxisGridLineWidth" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Width</span></a>
+<a href="config.SvgChartConfig.html#xAxisGridPadding" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Padding</span></a>
+<a href="config.SvgChartConfig.html#xAxisGridSelectedColumnOpacity" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Selected<wbr/>Column<wbr/>Opacity</span></a>
+<a href="config.SvgChartConfig.html#xAxisLabelColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Label<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#xAxisLabelRotation" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Label<wbr/>Rotation</span></a>
+<a href="config.SvgChartConfig.html#xAxisLabelStep" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Label<wbr/>Step</span></a>
+<a href="config.SvgChartConfig.html#xAxisLabelTop" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Label<wbr/>Top</span></a>
+<a href="config.SvgChartConfig.html#xAxisLabels" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Labels</span></a>
+<a href="config.SvgChartConfig.html#xAxisStep" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Step</span></a>
+<a href="config.SvgChartConfig.html#xAxisTitle" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Title</span></a>
+<a href="config.SvgChartConfig.html#xAxisTitleBottom" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Title<wbr/>Bottom</span></a>
+<a href="config.SvgChartConfig.html#xAxisTitleColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Title<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#yAxisGrid" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Grid</span></a>
+<a href="config.SvgChartConfig.html#yAxisGridLineColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#yAxisGridLineDashArray" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Dash<wbr/>Array</span></a>
+<a href="config.SvgChartConfig.html#yAxisGridLineWidth" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Width</span></a>
+<a href="config.SvgChartConfig.html#yAxisGridPadding" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Grid<wbr/>Padding</span></a>
+<a href="config.SvgChartConfig.html#yAxisLabelColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Label<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#yAxisLabelStep" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Label<wbr/>Step</span></a>
+<a href="config.SvgChartConfig.html#yAxisLabels" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Labels</span></a>
+<a href="config.SvgChartConfig.html#yAxisStep" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Step</span></a>
+<a href="config.SvgChartConfig.html#yAxisTitle" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Title</span></a>
+<a href="config.SvgChartConfig.html#yAxisTitleColor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Title<wbr/>Color</span></a>
+<a href="config.SvgChartConfig.html#yAxisTitleStart" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Title<wbr/>Start</span></a>
+<a href="config.SvgChartConfig.html#chartTypes" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>chart<wbr/>Types</span></a>
+<a href="config.SvgChartConfig.html#directions" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>directions</span></a>
+</div></section></div></details></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Constructors</h2>
+<section class="tsd-panel tsd-member"><a id="constructor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="constructor.new_SvgChartConfig"><span class="tsd-kind-constructor-signature">new <wbr/>Svg<wbr/>Chart<wbr/>Config</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="config.SvgChartConfig.html" class="tsd-signature-type tsd-kind-class">SvgChartConfig</a><a href="#constructor.new_SvgChartConfig" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <a href="config.SvgChartConfig.html" class="tsd-signature-type tsd-kind-class">SvgChartConfig</a></h4></li></ul></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Properties</h2>
+<section class="tsd-panel tsd-member"><a id="axisLabelFontSize" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>axis<wbr/>Label<wbr/>Font<wbr/>Size</span><a href="#axisLabelFontSize" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">axis<wbr/>Label<wbr/>Font<wbr/>Size</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;small&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">small</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L196">config.ts:196</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="axisTitleFontSize" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>axis<wbr/>Title<wbr/>Font<wbr/>Size</span><a href="#axisTitleFontSize" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">axis<wbr/>Title<wbr/>Font<wbr/>Size</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;smaller&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">smaller</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L190">config.ts:190</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="backgroundColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>background<wbr/>Color</span><a href="#backgroundColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">background<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;white&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">white</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L139">config.ts:139</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="barFillOpacity" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>bar<wbr/>Fill<wbr/>Opacity</span><a href="#barFillOpacity" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">bar<wbr/>Fill<wbr/>Opacity</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0.5</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">0.5</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L493">config.ts:493</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="barSpacing" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>bar<wbr/>Spacing</span><a href="#barSpacing" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">bar<wbr/>Spacing</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 4</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">4</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L499">config.ts:499</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="barStacked" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>bar<wbr/>Stacked</span><a href="#barStacked" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">bar<wbr/>Stacked</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">false</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L511">config.ts:511</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="barStrokeWidth" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>bar<wbr/>Stroke<wbr/>Width</span><a href="#barStrokeWidth" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">bar<wbr/>Stroke<wbr/>Width</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">1</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L505">config.ts:505</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="chartType" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>chart<wbr/>Type</span><a href="#chartType" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">chart<wbr/>Type</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L45">config.ts:45</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="connectNullValues" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>connect<wbr/>Null<wbr/>Values</span><a href="#connectNullValues" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">connect<wbr/>Null<wbr/>Values</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">false</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L465">config.ts:465</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="dir" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>dir</span><a href="#dir" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">dir</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = SvgChartConfig.directions.ltr</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">SvgChartConfig</span><span class="hl-3">.</span><span class="hl-0">directions</span><span class="hl-3">.</span><span class="hl-0">ltr</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L30">config.ts:30</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="donutStroke" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>donut<wbr/>Stroke</span><a href="#donutStroke" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">donut<wbr/>Stroke</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;white&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">white</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L544">config.ts:544</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="donutStrokeWidth" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>donut<wbr/>Stroke<wbr/>Width</span><a href="#donutStrokeWidth" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">donut<wbr/>Stroke<wbr/>Width</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 2</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">2</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L550">config.ts:550</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="donutWidth" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>donut<wbr/>Width</span><a href="#donutWidth" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">donut<wbr/>Width</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L526">config.ts:526</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="drawOnConfig" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>draw<wbr/>On<wbr/>Config</span><a href="#drawOnConfig" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">draw<wbr/>On<wbr/>Config</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Function</span><span class="tsd-signature-symbol"> = null</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-2">function</span><span class="hl-3">(</span><span class="hl-0">svgChart</span><span class="hl-3">, </span><span class="hl-0">groupNode</span><span class="hl-3">) {</span><br/><span class="hl-3">    </span><span class="hl-0">groupNode</span><span class="hl-3">.</span><span class="hl-4">appendChild</span><span class="hl-3">(</span><span class="hl-0">svgChart</span><span class="hl-3">.</span><span class="hl-4">el</span><span class="hl-3">(</span><span class="hl-5">&#39;rect&#39;</span><span class="hl-3">, {</span><br/><span class="hl-3">        </span><span class="hl-0">x:</span><span class="hl-3"> </span><span class="hl-1">10</span><span class="hl-3">,</span><br/><span class="hl-3">        </span><span class="hl-0">y:</span><span class="hl-3"> </span><span class="hl-1">10</span><br/><span class="hl-3">    }));</span><br/><span class="hl-3">}</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L116">config.ts:116</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="drawOnData" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>draw<wbr/>On<wbr/>Data</span><a href="#drawOnData" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">draw<wbr/>On<wbr/>Data</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Function</span><span class="tsd-signature-symbol"> = null</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-2">function</span><span class="hl-3">(</span><span class="hl-0">svgChart</span><span class="hl-3">, </span><span class="hl-0">groupNode</span><span class="hl-3">) {</span><br/><span class="hl-3">    </span><span class="hl-0">groupNode</span><span class="hl-3">.</span><span class="hl-4">appendChild</span><span class="hl-3">(</span><span class="hl-0">svgChart</span><span class="hl-3">.</span><span class="hl-4">el</span><span class="hl-3">(</span><span class="hl-5">&#39;rect&#39;</span><span class="hl-3">, {</span><br/><span class="hl-3">        </span><span class="hl-0">x:</span><span class="hl-3"> </span><span class="hl-1">10</span><span class="hl-3">,</span><br/><span class="hl-3">        </span><span class="hl-0">y:</span><span class="hl-3"> </span><span class="hl-1">10</span><br/><span class="hl-3">    }));</span><br/><span class="hl-3">}</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L127">config.ts:127</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="focusedValueColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>focused<wbr/>Value<wbr/>Color</span><a href="#focusedValueColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">focused<wbr/>Value<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;white&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">white</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L99">config.ts:99</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="focusedValueFill" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>focused<wbr/>Value<wbr/>Fill</span><a href="#focusedValueFill" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">focused<wbr/>Value<wbr/>Fill</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;black&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">black</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L93">config.ts:93</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="focusedValuePadding" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>focused<wbr/>Value<wbr/>Padding</span><a href="#focusedValuePadding" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">focused<wbr/>Value<wbr/>Padding</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 6</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">6</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L105">config.ts:105</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="focusedValueShow" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>focused<wbr/>Value<wbr/>Show</span><a href="#focusedValueShow" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">focused<wbr/>Value<wbr/>Show</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">true</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L87">config.ts:87</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="fontFamily" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>font<wbr/>Family</span><a href="#fontFamily" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">font<wbr/>Family</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;sans-serif&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">sans</span><span class="hl-3">-</span><span class="hl-0">serif</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L145">config.ts:145</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="legend" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>legend</span><a href="#legend" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">legend</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">true</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L422">config.ts:422</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="legendBottom" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>legend<wbr/>Bottom</span><a href="#legendBottom" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">legend<wbr/>Bottom</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L439">config.ts:439</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="legendCircle" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>legend<wbr/>Circle</span><a href="#legendCircle" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">legend<wbr/>Circle</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">false</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L416">config.ts:416</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="legendColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>legend<wbr/>Color</span><a href="#legendColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">legend<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;black&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">black</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L410">config.ts:410</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="legendFontSize" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>legend<wbr/>Font<wbr/>Size</span><a href="#legendFontSize" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">legend<wbr/>Font<wbr/>Size</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;smaller&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">smaller</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L404">config.ts:404</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="legendPosition" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>legend<wbr/>Position</span><a href="#legendPosition" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">legend<wbr/>Position</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;top&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">top</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L434">config.ts:434</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="legendSelect" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>legend<wbr/>Select</span><a href="#legendSelect" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">legend<wbr/>Select</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">true</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L428">config.ts:428</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="legendTop" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>legend<wbr/>Top</span><a href="#legendTop" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">legend<wbr/>Top</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L444">config.ts:444</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="legendWidth" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>legend<wbr/>Width</span><a href="#legendWidth" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">legend<wbr/>Width</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 10</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">10</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L81">config.ts:81</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="lineChartFilled" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>line<wbr/>Chart<wbr/>Filled</span><a href="#lineChartFilled" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">line<wbr/>Chart<wbr/>Filled</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">false</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L477">config.ts:477</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="lineCurved" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>line<wbr/>Curved</span><a href="#lineCurved" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">line<wbr/>Curved</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">true</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L471">config.ts:471</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="lineWidth" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>line<wbr/>Width</span><a href="#lineWidth" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">line<wbr/>Width</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 2</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">2</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L453">config.ts:453</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="maxValue" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>max<wbr/>Value</span><a href="#maxValue" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">max<wbr/>Value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L175">config.ts:175</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="minValue" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>min<wbr/>Value</span><a href="#minValue" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">min<wbr/>Value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L180">config.ts:180</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="onXAxisLabelGroupSelect" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>onXAxis<wbr/>Label<wbr/>Group<wbr/>Select</span><a href="#onXAxisLabelGroupSelect" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">onXAxis<wbr/>Label<wbr/>Group<wbr/>Select</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Function</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L50">config.ts:50</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="padding" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>padding</span><a href="#padding" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">padding</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">bottom</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">end</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">left</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">right</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">start</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">top</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">{</span><span class="hl-6">start</span><span class="hl-3">: </span><span class="hl-1">40</span><span class="hl-3">, </span><span class="hl-6">end</span><span class="hl-3">: </span><span class="hl-1">20</span><span class="hl-3">, </span><span class="hl-6">top</span><span class="hl-3">: </span><span class="hl-1">100</span><span class="hl-3">, </span><span class="hl-6">bottom</span><span class="hl-3">: </span><span class="hl-1">40</span><span class="hl-3">}</span>
+</code><button>Copy</button></pre>
+</div>
+<div class="tsd-type-declaration">
+<h4>Type declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">bottom</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">end</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">left</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>Left will be set by code, depends on direction.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">right</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>Right will be set by code, depends on direction.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">start</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">top</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L56">config.ts:56</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="paddingDefault" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>padding<wbr/>Default</span><a href="#paddingDefault" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">padding<wbr/>Default</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 20</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">20</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L75">config.ts:75</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="pieFillOpacity" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>pie<wbr/>Fill<wbr/>Opacity</span><a href="#pieFillOpacity" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">pie<wbr/>Fill<wbr/>Opacity</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0.6</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">0.6</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L521">config.ts:521</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="pieStroke" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>pie<wbr/>Stroke</span><a href="#pieStroke" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">pie<wbr/>Stroke</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;white&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">white</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L532">config.ts:532</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="pieStrokeWidth" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>pie<wbr/>Stroke<wbr/>Width</span><a href="#pieStrokeWidth" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">pie<wbr/>Stroke<wbr/>Width</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 2</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">2</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L538">config.ts:538</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="pointRadius" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>point<wbr/>Radius</span><a href="#pointRadius" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">point<wbr/>Radius</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 2</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">2</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L459">config.ts:459</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="points" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>points</span><a href="#points" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">points</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">true</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L483">config.ts:483</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="series" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>series</span><a href="#series" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">series</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/config.ChartConfigSerie.html" class="tsd-signature-type tsd-kind-interface">ChartConfigSerie</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L35">config.ts:35</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="textAnchorXAxisLabels" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>text<wbr/>AnchorXAxis<wbr/>Labels</span><a href="#textAnchorXAxisLabels" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">text<wbr/>AnchorXAxis<wbr/>Labels</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;middle&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">middle</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L291">config.ts:291</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="title" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>title</span><a href="#title" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">title</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L40">config.ts:40</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="titleColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>title<wbr/>Color</span><a href="#titleColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">title<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;black&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">black</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L158">config.ts:158</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="titleFontSize" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>title<wbr/>Font<wbr/>Size</span><a href="#titleFontSize" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">title<wbr/>Font<wbr/>Size</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = &#39;normal&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">normal</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L152">config.ts:152</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="titleHorizontalPosition" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>title<wbr/>Horizontal<wbr/>Position</span><a href="#titleHorizontalPosition" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">title<wbr/>Horizontal<wbr/>Position</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;center&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">center</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L164">config.ts:164</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="titleVerticalPosition" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>title<wbr/>Vertical<wbr/>Position</span><a href="#titleVerticalPosition" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">title<wbr/>Vertical<wbr/>Position</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;top&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">top</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L170">config.ts:170</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="transition" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>transition</span><a href="#transition" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">transition</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">true</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L133">config.ts:133</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisGrid" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Grid</span><a href="#xAxisGrid" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Grid</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">true</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L245">config.ts:245</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisGridColumns" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Grid<wbr/>Columns</span><a href="#xAxisGridColumns" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Grid<wbr/>Columns</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">false</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L264">config.ts:264</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisGridColumnsSelectable" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Grid<wbr/>Columns<wbr/>Selectable</span><a href="#xAxisGridColumnsSelectable" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Grid<wbr/>Columns<wbr/>Selectable</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">false</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L271">config.ts:271</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisGridColumnsSelectableColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Grid<wbr/>Columns<wbr/>Selectable<wbr/>Color</span><a href="#xAxisGridColumnsSelectableColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Grid<wbr/>Columns<wbr/>Selectable<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;black&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-0">black</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L283">config.ts:283</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisGridLineColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Color</span><a href="#xAxisGridLineColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;#C0C0C0&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-3">#</span><span class="hl-7">C0C0C0</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L220">config.ts:220</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisGridLineDashArray" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Dash<wbr/>Array</span><a href="#xAxisGridLineDashArray" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Dash<wbr/>Array</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;1 1&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">1</span><span class="hl-3"> </span><span class="hl-1">1</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L227">config.ts:227</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisGridLineWidth" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Width</span><a href="#xAxisGridLineWidth" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Width</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">1</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L214">config.ts:214</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisGridPadding" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Grid<wbr/>Padding</span><a href="#xAxisGridPadding" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Grid<wbr/>Padding</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">0</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L251">config.ts:251</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisGridSelectedColumnOpacity" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Grid<wbr/>Selected<wbr/>Column<wbr/>Opacity</span><a href="#xAxisGridSelectedColumnOpacity" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Grid<wbr/>Selected<wbr/>Column<wbr/>Opacity</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0.2</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">0.2</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L277">config.ts:277</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisLabelColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Label<wbr/>Color</span><a href="#xAxisLabelColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Label<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;#A0A0A0&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-3">#</span><span class="hl-7">A0A0A0</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L233">config.ts:233</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisLabelRotation" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Label<wbr/>Rotation</span><a href="#xAxisLabelRotation" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Label<wbr/>Rotation</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">0</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L303">config.ts:303</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisLabelStep" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Label<wbr/>Step</span><a href="#xAxisLabelStep" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Label<wbr/>Step</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">1</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L315">config.ts:315</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisLabelTop" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Label<wbr/>Top</span><a href="#xAxisLabelTop" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Label<wbr/>Top</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 10</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">10</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L297">config.ts:297</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisLabels" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Labels</span><a href="#xAxisLabels" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Labels</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">true</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L257">config.ts:257</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisStep" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Step</span><a href="#xAxisStep" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Step</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">1</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L309">config.ts:309</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisTitle" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Title</span><a href="#xAxisTitle" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Title</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L202">config.ts:202</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisTitleBottom" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Title<wbr/>Bottom</span><a href="#xAxisTitleBottom" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Title<wbr/>Bottom</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L208">config.ts:208</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="xAxisTitleColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>x<wbr/>Axis<wbr/>Title<wbr/>Color</span><a href="#xAxisTitleColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x<wbr/>Axis<wbr/>Title<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;#A0A0A0&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-3">#</span><span class="hl-7">A0A0A0</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L239">config.ts:239</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisGrid" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Grid</span><a href="#yAxisGrid" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Grid</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">true</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L382">config.ts:382</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisGridLineColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Color</span><a href="#yAxisGridLineColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;#C0C0C0&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-3">#</span><span class="hl-7">C0C0C0</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L342">config.ts:342</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisGridLineDashArray" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Dash<wbr/>Array</span><a href="#yAxisGridLineDashArray" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Dash<wbr/>Array</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;1 1&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">1</span><span class="hl-3"> </span><span class="hl-1">1</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L349">config.ts:349</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisGridLineWidth" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Width</span><a href="#yAxisGridLineWidth" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Width</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">1</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L336">config.ts:336</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisGridPadding" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Grid<wbr/>Padding</span><a href="#yAxisGridPadding" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Grid<wbr/>Padding</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">0</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L394">config.ts:394</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisLabelColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Label<wbr/>Color</span><a href="#yAxisLabelColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Label<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;#A0A0A0&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-3">#</span><span class="hl-7">A0A0A0</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L355">config.ts:355</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisLabelStep" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Label<wbr/>Step</span><a href="#yAxisLabelStep" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Label<wbr/>Step</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 10</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">10</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L373">config.ts:373</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisLabels" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Labels</span><a href="#yAxisLabels" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Labels</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-2">true</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L388">config.ts:388</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisStep" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Step</span><a href="#yAxisStep" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Step</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 10</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-1">10</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L367">config.ts:367</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisTitle" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Title</span><a href="#yAxisTitle" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Title</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L325">config.ts:325</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisTitleColor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Title<wbr/>Color</span><a href="#yAxisTitleColor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Title<wbr/>Color</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;#A0A0A0&#39;</span></div>
+<div class="tsd-comment tsd-typography">
+<h3>Default</h3><pre><code class="language-ts"><span class="hl-3">#</span><span class="hl-7">A0A0A0</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L361">config.ts:361</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="yAxisTitleStart" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>y<wbr/>Axis<wbr/>Title<wbr/>Start</span><a href="#yAxisTitleStart" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y<wbr/>Axis<wbr/>Title<wbr/>Start</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L330">config.ts:330</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="chartTypes" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>chart<wbr/>Types</span><a href="#chartTypes" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">chart<wbr/>Types</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">bar</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">donut</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">line</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">lineAndBar</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">pie</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-type-declaration">
+<h4>Type declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">bar</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">donut</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">line</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">line<wbr/>And<wbr/>Bar</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">pie</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L18">config.ts:18</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="directions" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>directions</span><a href="#directions" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">directions</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">ltr</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">rtl</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-type-declaration">
+<h4>Type declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">ltr</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">rtl</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/michielvaneerd/charted/blob/b628a16/src/config.ts#L13">config.ts:13</a></li></ul></aside></section></section></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg>On This Page</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li><a href="#constructor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-512-path"></use><use href="#icon-512-text"></use></svg><span>constructor</span></a></li>
+<li><a href="#axisLabelFontSize" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>axis<wbr/>Label<wbr/>Font<wbr/>Size</span></a></li>
+<li><a href="#axisTitleFontSize" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>axis<wbr/>Title<wbr/>Font<wbr/>Size</span></a></li>
+<li><a href="#backgroundColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>background<wbr/>Color</span></a></li>
+<li><a href="#barFillOpacity" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>bar<wbr/>Fill<wbr/>Opacity</span></a></li>
+<li><a href="#barSpacing" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>bar<wbr/>Spacing</span></a></li>
+<li><a href="#barStacked" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>bar<wbr/>Stacked</span></a></li>
+<li><a href="#barStrokeWidth" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>bar<wbr/>Stroke<wbr/>Width</span></a></li>
+<li><a href="#chartType" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>chart<wbr/>Type</span></a></li>
+<li><a href="#connectNullValues" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>connect<wbr/>Null<wbr/>Values</span></a></li>
+<li><a href="#dir" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>dir</span></a></li>
+<li><a href="#donutStroke" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>donut<wbr/>Stroke</span></a></li>
+<li><a href="#donutStrokeWidth" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>donut<wbr/>Stroke<wbr/>Width</span></a></li>
+<li><a href="#donutWidth" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>donut<wbr/>Width</span></a></li>
+<li><a href="#drawOnConfig" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>draw<wbr/>On<wbr/>Config</span></a></li>
+<li><a href="#drawOnData" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>draw<wbr/>On<wbr/>Data</span></a></li>
+<li><a href="#focusedValueColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>focused<wbr/>Value<wbr/>Color</span></a></li>
+<li><a href="#focusedValueFill" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>focused<wbr/>Value<wbr/>Fill</span></a></li>
+<li><a href="#focusedValuePadding" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>focused<wbr/>Value<wbr/>Padding</span></a></li>
+<li><a href="#focusedValueShow" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>focused<wbr/>Value<wbr/>Show</span></a></li>
+<li><a href="#fontFamily" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>font<wbr/>Family</span></a></li>
+<li><a href="#legend" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend</span></a></li>
+<li><a href="#legendBottom" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Bottom</span></a></li>
+<li><a href="#legendCircle" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Circle</span></a></li>
+<li><a href="#legendColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Color</span></a></li>
+<li><a href="#legendFontSize" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Font<wbr/>Size</span></a></li>
+<li><a href="#legendPosition" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Position</span></a></li>
+<li><a href="#legendSelect" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Select</span></a></li>
+<li><a href="#legendTop" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Top</span></a></li>
+<li><a href="#legendWidth" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>legend<wbr/>Width</span></a></li>
+<li><a href="#lineChartFilled" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>line<wbr/>Chart<wbr/>Filled</span></a></li>
+<li><a href="#lineCurved" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>line<wbr/>Curved</span></a></li>
+<li><a href="#lineWidth" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>line<wbr/>Width</span></a></li>
+<li><a href="#maxValue" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>max<wbr/>Value</span></a></li>
+<li><a href="#minValue" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>min<wbr/>Value</span></a></li>
+<li><a href="#onXAxisLabelGroupSelect" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>onXAxis<wbr/>Label<wbr/>Group<wbr/>Select</span></a></li>
+<li><a href="#padding" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>padding</span></a></li>
+<li><a href="#paddingDefault" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>padding<wbr/>Default</span></a></li>
+<li><a href="#pieFillOpacity" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>pie<wbr/>Fill<wbr/>Opacity</span></a></li>
+<li><a href="#pieStroke" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>pie<wbr/>Stroke</span></a></li>
+<li><a href="#pieStrokeWidth" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>pie<wbr/>Stroke<wbr/>Width</span></a></li>
+<li><a href="#pointRadius" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>point<wbr/>Radius</span></a></li>
+<li><a href="#points" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>points</span></a></li>
+<li><a href="#series" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>series</span></a></li>
+<li><a href="#textAnchorXAxisLabels" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>text<wbr/>AnchorXAxis<wbr/>Labels</span></a></li>
+<li><a href="#title" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>title</span></a></li>
+<li><a href="#titleColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>title<wbr/>Color</span></a></li>
+<li><a href="#titleFontSize" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>title<wbr/>Font<wbr/>Size</span></a></li>
+<li><a href="#titleHorizontalPosition" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>title<wbr/>Horizontal<wbr/>Position</span></a></li>
+<li><a href="#titleVerticalPosition" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>title<wbr/>Vertical<wbr/>Position</span></a></li>
+<li><a href="#transition" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>transition</span></a></li>
+<li><a href="#xAxisGrid" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid</span></a></li>
+<li><a href="#xAxisGridColumns" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Columns</span></a></li>
+<li><a href="#xAxisGridColumnsSelectable" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Columns<wbr/>Selectable</span></a></li>
+<li><a href="#xAxisGridColumnsSelectableColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Columns<wbr/>Selectable<wbr/>Color</span></a></li>
+<li><a href="#xAxisGridLineColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Color</span></a></li>
+<li><a href="#xAxisGridLineDashArray" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Dash<wbr/>Array</span></a></li>
+<li><a href="#xAxisGridLineWidth" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Width</span></a></li>
+<li><a href="#xAxisGridPadding" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Padding</span></a></li>
+<li><a href="#xAxisGridSelectedColumnOpacity" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Grid<wbr/>Selected<wbr/>Column<wbr/>Opacity</span></a></li>
+<li><a href="#xAxisLabelColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Label<wbr/>Color</span></a></li>
+<li><a href="#xAxisLabelRotation" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Label<wbr/>Rotation</span></a></li>
+<li><a href="#xAxisLabelStep" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Label<wbr/>Step</span></a></li>
+<li><a href="#xAxisLabelTop" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Label<wbr/>Top</span></a></li>
+<li><a href="#xAxisLabels" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Labels</span></a></li>
+<li><a href="#xAxisStep" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Step</span></a></li>
+<li><a href="#xAxisTitle" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Title</span></a></li>
+<li><a href="#xAxisTitleBottom" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Title<wbr/>Bottom</span></a></li>
+<li><a href="#xAxisTitleColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>x<wbr/>Axis<wbr/>Title<wbr/>Color</span></a></li>
+<li><a href="#yAxisGrid" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Grid</span></a></li>
+<li><a href="#yAxisGridLineColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Color</span></a></li>
+<li><a href="#yAxisGridLineDashArray" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Dash<wbr/>Array</span></a></li>
+<li><a href="#yAxisGridLineWidth" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Grid<wbr/>Line<wbr/>Width</span></a></li>
+<li><a href="#yAxisGridPadding" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Grid<wbr/>Padding</span></a></li>
+<li><a href="#yAxisLabelColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Label<wbr/>Color</span></a></li>
+<li><a href="#yAxisLabelStep" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Label<wbr/>Step</span></a></li>
+<li><a href="#yAxisLabels" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Labels</span></a></li>
+<li><a href="#yAxisStep" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Step</span></a></li>
+<li><a href="#yAxisTitle" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Title</span></a></li>
+<li><a href="#yAxisTitleColor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Title<wbr/>Color</span></a></li>
+<li><a href="#yAxisTitleStart" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>y<wbr/>Axis<wbr/>Title<wbr/>Start</span></a></li>
+<li><a href="#chartTypes" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>chart<wbr/>Types</span></a></li>
+<li><a href="#directions" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>directions</span></a></li></ul></div></details></div>
+<div class="site-menu">
+<nav class="tsd-navigation"><a href="../index.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-4-path"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)" id="icon-4-text"></path></svg><span>charted</span></a>
+<ul class="tsd-small-nested-navigation">
+<li>
+<details class="tsd-index-accordion" data-key="charts/bar_and_line_chart_controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_bar_and_line_chart_controller.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/bar_<wbr/>and_<wbr/>line_<wbr/>chart_<wbr/>controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="charts_bar_and_line_chart_controller.BarAndLineController.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-128-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-128-text"></path></svg><span>Bar<wbr/>And<wbr/>Line<wbr/>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/bar_and_line_chart_controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_bar_and_line_chart_controller-1.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/bar_<wbr/>and_<wbr/>line_<wbr/>chart_<wbr/>controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="../modules/charts_bar_and_line_chart_controller-1.html#BarAndLineController"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4D82" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-8388608-path"></rect><path d="M10.354 17V8.24H13.066C13.586 8.24 14.042 8.348 14.434 8.564C14.826 8.772 15.13 9.064 15.346 9.44C15.562 9.816 15.67 10.256 15.67 10.76C15.67 11.352 15.514 11.86 15.202 12.284C14.898 12.708 14.482 13 13.954 13.16L15.79 17H14.518L12.838 13.28H11.434V17H10.354ZM11.434 12.308H13.066C13.514 12.308 13.874 12.168 14.146 11.888C14.418 11.6 14.554 11.224 14.554 10.76C14.554 10.288 14.418 9.912 14.146 9.632C13.874 9.352 13.514 9.212 13.066 9.212H11.434V12.308Z" fill="var(--color-text)" id="icon-8388608-text"></path></svg><span>Bar<wbr/>And<wbr/>Line<wbr/>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/bar_chart_controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_bar_chart_controller.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/bar_<wbr/>chart_<wbr/>controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="charts_bar_chart_controller.BarController.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Bar<wbr/>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/bar_chart_controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_bar_chart_controller-1.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/bar_<wbr/>chart_<wbr/>controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="../modules/charts_bar_chart_controller-1.html#BarController"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8388608-path"></use><use href="#icon-8388608-text"></use></svg><span>Bar<wbr/>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_controller.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="charts_controller.Controller.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_controller-1.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="../modules/charts_controller-1.html#Controller"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8388608-path"></use><use href="#icon-8388608-text"></use></svg><span>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/donut_chart_controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_donut_chart_controller.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/donut_<wbr/>chart_<wbr/>controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="charts_donut_chart_controller.DonutController.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Donut<wbr/>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/donut_chart_controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_donut_chart_controller-1.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/donut_<wbr/>chart_<wbr/>controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="../modules/charts_donut_chart_controller-1.html#DonutController"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8388608-path"></use><use href="#icon-8388608-text"></use></svg><span>Donut<wbr/>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/line_chart_controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_line_chart_controller.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/line_<wbr/>chart_<wbr/>controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="charts_line_chart_controller.LineController.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Line<wbr/>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/line_chart_controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_line_chart_controller-1.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/line_<wbr/>chart_<wbr/>controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="../modules/charts_line_chart_controller-1.html#LineController"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8388608-path"></use><use href="#icon-8388608-text"></use></svg><span>Line<wbr/>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/pie_chart_controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_pie_chart_controller.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/pie_<wbr/>chart_<wbr/>controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="charts_pie_chart_controller.PieController.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Pie<wbr/>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="charts/pie_chart_controller"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/charts_pie_chart_controller-1.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>charts/pie_<wbr/>chart_<wbr/>controller</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="../modules/charts_pie_chart_controller-1.html#PieController"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8388608-path"></use><use href="#icon-8388608-text"></use></svg><span>Pie<wbr/>Controller</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="colors"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/colors.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>colors</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="../variables/colors.colors.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-variable)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-32-path"></rect><path d="M11.106 16L8.85 7.24H9.966L11.454 13.192C11.558 13.608 11.646 13.996 11.718 14.356C11.79 14.708 11.842 14.976 11.874 15.16C11.906 14.976 11.954 14.708 12.018 14.356C12.09 13.996 12.178 13.608 12.282 13.192L13.758 7.24H14.85L12.582 16H11.106Z" fill="var(--color-text)" id="icon-32-text"></path></svg><span>colors</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" open data-key="config"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/config.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>config</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="config.SvgChartConfig.html" class="current"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Svg<wbr/>Chart<wbr/>Config</span></a></li>
+<li><a href="../interfaces/config.ChartConfigSerie.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-256-path"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)" id="icon-256-text"></path></svg><span>Chart<wbr/>Config<wbr/>Serie</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="svg"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg><a href="../modules/svg.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4-path"></use><use href="#icon-4-text"></use></svg><span>svg</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="svg.SvgChart.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg><span>Svg<wbr/>Chart</span></a></li>
+<li><a href="../interfaces/svg.ChartData.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Chart<wbr/>Data</span></a></li>
+<li><a href="../interfaces/svg.ChartPoint.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>Chart<wbr/>Point</span></a></li></ul></div></details></li></ul></nav></div></div></div>
+<div class="tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div></body></html>

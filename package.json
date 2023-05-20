@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "esbuild": "0.17.18"
+    "esbuild": "0.17.18",
+    "typedoc": "^0.24.7"
   }
 }
