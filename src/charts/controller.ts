@@ -1,10 +1,14 @@
-import { SvgChart } from "../svg.js";
-import { el, prefixed } from "../utils.js";
+import { SvgChartConfig, ChartConfigSerie } from "../config";
+import { SvgChart } from "../svg";
+import { el, prefixed } from "../utils";
 
 /**
  * Abstract Controller class. Reponsible for drawing charts for specific chart types.
  */
 class Controller {
+
+    svgChart: SvgChart;
+    config: SvgChartConfig;
 
     static requiredConfigWithValue = {};
 
@@ -12,7 +16,7 @@ class Controller {
      * Create new Controller class.
      * @param {SvgChart} svgChart SvgChart instance.
      */
-    constructor(svgChart) {
+    constructor(svgChart: SvgChart) {
         if (new.target === Controller) {
             throw new Error('Controller class cannot be directly instanstiated.');
         }
@@ -24,7 +28,7 @@ class Controller {
      * Draws chart.
      * @param {SVGElement} currentSerieGroupElement Group element where the chart can be appended to.
      */
-    draw(currentSerieGroupElement) {
+    draw(currentSerieGroupElement: SVGElement) {
         this.drawStart(currentSerieGroupElement);
         this.config.series.forEach(function (serie, serieIndex) {
             const serieGroup = el('g', {
@@ -41,7 +45,7 @@ class Controller {
      * Do things at the start of the draw for this chart.
      * @param {SVGElement} currentSerieGroupElement DOM group element.
      */
-    drawStart(currentSerieGroupElement) {
+    drawStart(currentSerieGroupElement: SVGElement) {
 
     }
 
@@ -49,17 +53,17 @@ class Controller {
      * Do things at the end of the draw for this chart.
      * @param {SVGElement} currentSerieGroupElement DOM group element.
      */
-    drawEnd(currentSerieGroupElement) {
+    drawEnd(currentSerieGroupElement: SVGElement) {
 
     }
 
     /**
      * Draws chart element for this serie and attached it to the serieGroup.
-     * @param {Object} serie Serie object.
-     * @param {Number} serieIndex Serie index.
+     * @param {ChartConfigSerie} serie Serie object.
+     * @param {number} serieIndex Serie index.
      * @param {SVGElement} serieGroup DOM group element for this serie.
      */
-    drawSerie(serie, serieIndex, serieGroup) {
+    drawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
 
     }
 
@@ -79,17 +83,17 @@ class Controller {
 
     /**
      * Execute serie config things before global config serie things are done.
-     * @param {Object} serie - Serie object
+     * @param {ChartConfigSerie} serie - Serie object
      */
-    configSerieBefore(serie) {
+    configSerieBefore(serie: ChartConfigSerie) {
         //console.log(`configSerieBefore for serie ${serie.id}`);
     }
 
     /**
      * Execute config things after global config things are done.
-     * @param {Object} serie - Serie object
+     * @param {ChartConfigSerie} serie - Serie object
      */
-    configSerieAfter(serie) {
+    configSerieAfter(serie: ChartConfigSerie) {
         //console.log(`configSerieAfter for serie ${serie.id}`);
     }
 

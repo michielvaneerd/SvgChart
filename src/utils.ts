@@ -3,6 +3,8 @@
  * @ignore
  */
 
+import { ChartPoint } from "./svg";
+
 /**
  * SVG namespace.
  */
@@ -20,12 +22,12 @@ const classNamePrefix = 'svg-chart-';
 
 /**
  * Creates a new HTML element.
- * @param {String} name Tag name for new HTML element.
- * @param {Object} [attributes] Key value pair of attributes to set.
+ * @param {string} name Tag name for new HTML element.
+ * @param {object} [attributes] Key value pair of attributes to set.
  * @param {Node} [child] Child node to add to new HTML element.
  * @returns {SVGElement} The new HTML element.
  */
-function el(name, attributes = {}, child = null) {
+function el(name: string, attributes: object = {}, child: Node = null): SVGElement {
     var el = document.createElementNS(ns, name);
     Object.keys(attributes).forEach(function (key) {
         if (attributes[key] === null) {
@@ -38,7 +40,8 @@ function el(name, attributes = {}, child = null) {
                 }
                 break;
             default:
-                el.setAttribute(key.replaceAll(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
+                //el.setAttribute(key.replaceAll(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
+                el.setAttribute(key.replace(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
                 break;
         }
     });
@@ -50,35 +53,35 @@ function el(name, attributes = {}, child = null) {
 
 /**
  * Searches up from currentElement until an element is found with the parentName. 
- * @param {HTMLE} currentElement HTML element to search up from.
- * @param {String} parentName Tag name of element to search for.
- * @returns {HTMLElement|null} Found HTML element or null.
+ * @param {SVGElement} currentElement HTML element to search up from.
+ * @param {string} parentName Tag name of element to search for.
+ * @returns {Node|null} Found HTML element or null.
  */
-function parent(currentElement, parentName) {
+function parent(currentElement: SVGElement, parentName: string): SVGElement | null {
     var el = currentElement;
     while (el && el.nodeName.toLowerCase() !== parentName.toLowerCase()) {
-        el = el.parentNode;
+        el = el.parentNode as SVGElement;
     }
     return el;
 }
 
 /**
  * Returns the className with prefix.
- * @param {String} className Class name to prefix.
- * @returns {String} Classname with prefix.
+ * @param {string} className Class name to prefix.
+ * @returns {string} Classname with prefix.
  */
-function prefixed(className) {
+function prefixed(className: string): string {
     return classNamePrefix + className;
 }
 
 /**
  * Loop through items in normal (isRTL = true) or reversed (isRTL = false) order and call the callback for each item.
- * @param {Object} instance Instance of object that will be this in the callback.
+ * @param {object} instance Instance of object that will be this in the callback.
  * @param {Array} items Array of items to loop through.
- * @param {Boolean} isRTL Whether it is left-to-right or right-to-left.
+ * @param {boolean} isRTL Whether it is left-to-right or right-to-left.
  * @param {Function} callback Callback function. Arguments it receives: {Any} item, {Number} index, {Array} items
  */
-function directionForEach(instance, items, isRTL, callback) {
+function directionForEach(instance: object, items: Array<any>, isRTL: boolean, callback: Function) {
     if (isRTL) {
         const length = items.length;
         for (let i = 0; i < length; i++) {
@@ -100,7 +103,7 @@ function directionForEach(instance, items, isRTL, callback) {
  * @param {Number} angleInDegrees Angle in degrees.
  * @returns {Object} Point.
  */
-function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+function polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number): ChartPoint {
     var angleInRadians = (angleInDegrees - 90) * Math.PI / 180;
     return {
         x: centerX + (radius * Math.cos(angleInRadians)),

@@ -1,8 +1,9 @@
-import { prefixed, directionForEach, el } from "../utils.js";
-import { Controller } from "./controller.js";
-import { SvgChart } from "../svg.js";
-import { AxisController } from "../axis.js";
-import { configBefore as barAndLineConfigBefore, drawStart as barAndLineDrawStart } from "../bar_and_line_utils.js";
+import { prefixed, directionForEach, el } from "../utils";
+import { Controller } from "./controller";
+import { ChartPoint, SvgChart } from "../svg";
+import { AxisController } from "../axis";
+import { configBefore as barAndLineConfigBefore, drawStart as barAndLineDrawStart } from "../bar_and_line_utils";
+import { ChartConfigSerie } from "../config";
 
 /**
  * Controller class for bar and line charts.
@@ -15,23 +16,23 @@ class LineController extends Controller {
     /**
      * @param {SvgChart} svgChart SvgChart instance.
      */
-    constructor(svgChart) {
+    constructor(svgChart: SvgChart) {
         super(svgChart);
         this.#axisController = new AxisController(svgChart);
     }
 
     /**
      * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
-     * @param {Object} serie Serie object.
-     * @param {Number} serieIndex Serie index.
-     * @param {HTMLElement} serieGroup DOM group element for this serie.
+     * @param {ChartConfigSerie} serie Serie object.
+     * @param {number} serieIndex Serie index.
+     * @param {SVGElement} serieGroup DOM group element for this serie.
      */
-    drawSerie(serie, serieIndex, serieGroup) {
+    drawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
         var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
         var flatNonNullPoints = [];
 
-        directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, function (value, valueIndex, values) {
-            var x = this.config.padding._left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + (this.config.xAxisGridColumns ? (this.svgChart.columnWidth / 2) : 0);
+        directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, function (value: number, valueIndex: number, values: Array<number>) {
+            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + (this.config.xAxisGridColumns ? (this.svgChart.columnWidth / 2) : 0);
             var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.svgChart.lineAndBarValueHeight);
 
             if (value === null) {
@@ -59,18 +60,18 @@ class LineController extends Controller {
 
             // Loop through nonNullPoints
 
-            nonNullPoints.forEach(function (currentNonNullPoints) {
+            nonNullPoints.forEach((currentNonNullPoints) => {
                 if (currentNonNullPoints.length > 0) {
                     let path = this.config.lineCurved ? this.#getCurvedPathFromPoints(currentNonNullPoints) : this.#getStraightPathFromPoints(currentNonNullPoints);
                     if (path.length > 0) {
                         paths.push(path);
                     }
                 }
-            }, this);
+            });
 
         }
 
-        paths.forEach(function (path) {
+        paths.forEach((path) => {
             serieGroup.appendChild(el('path', {
                 d: path.join(' '),
                 fill: this.config.lineChartFilled ? this.svgChart.getSerieFill(serie, serieIndex) : 'none',
@@ -79,10 +80,10 @@ class LineController extends Controller {
                 strokeWidth: this.config.lineWidth || '',
                 className: prefixed('line')
             }));
-        }, this);
+        });
 
         if (this.config.points) {
-            flatNonNullPoints.forEach(function (point) {
+            flatNonNullPoints.forEach((point) => {
                 serieGroup.appendChild(el('circle', {
                     cx: point.x,
                     cy: point.y,
@@ -94,24 +95,24 @@ class LineController extends Controller {
                     className: prefixed('line-point'),
                     tabindex: this.config.focusedValueShow ? 0 : null
                 }));
-            }, this);
+            });
         }
     }
 
     /**
      * Do things at the start of the draw for this chart.
-     * @param {HTMLElement} currentSerieGroupElement DOM group element.
+     * @param {SVGElement} currentSerieGroupElement DOM group element.
      */
-    drawStart(currentSerieGroupElement) {
+    drawStart(currentSerieGroupElement: SVGElement) {
         barAndLineDrawStart(this.svgChart, this.#axisController, currentSerieGroupElement);
     }
 
     /**
      * Helper function to get a curved path from an array of points.
-     * @param {Array} points Array of points.
+     * @param {Array<ChartPoint>} points Array of points.
      * @returns Array of curved path coordinates.
      */
-    #getCurvedPathFromPoints(points) {
+    #getCurvedPathFromPoints(points: Array<ChartPoint>): Array<any> {
         let path = ['M ' + points[0].x + ' ' + points[0].y];
         for (var i = 0; i < points.length - 1; i++) {
             var x_mid = (points[i].x + points[i + 1].x) / 2;
@@ -130,7 +131,7 @@ class LineController extends Controller {
      * @param {Array} path Array of path coordinates
      * @param {Array} points Array of points
      */
-    #closePath(path, points) {
+    #closePath(path: Array<any>, points: Array<ChartPoint>) {
         if (this.config.lineChartFilled && points.length > 1) {
             path.push(`L ${points[points.length - 1].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight}`);
             path.push(`L ${points[0].x} ${this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight}`);
@@ -146,7 +147,7 @@ class LineController extends Controller {
      * @param {Array} points Array of points.
      * @returns Array of path coordinates.
      */
-    #getStraightPathFromPoints(points) {
+    #getStraightPathFromPoints(points: Array<ChartPoint>): Array<any> {
         let path = [];
         points.forEach(function (point, pointIndex) {
             if (pointIndex === 0) {

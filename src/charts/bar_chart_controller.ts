@@ -1,9 +1,9 @@
-import { prefixed, directionForEach, el } from "../utils.js";
-import { Controller } from "./controller.js";
-import { SvgChart } from "../svg.js";
-import { AxisController } from "../axis.js";
-import { configBefore as barAndLineConfigBefore, drawStart as barAndLineDrawStart } from "../bar_and_line_utils.js";
-import { SvgChartConfig } from "../config";
+import { prefixed, directionForEach, el } from "../utils";
+import { Controller } from "./controller";
+import { SvgChart } from "../svg";
+import { AxisController } from "../axis";
+import { configBefore as barAndLineConfigBefore, drawStart as barAndLineDrawStart } from "../bar_and_line_utils";
+import { SvgChartConfig, ChartConfigSerie } from "../config";
 
 /**
  * Controller class for bar and line charts.
@@ -11,12 +11,17 @@ import { SvgChartConfig } from "../config";
  */
 class BarController extends Controller {
 
+    svgChart: SvgChart;
+    currentBarIndex: number;
+    stackedBarValues: object;
+    barWidth: number;
+
     #axisController = null;
 
     /**
      * @param {SvgChart} svgChart SvgChart instance.
      */
-    constructor(svgChart) {
+    constructor(svgChart: SvgChart) {
         super(svgChart);
         this.#axisController = new AxisController(svgChart);
     }
@@ -30,11 +35,11 @@ class BarController extends Controller {
 
     /**
      * Draws chart element for this serie and attached it to the serieGroup.
-     * @param {Object} serie Serie object.
-     * @param {Number} serieIndex Serie index.
+     * @param {ChartConfigSerie} serie Serie object.
+     * @param {number} serieIndex Serie index.
      * @param {HTMLElement} serieGroup DOM group element for this serie.
      */
-    drawSerie(serie, serieIndex, serieGroup) {
+    drawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
         directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, function (value, valueIndex) {
 
             var x = null;
@@ -44,12 +49,12 @@ class BarController extends Controller {
                 if (!this.stackedBarValues[valueIndex]) {
                     this.stackedBarValues[valueIndex] = this.config.minValue
                 };
-                x = this.config.padding._left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + this.config.barSpacing;
+                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + this.config.barSpacing;
                 y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.svgChart.lineAndBarValueHeight) - (this.stackedBarValues[valueIndex] * this.svgChart.lineAndBarValueHeight);
                 height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.svgChart.lineAndBarValueHeight);
                 this.stackedBarValues[valueIndex] = this.stackedBarValues[valueIndex] += value;
             } else {
-                x = this.config.padding._left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + (this.svgChart.barWidth * this.currentBarIndex) + (this.config.barSpacing * (this.currentBarIndex + 1));
+                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + (this.barWidth * this.currentBarIndex) + (this.config.barSpacing * (this.currentBarIndex + 1));
                 if (isNaN(x)) {
                     console.log(this.currentBarIndex);
                 }
@@ -59,7 +64,7 @@ class BarController extends Controller {
             serieGroup.appendChild(el('rect', {
                 x: x,
                 y: y,
-                width: this.svgChart.barWidth,
+                width: this.barWidth,
                 height: this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
                 fill: this.svgChart.getSerieFill(serie, serieIndex),
                 className: prefixed('bar'),
@@ -79,15 +84,15 @@ class BarController extends Controller {
      * Do things at the start of the draw for this chart.
      * @param {HTMLElement} currentSerieGroupElement DOM group element.
      */
-    drawStart(currentSerieGroupElement) {
-        
+    drawStart(currentSerieGroupElement: SVGElement) {
+
         barAndLineDrawStart(this.svgChart, this.#axisController, currentSerieGroupElement);
         const barWidth = (this.svgChart.columnWidth - (this.config.barSpacing * (this.svgChart.barCountPerColumn + 1))) / (this.svgChart.barCountPerColumn || 1);
 
-        this.svgChart.barWidth = barWidth;
+        this.barWidth = barWidth;
 
         this.currentBarIndex = 0;
-        this.stackedBarValues = []; // value index => current value (steeds optellen)
+        this.stackedBarValues = {}; // value index => current value (steeds optellen)
     }
 
     /**
@@ -100,9 +105,9 @@ class BarController extends Controller {
 
     /**
      * Execute serie config things before global config serie things are done.
-     * @param {Object} serie - Serie object
+     * @param {ChartConfigSerie} serie - Serie object
      */
-    configSerieBefore(serie) {
+    configSerieBefore(serie: ChartConfigSerie) {
         super.configSerieBefore(serie);
         if (!this.config.barStacked && (serie.type === SvgChartConfig.chartTypes.bar || this.config.chartType === SvgChartConfig.chartTypes.bar)) {
             this.svgChart.barCountPerColumn += 1;

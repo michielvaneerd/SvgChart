@@ -1,8 +1,8 @@
-import { Controller } from "./controller.js";
-import { LineController } from "./line_chart_controller.js";
-import { BarController } from "./bar_chart_controller.js";
-import { SvgChart } from "../svg.js";
-import { SvgChartConfig } from "../config";
+import { Controller } from "./controller";
+import { LineController } from "./line_chart_controller";
+import { BarController } from "./bar_chart_controller";
+import { SvgChart } from "../svg";
+import { ChartConfigSerie, SvgChartConfig } from "../config";
 
 /**
  * Controller class for bar and line charts.
@@ -16,7 +16,7 @@ class BarAndLineController extends Controller {
     /**
      * @param {SvgChart} svgChart SvgChart instance.
      */
-    constructor(svgChart) {
+    constructor(svgChart: SvgChart) {
         super(svgChart);
         this.#barChartController = new BarController(svgChart);
         this.#lineChartController = new LineController(svgChart);
@@ -26,7 +26,7 @@ class BarAndLineController extends Controller {
         xAxisGridColumns: true
     };
 
-    drawSerie(serie, serieIndex, serieGroup) {
+    drawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
         const serieType = serie.type || (this.config.chartType === SvgChartConfig.chartTypes.lineAndBar ? SvgChartConfig.chartTypes.line : this.config.chartType);
         switch (serieType) {
             case SvgChartConfig.chartTypes.line:
@@ -38,7 +38,7 @@ class BarAndLineController extends Controller {
         }
     }
 
-    drawStart(currentSerieGroupElement) {
+    drawStart(currentSerieGroupElement: SVGElement) {
         this.#barChartController.drawStart(currentSerieGroupElement);
     }
 

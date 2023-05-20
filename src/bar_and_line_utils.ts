@@ -3,17 +3,17 @@
  * @ignore
  */
 
-import { AxisController } from "./axis.js";
-import { SvgChart } from "./svg.js";
-import { el, prefixed } from "./utils.js";
+import { AxisController } from "./axis";
+import { SvgChart } from "./svg";
+import { el, prefixed } from "./utils";
 
 /**
      * Do things at the start of the draw for this chart.
      * @param {SvgChart} svgChart SvgChart instance.
      * @param {AxisController} axisController AxisController instance.
-     * @param {HTMLElement} currentSerieGroupElement DOM group element.
+     * @param {SVGElement} currentSerieGroupElement DOM group element.
      */
-function drawStart(svgChart, axisController, currentSerieGroupElement) {
+function drawStart(svgChart: SvgChart, axisController: AxisController, currentSerieGroupElement: SVGElement) {
     if (svgChart.xAxisGroupElement.firstChild) {
         svgChart.xAxisGroupElement.removeChild(svgChart.xAxisGroupElement.firstChild);
     }
@@ -43,7 +43,7 @@ function drawStart(svgChart, axisController, currentSerieGroupElement) {
  * @param {SvgChart} svgChart SvgChart instance.
  * @param {AxisController} axisController AxisController instance.
  */
-function configBefore(svgChart, axisController) {
+function configBefore(svgChart: SvgChart, axisController: AxisController) {
 
     svgChart.lineAndBarSelectedColumnIndex = null;
     svgChart.lineAndBarValueHeight = svgChart.chartHeight / svgChart.config.maxValue;

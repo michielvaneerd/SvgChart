@@ -38,9 +38,9 @@ class AxisController {
             if (this.config.yAxisGrid && currentYAxisValue <= this.config.maxValue) {
                 let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (currentYAxisValue * this.svgChart.lineAndBarValueHeight);
                 gYAxis.appendChild(el('line', {
-                    x1: this.config.padding._left,
+                    x1: this.config.padding.left,
                     y1: y,
-                    x2: this.config.padding._left + this.svgChart.chartWidth + (this.config.xAxisGridPadding * 2),
+                    x2: this.config.padding.left + this.svgChart.chartWidth + (this.config.xAxisGridPadding * 2),
                     y2: y,
                     className: prefixed('y-axis-grid-line'),
                     stroke: this.config.yAxisGridLineColor || '',
@@ -53,7 +53,7 @@ class AxisController {
                 let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (currentYAxisLabelValue * this.svgChart.lineAndBarValueHeight);
                 gYAxis.appendChild(el('text', {
                     direction: this.config.dir,
-                    x: this.svgChart.isLTR ? (this.config.padding._left - 10) : (this.config.padding._left + this.svgChart.chartWidth + 10),
+                    x: this.svgChart.isLTR ? (this.config.padding.left - 10) : (this.config.padding.left + this.svgChart.chartWidth + 10),
                     y: y,
                     textAnchor: 'end',
                     dominantBaseline: 'middle',
@@ -79,7 +79,7 @@ class AxisController {
         var currentXAxisGridColumnsSelectableGroupElement = (this.config.xAxisGridColumnsSelectable) ? el('g') : null;
         directionForEach(this, this.svgChart.data.xAxis.columns, this.svgChart.isLTR, function (colValue: number, colIndex: number) {
             if (this.config.xAxisGrid) {
-                const x = this.config.padding._left + this.config.xAxisGridPadding + (colIndex * columnWidth);
+                const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
                 if (colIndex === 0 || ((colIndex + 0) % this.config.xAxisStep === 0)) {
                     this.#addXAxisLine(currentXAxisGroupElement, x);
                 }
@@ -97,7 +97,7 @@ class AxisController {
             }
             if (this.config.xAxisLabels && ((colIndex + 0) % this.config.xAxisLabelStep === 0)) {
                 var xlg = el('g', {
-                    transform: `translate(${this.config.padding._left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.svgChart.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + this.config.xAxisLabelTop})`
+                    transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.svgChart.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + this.config.xAxisLabelTop})`
                 });
                 xlg.appendChild(el('text', {
                     direction: this.config.dir,
@@ -115,7 +115,7 @@ class AxisController {
             }
         });
         if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
-            this.#addXAxisLine(currentXAxisGroupElement, this.config.padding._left + this.config.xAxisGridPadding + (this.svgChart.data.xAxis.columns.length * columnWidth));
+            this.#addXAxisLine(currentXAxisGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.svgChart.data.xAxis.columns.length * columnWidth));
         }
         this.svgChart.xAxisGroupElement.appendChild(currentXAxisGroupElement);
         this.config.xAxisGridColumnsSelectable && this.svgChart.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
@@ -136,7 +136,7 @@ class AxisController {
     }
 
     addXAxisTitle() {
-        var x = this.svgChart.isLTR ? (this.svgChart.width - this.config.padding._right - this.config.xAxisGridPadding) : (this.config.padding._left);
+        var x = this.svgChart.isLTR ? (this.svgChart.width - this.config.padding.right - this.config.xAxisGridPadding) : (this.config.padding.left);
         this.svgChart.svg.appendChild(el('text', {
             direction: this.config.dir,
             x: x,

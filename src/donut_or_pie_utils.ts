@@ -3,16 +3,16 @@
  * @ignore
  */
 
-import { el, prefixed } from "./utils.js";
-import { SvgChart } from "./svg.js";
+import { el, prefixed } from "./utils";
+import { SvgChart } from "./svg";
 
 /**
  * 
  * @param {SvgChart} svgChart SvgChart instance.
- * @param {HTMLElement} currentSerieGroupElement Group node.
+ * @param {SVGElement} currentSerieGroupElement Group node.
  * @param {Function} describeArcCallback Callback for gettting the path of the pie or donut.
  */
-function draw(svgChart, currentSerieGroupElement, describeArcCallback) {
+function draw(svgChart: SvgChart, currentSerieGroupElement: SVGElement, describeArcCallback: Function) {
 
     var radius = svgChart.chartHeight / 2;
     var centerX = svgChart.width / 2;

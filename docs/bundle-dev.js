@@ -1,16 +1,10 @@
 (() => {
-  var __defProp = Object.defineProperty;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
   var __esm = (fn, res) => function __init() {
     return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
   };
   var __commonJS = (cb, mod) => function __require() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-  };
-  var __publicField = (obj, key, value) => {
-    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-    return value;
   };
   var __accessCheck = (obj, member, msg) => {
     if (!member.has(obj))
@@ -35,7 +29,7 @@
     return method;
   };
 
-  // src/utils.js
+  // src/utils.ts
   function el(name, attributes = {}, child = null) {
     var el2 = document.createElementNS(ns, name);
     Object.keys(attributes).forEach(function(key) {
@@ -49,7 +43,7 @@
           }
           break;
         default:
-          el2.setAttribute(key.replaceAll(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
+          el2.setAttribute(key.replace(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
           break;
       }
     });
@@ -90,7 +84,7 @@
   }
   var ns, attributesCamelCaseToDashRegex, classNamePrefix;
   var init_utils = __esm({
-    "src/utils.js"() {
+    "src/utils.ts"() {
       ns = "http://www.w3.org/2000/svg";
       attributesCamelCaseToDashRegex = /[A-Z]/g;
       classNamePrefix = "svg-chart-";
@@ -110,11 +104,10 @@
     }
   });
 
-  // src/charts/controller.js
+  // src/charts/controller.ts
   var _Controller, Controller;
   var init_controller = __esm({
-    "src/charts/controller.js"() {
-      init_svg();
+    "src/charts/controller.ts"() {
       init_utils();
       _Controller = class {
         /**
@@ -158,8 +151,8 @@
         }
         /**
          * Draws chart element for this serie and attached it to the serieGroup.
-         * @param {Object} serie Serie object.
-         * @param {Number} serieIndex Serie index.
+         * @param {ChartConfigSerie} serie Serie object.
+         * @param {number} serieIndex Serie index.
          * @param {SVGElement} serieGroup DOM group element for this serie.
          */
         drawSerie(serie, serieIndex, serieGroup) {
@@ -176,19 +169,19 @@
         }
         /**
          * Execute serie config things before global config serie things are done.
-         * @param {Object} serie - Serie object
+         * @param {ChartConfigSerie} serie - Serie object
          */
         configSerieBefore(serie) {
         }
         /**
          * Execute config things after global config things are done.
-         * @param {Object} serie - Serie object
+         * @param {ChartConfigSerie} serie - Serie object
          */
         configSerieAfter(serie) {
         }
       };
       Controller = _Controller;
-      __publicField(Controller, "requiredConfigWithValue", {});
+      Controller.requiredConfigWithValue = {};
     }
   });
 
@@ -253,7 +246,7 @@
                 fontSize: this.config.axisLabelFontSize || "",
                 className: prefixed("y-axis-label"),
                 fill: this.config.yAxisLabelColor || ""
-              }, document.createTextNode(currentYAxisLabelValue)));
+              }, document.createTextNode(currentYAxisLabelValue.toString())));
             }
             currentYAxisLabelValue += this.config.yAxisLabelStep;
           }
@@ -416,7 +409,7 @@
     }
   });
 
-  // src/bar_and_line_utils.js
+  // src/bar_and_line_utils.ts
   function drawStart(svgChart, axisController, currentSerieGroupElement) {
     if (svgChart.xAxisGroupElement.firstChild) {
       svgChart.xAxisGroupElement.removeChild(svgChart.xAxisGroupElement.firstChild);
@@ -454,20 +447,17 @@
     }));
   }
   var init_bar_and_line_utils = __esm({
-    "src/bar_and_line_utils.js"() {
-      init_axis();
-      init_svg();
+    "src/bar_and_line_utils.ts"() {
       init_utils();
     }
   });
 
-  // src/charts/line_chart_controller.js
+  // src/charts/line_chart_controller.ts
   var _axisController, _getCurvedPathFromPoints, getCurvedPathFromPoints_fn, _closePath, closePath_fn, _getStraightPathFromPoints, getStraightPathFromPoints_fn, LineController;
   var init_line_chart_controller = __esm({
-    "src/charts/line_chart_controller.js"() {
+    "src/charts/line_chart_controller.ts"() {
       init_utils();
       init_controller();
-      init_svg();
       init_axis();
       init_bar_and_line_utils();
       LineController = class extends Controller {
@@ -478,7 +468,7 @@
           super(svgChart);
           /**
            * Helper function to get a curved path from an array of points.
-           * @param {Array} points Array of points.
+           * @param {Array<ChartPoint>} points Array of points.
            * @returns Array of curved path coordinates.
            */
           __privateAdd(this, _getCurvedPathFromPoints);
@@ -499,9 +489,9 @@
         }
         /**
          * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
-         * @param {Object} serie Serie object.
-         * @param {Number} serieIndex Serie index.
-         * @param {HTMLElement} serieGroup DOM group element for this serie.
+         * @param {ChartConfigSerie} serie Serie object.
+         * @param {number} serieIndex Serie index.
+         * @param {SVGElement} serieGroup DOM group element for this serie.
          */
         drawSerie(serie, serieIndex, serieGroup) {
           var nonNullPoints = [[]];
@@ -525,16 +515,16 @@
               paths.push(path);
             }
           } else {
-            nonNullPoints.forEach(function(currentNonNullPoints) {
+            nonNullPoints.forEach((currentNonNullPoints) => {
               if (currentNonNullPoints.length > 0) {
                 let path = this.config.lineCurved ? __privateMethod(this, _getCurvedPathFromPoints, getCurvedPathFromPoints_fn).call(this, currentNonNullPoints) : __privateMethod(this, _getStraightPathFromPoints, getStraightPathFromPoints_fn).call(this, currentNonNullPoints);
                 if (path.length > 0) {
                   paths.push(path);
                 }
               }
-            }, this);
+            });
           }
-          paths.forEach(function(path) {
+          paths.forEach((path) => {
             serieGroup.appendChild(el("path", {
               d: path.join(" "),
               fill: this.config.lineChartFilled ? this.svgChart.getSerieFill(serie, serieIndex) : "none",
@@ -543,9 +533,9 @@
               strokeWidth: this.config.lineWidth || "",
               className: prefixed("line")
             }));
-          }, this);
+          });
           if (this.config.points) {
-            flatNonNullPoints.forEach(function(point) {
+            flatNonNullPoints.forEach((point) => {
               serieGroup.appendChild(el("circle", {
                 cx: point.x,
                 cy: point.y,
@@ -557,12 +547,12 @@
                 className: prefixed("line-point"),
                 tabindex: this.config.focusedValueShow ? 0 : null
               }));
-            }, this);
+            });
           }
         }
         /**
          * Do things at the start of the draw for this chart.
-         * @param {HTMLElement} currentSerieGroupElement DOM group element.
+         * @param {SVGElement} currentSerieGroupElement DOM group element.
          */
         drawStart(currentSerieGroupElement) {
           drawStart(this.svgChart, __privateGet(this, _axisController), currentSerieGroupElement);
@@ -615,15 +605,481 @@
     }
   });
 
-  // src/charts/bar_chart_controller.js
+  // src/config.ts
+  var _SvgChartConfig, SvgChartConfig;
+  var init_config = __esm({
+    "src/config.ts"() {
+      _SvgChartConfig = class {
+        constructor() {
+          /**
+           * @prop {String} dir - Language direction.
+           * @default SvgChartConfig.directions.ltr
+           */
+          this.dir = _SvgChartConfig.directions.ltr;
+          /**
+           * @prop {Array<ChartConfigSerie>} series - Series array.
+           */
+          this.series = null;
+          /**
+           * @prop {String} title - Title of chart.
+           */
+          this.title = null;
+          /**
+           * @prop {String} chartType - Chart type. Required. Possible values: line, bar, lineAndBar, pie, donut.
+           */
+          this.chartType = null;
+          /**
+           * @prop {Function} onXAxisLabelGroupSelect - Callback when x axis label is selected. Parameters are SvgChart and x axis column index.
+           */
+          this.onXAxisLabelGroupSelect = null;
+          /**
+           * @prop {Object} padding - Padding object.
+           * @example {start: 40, end: 20, top: 100, bottom: 40}
+           */
+          this.padding = {
+            start: 40,
+            end: 20,
+            top: 100,
+            bottom: 40,
+            /**
+             * Left will be set by code, depends on direction.
+             */
+            left: 40,
+            /**
+             * Right will be set by code, depends on direction.
+             */
+            right: 20
+          };
+          /**
+           * @prop {number} paddingDefault - Default padding for space between elements.
+           * @default 20
+           */
+          this.paddingDefault = 20;
+          /**
+           * @prop {number} legendWidth - Width of legend squares or circles.
+           * @default 10
+           */
+          this.legendWidth = 10;
+          /**
+           * @prop {boolean} focusedValueShow - Whether the value box should be displayed when an element has focus.
+           * @default true
+           */
+          this.focusedValueShow = true;
+          /**
+           * @prop {string} focusedValueFill - Fill color of focused value box.
+           * @default black
+           */
+          this.focusedValueFill = "black";
+          /**
+           * @prop {string} focusedValueColor - Font color of focused value box.
+           * @default white
+           */
+          this.focusedValueColor = "white";
+          /**
+           * @prop {number} focusedValuePadding - Padding of focused value box.
+           * @default 6
+           */
+          this.focusedValuePadding = 6;
+          /**
+           * @prop {Function} drawOnConfig - Draw function to execute in the config phase. It receives a SvgChart and HTMLElement parameter.
+           * @example function(svgChart, groupNode) {
+           *     groupNode.appendChild(svgChart.el('rect', {
+           *         x: 10,
+           *         y: 10
+           *     }));
+           * }
+           */
+          this.drawOnConfig = null;
+          /**
+           * @prop {Function} drawOnData - Draw function to execute in the chart phase. It receives a SvgChart and HTMLElement parameter.
+           * @example function(svgChart, groupNode) {
+           *     groupNode.appendChild(svgChart.el('rect', {
+           *         x: 10,
+           *         y: 10
+           *     }));
+           * }
+           */
+          this.drawOnData = null;
+          /**
+           * @prop {boolean} transition - Whether the chart elements should be faded in or nor.
+           * @default true
+           */
+          this.transition = true;
+          /**
+           * @prop {string} backgroundColor - Background color of the SVG element.
+           * @default white
+           */
+          this.backgroundColor = "white";
+          /**
+           * @prop {string} fontFamily - Font fanily for all text elements.
+           * @default sans-serif
+           */
+          this.fontFamily = "sans-serif";
+          /**
+           * @prop {string|number} titleFontSize - Fontsize for the title.
+           * @default normal
+           * 
+           */
+          this.titleFontSize = "normal";
+          /**
+           * @prop {string} titleColor - Font color of title.
+           * @default black
+           */
+          this.titleColor = "black";
+          /**
+           * @prop {string} titleHorizontalPosition - Horizontal position of title. Can be one of: center, start, end.
+           * @default center
+           */
+          this.titleHorizontalPosition = "center";
+          // center (default); start; end
+          /**
+           * @prop {string} titleVerticalPosition - Vertical position of title. Can be one of: top, bottom, center.
+           * @default top
+           */
+          this.titleVerticalPosition = "top";
+          // top (default); bottom; center
+          /**
+           * @prop {number} maxValue - Maximum value. Required for charts with Y-axes.
+           */
+          this.maxValue = null;
+          /**
+           * @prop {number} minValue - Minumum value of Y axis. Required for charts with Y-axes.
+           */
+          this.minValue = null;
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          // X Axis
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          /**
+           * @prop {string} axisTitleFontSize - Font size of axes titles.
+           * @default smaller
+           */
+          this.axisTitleFontSize = "smaller";
+          /**
+           * @prop {string} axisLabelFontSize - Font size of axes labels.
+           * @default small
+           */
+          this.axisLabelFontSize = "small";
+          // X axis
+          /**
+           * @prop {string} xAxisTitle - X axis title.
+           */
+          this.xAxisTitle = null;
+          /**
+           * @prop {Number} xAxisTitleBottom - If this is a number X, than the x axis title will be positioned X pixels from the bottom.
+           * If this is null, then the title will be positioned paddingDefault pixesl from the bottom.
+           */
+          this.xAxisTitleBottom = null;
+          /**
+           * @prop {number} xAxisGridLineWidth - Line width of the x axis grid.
+           * @default 1
+           */
+          this.xAxisGridLineWidth = 1;
+          /**
+           * @prop {string} xAxisGridLineColor - Color of x axis grid lines.
+           * @default #C0C0C0
+           */
+          this.xAxisGridLineColor = "#C0C0C0";
+          /**
+           * @prop {string} xAxisGridLineDashArray - Stroke dash array value for the x axis grid lines.
+           * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
+           * @default 1 1
+           */
+          this.xAxisGridLineDashArray = "1 1";
+          /**
+           * @prop {string} xAxisLabelColor - Font color of xaxis labels.
+           * @default #A0A0A0
+           */
+          this.xAxisLabelColor = "#A0A0A0";
+          /**
+           * @prop {string} xAxisTitleColor - Font color of x axis title.
+           * @default #A0A0A0
+           */
+          this.xAxisTitleColor = "#A0A0A0";
+          /**
+           * @prop {boolean} xAxisGrid - Whether the xaxis grid should be displayed.
+           * @default true
+           */
+          this.xAxisGrid = true;
+          /**
+           * @prop {number} xAxisGridPadding - Outside padding for x axis grid.
+           * @default 0
+           */
+          this.xAxisGridPadding = 0;
+          /**
+           * @prop {boolean} xAxisLabels - Whether x axis labels should be displayed.
+           * @default true
+           */
+          this.xAxisLabels = true;
+          /**
+           * @prop {boolean} xAxisGridColumns - Whether the x axis labels should be below (false)
+           * or between (true) the x axis grid lines. For bar charts this will always be set to true.
+           * @default false
+           */
+          this.xAxisGridColumns = false;
+          /**
+           * @prop {boolean} xAxisGridColumnsSelectable - Whether xAxisGridColumns should be selectable.
+           * If this is true, the x axis labels can be clicked and selected.
+           * @default false
+           */
+          this.xAxisGridColumnsSelectable = false;
+          /**
+           * @prop {number} xAxisGridSelectedColumnOpacity - Opacity value for the selected xAxisGridColumn.
+           * @default 0.2
+           */
+          this.xAxisGridSelectedColumnOpacity = 0.2;
+          /**
+           * @prop {string} xAxisGridColumnsSelectableColor - Background color for a selected xAxisGridColumn.
+           * @default black
+           */
+          this.xAxisGridColumnsSelectableColor = "black";
+          /**
+           * @prop {string} textAnchorXAxisLabels - The text anchor value for x axis labels.
+           * For example if you want vertical labels that should be aligned to the x axis, you can set this to 'start'.
+           * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/text-anchor}.
+           * @default middle
+           */
+          this.textAnchorXAxisLabels = "middle";
+          /**
+           * @prop {number} xAxisLabelTop - Number of pixels that the x axsis labels will be positioned from the bottom x axis grid line.
+           * @default 10
+           */
+          this.xAxisLabelTop = 10;
+          /**
+           * @prop {number} rotate - degrees for the x axis labels.
+           * @default 0
+           */
+          this.xAxisLabelRotation = 0;
+          /**
+           * @prop {number} xAxisStep - Steps between x axis grid lines.
+           * @default 1
+           */
+          this.xAxisStep = 1;
+          /**
+           * @prop {number} xAxisLabelStep - Steps between x axis labels.
+           * @default 1
+           */
+          this.xAxisLabelStep = 1;
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          // Y Axis
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          /**
+           * @prop {string} yAxisTitle - Y axis title.
+           */
+          this.yAxisTitle = null;
+          /**
+           * @prop {number} yAxisTitleStart - Number of pixels the y axis labels should be positioned from the start. If this is null, this will be defaultPadding pixels.
+           */
+          this.yAxisTitleStart = null;
+          // if this is <> null; then this will be the X start position of the Y axis title.
+          /**
+           * @prop {number} yAxisGridLineWidth - Line width of the y axis grid.
+           * @default 1
+           */
+          this.yAxisGridLineWidth = 1;
+          /**
+           * @prop {string} yAxisGridLineColor - Color of y axis grid lines.
+           * @default #C0C0C0
+           */
+          this.yAxisGridLineColor = "#C0C0C0";
+          /**
+           * @prop {string} yAxisGridLineDashArray - Stroke dash array value for the y axis grid lines.
+           * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
+           * @default 1 1
+           */
+          this.yAxisGridLineDashArray = "1 1";
+          /**
+           * @prop {string} yAxisLabelColor - Font color of y axis labels.
+           * @default #A0A0A0
+           */
+          this.yAxisLabelColor = "#A0A0A0";
+          /**
+           * @prop {string} yAxisTitleColor - Font color of y axis title.
+           * @default #A0A0A0
+           */
+          this.yAxisTitleColor = "#A0A0A0";
+          /**
+           * @prop {number} yAxisStep - Steps between y axis grid lines.
+           * @default 10
+           */
+          this.yAxisStep = 10;
+          // how many steps between y axis grid lines
+          /**
+           * @prop {number} yAxisLabelStep - Steps between y axis labels.
+           * @default 10
+           */
+          this.yAxisLabelStep = 10;
+          // how many steps between labels y axis
+          //yAxis = true;
+          /**
+           * @prop {boolean} yAxisGrid - Whether the y axis grid should be displayed.
+           * @default true
+           */
+          this.yAxisGrid = true;
+          /**
+           * @prop {boolean} yAxisLabels - Whether y axis labels should be displayed.
+           * @default true
+           */
+          this.yAxisLabels = true;
+          /**
+           * @prop {number} yAxisGridPadding - Outside padding for y axis grid.
+           * @default 0
+           */
+          this.yAxisGridPadding = 0;
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          // Legend
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          /**
+           * @prop {string} legendFontSize - Font size for legend labels.
+           * @default smaller
+           */
+          this.legendFontSize = "smaller";
+          /**
+           * @prop {string} legendColor - Font color of legend labels.
+           * @default black
+           */
+          this.legendColor = "black";
+          /**
+           * @prop {boolean} legendCircle - Whether legends should be squares (false) or circles (true)
+           * @default false
+           */
+          this.legendCircle = false;
+          /**
+           * @prop {boolean} legend - Whether legends should be displayed.
+           * @default true
+           */
+          this.legend = true;
+          /**
+           * @prop {boolean} legendSelect - Whether clicking on a legend hides and shows a the serie.
+           * @default true
+           */
+          this.legendSelect = true;
+          /**
+           * @prop {string} legendPosition - Position of legend. Possible values: bottom, top, end.
+           * @default top
+           */
+          this.legendPosition = "top";
+          /**
+           * @prop {number} legendBottom - If not null, number of pixels the legend should be positioned from the bottom. Otherwise a default number of pixels will be used.
+           */
+          this.legendBottom = null;
+          /**
+           * @prop {number} legendTop - If not null, number of pixels the legend should be positioned from the top. Otherwise a default number of pixels will be used.
+           */
+          this.legendTop = null;
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          // Line charts
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          /**
+           * @prop {number} lineWidth - Width of line for line charts.
+           * @default 2
+           */
+          this.lineWidth = 2;
+          /**
+           * @prop {number} pointRadius - Radius of line points for line charts.
+           * @default 2
+           */
+          this.pointRadius = 2;
+          /**
+           * @prop {boolean} connectNullValues - Whether null values should be connected or not.
+           * @default false
+           */
+          this.connectNullValues = false;
+          /**
+           * @prop {boolean} lineCurved - Whether lines should be curved or not.
+           * @default true
+           */
+          this.lineCurved = true;
+          /**
+           * @prop {boolean} lineChartFilled - Whether line charts should be filled or not.
+           * @default false
+           */
+          this.lineChartFilled = false;
+          /**
+           * @prop {boolean} points - Whether the lines should display points or not.
+           * @default true
+           */
+          this.points = true;
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          // Bar charts
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          /**
+           * @prop {number} barFillOpacity - Opacity of bars.
+           * @default 0.5
+           */
+          this.barFillOpacity = 0.5;
+          /**
+           * @prop {number} barSpacing - Spacing in pixels between bars.
+           * @default 4
+           */
+          this.barSpacing = 4;
+          /**
+           * @prop {number} barStrokeWidth - Width of bar border.
+           * @default 1
+           */
+          this.barStrokeWidth = 1;
+          /**
+           * @prop {boolean} barStacked - Whether bars should be stacked.
+           * @default false
+           */
+          this.barStacked = false;
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          // Pie and donut charts
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          /**
+           * @prop {number} pieFillOpacity - Opacity of pie and donut charts.
+           * @default 0.6
+           */
+          this.pieFillOpacity = 0.6;
+          /**
+           * @prop {number} donutWidth - With of donuts. Of not given a default value is used.
+           */
+          this.donutWidth = null;
+          /**
+           * @prop {string} pieStroke - Stroke color for pie charts.
+           * @default white
+           */
+          this.pieStroke = "white";
+          /**
+           * @prop {number} pieStrokeWidth - Width of stroke for pie charts. If this is 0, no stroke is painted.
+           * @default 2
+           */
+          this.pieStrokeWidth = 2;
+          /**
+           * @prop {string} donutStroke - Stroke color for donut charts.
+           * @default white
+           */
+          this.donutStroke = "white";
+          /**
+           * @prop {number} donutStrokeWidth - Width of stroke for donut charts. If this is 0, no stroke is painted.
+           * @default 2
+           */
+          this.donutStrokeWidth = 2;
+        }
+      };
+      SvgChartConfig = _SvgChartConfig;
+      SvgChartConfig.directions = {
+        ltr: "ltr",
+        rtl: "rtl"
+      };
+      SvgChartConfig.chartTypes = {
+        line: "line",
+        bar: "bar",
+        pie: "pie",
+        donut: "donut",
+        lineAndBar: "lineAndBar"
+      };
+    }
+  });
+
+  // src/charts/bar_chart_controller.ts
   var _axisController2, BarController;
   var init_bar_chart_controller = __esm({
-    "src/charts/bar_chart_controller.js"() {
+    "src/charts/bar_chart_controller.ts"() {
       init_utils();
       init_controller();
-      init_svg();
       init_axis();
       init_bar_and_line_utils();
+      init_config();
       BarController = class extends Controller {
         /**
          * @param {SvgChart} svgChart SvgChart instance.
@@ -635,8 +1091,8 @@
         }
         /**
          * Draws chart element for this serie and attached it to the serieGroup.
-         * @param {Object} serie Serie object.
-         * @param {Number} serieIndex Serie index.
+         * @param {ChartConfigSerie} serie Serie object.
+         * @param {number} serieIndex Serie index.
          * @param {HTMLElement} serieGroup DOM group element for this serie.
          */
         drawSerie(serie, serieIndex, serieGroup) {
@@ -654,7 +1110,7 @@
               height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight;
               this.stackedBarValues[valueIndex] = this.stackedBarValues[valueIndex] += value;
             } else {
-              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.svgChart.columnWidth + this.svgChart.barWidth * this.currentBarIndex + this.config.barSpacing * (this.currentBarIndex + 1);
+              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.svgChart.columnWidth + this.barWidth * this.currentBarIndex + this.config.barSpacing * (this.currentBarIndex + 1);
               if (isNaN(x)) {
                 console.log(this.currentBarIndex);
               }
@@ -663,7 +1119,7 @@
             serieGroup.appendChild(el("rect", {
               x,
               y,
-              width: this.svgChart.barWidth,
+              width: this.barWidth,
               height: this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
               fill: this.svgChart.getSerieFill(serie, serieIndex),
               className: prefixed("bar"),
@@ -683,9 +1139,9 @@
         drawStart(currentSerieGroupElement) {
           drawStart(this.svgChart, __privateGet(this, _axisController2), currentSerieGroupElement);
           const barWidth = (this.svgChart.columnWidth - this.config.barSpacing * (this.svgChart.barCountPerColumn + 1)) / (this.svgChart.barCountPerColumn || 1);
-          this.svgChart.barWidth = barWidth;
+          this.barWidth = barWidth;
           this.currentBarIndex = 0;
-          this.stackedBarValues = [];
+          this.stackedBarValues = {};
         }
         /**
          * Execute config things before global config things are done.
@@ -696,11 +1152,11 @@
         }
         /**
          * Execute serie config things before global config serie things are done.
-         * @param {Object} serie - Serie object
+         * @param {ChartConfigSerie} serie - Serie object
          */
         configSerieBefore(serie) {
           super.configSerieBefore(serie);
-          if (!this.config.barStacked && (serie.type === SvgChart.chartTypes.bar || this.config.chartType === SvgChart.chartTypes.bar)) {
+          if (!this.config.barStacked && (serie.type === SvgChartConfig.chartTypes.bar || this.config.chartType === SvgChartConfig.chartTypes.bar)) {
             this.svgChart.barCountPerColumn += 1;
           }
         }
@@ -709,20 +1165,20 @@
       /**
        * Required config property values for this type of chart.
        */
-      __publicField(BarController, "requiredConfigWithValue", {
+      BarController.requiredConfigWithValue = {
         xAxisGridColumns: true
-      });
+      };
     }
   });
 
-  // src/charts/bar_and_line_chart_controller.js
+  // src/charts/bar_and_line_chart_controller.ts
   var _lineChartController, _barChartController, BarAndLineController;
   var init_bar_and_line_chart_controller = __esm({
-    "src/charts/bar_and_line_chart_controller.js"() {
+    "src/charts/bar_and_line_chart_controller.ts"() {
       init_controller();
       init_line_chart_controller();
       init_bar_chart_controller();
-      init_svg();
+      init_config();
       BarAndLineController = class extends Controller {
         /**
          * @param {SvgChart} svgChart SvgChart instance.
@@ -735,12 +1191,12 @@
           __privateSet(this, _lineChartController, new LineController(svgChart));
         }
         drawSerie(serie, serieIndex, serieGroup) {
-          const serieType = serie.type || (this.config.chartType === SvgChart.chartTypes.lineAndBar ? SvgChart.chartTypes.line : this.config.chartType);
+          const serieType = serie.type || (this.config.chartType === SvgChartConfig.chartTypes.lineAndBar ? SvgChartConfig.chartTypes.line : this.config.chartType);
           switch (serieType) {
-            case SvgChart.chartTypes.line:
+            case SvgChartConfig.chartTypes.line:
               __privateGet(this, _lineChartController).drawSerie(serie, serieIndex, serieGroup);
               break;
-            case SvgChart.chartTypes.bar:
+            case SvgChartConfig.chartTypes.bar:
               __privateGet(this, _barChartController).drawSerie(serie, serieIndex, serieGroup);
               break;
           }
@@ -757,13 +1213,13 @@
       };
       _lineChartController = new WeakMap();
       _barChartController = new WeakMap();
-      __publicField(BarAndLineController, "requiredConfigWithValue", {
+      BarAndLineController.requiredConfigWithValue = {
         xAxisGridColumns: true
-      });
+      };
     }
   });
 
-  // src/donut_or_pie_utils.js
+  // src/donut_or_pie_utils.ts
   function draw(svgChart, currentSerieGroupElement, describeArcCallback) {
     var radius = svgChart.chartHeight / 2;
     var centerX = svgChart.width / 2;
@@ -798,13 +1254,12 @@
     });
   }
   var init_donut_or_pie_utils = __esm({
-    "src/donut_or_pie_utils.js"() {
+    "src/donut_or_pie_utils.ts"() {
       init_utils();
-      init_svg();
     }
   });
 
-  // src/charts/donut_chart_controller.js
+  // src/charts/donut_chart_controller.ts
   function describeArcDonut(x, y, radius, spread, startAngle, endAngle) {
     var innerStart = polarToCartesian(x, y, radius, endAngle);
     var innerEnd = polarToCartesian(x, y, radius, startAngle);
@@ -843,14 +1298,14 @@
   }
   var DonutController;
   var init_donut_chart_controller = __esm({
-    "src/charts/donut_chart_controller.js"() {
+    "src/charts/donut_chart_controller.ts"() {
       init_utils();
       init_controller();
       init_donut_or_pie_utils();
       DonutController = class extends Controller {
         /**
          * 
-         * @param {HTMLElement} currentSerieGroupElement Current serie group element.
+         * @param {SVGElement} currentSerieGroupElement Current serie group element.
          */
         draw(currentSerieGroupElement) {
           const donutWidth = this.config.donutWidth || this.svgChart.chartHeight / 4;
@@ -862,7 +1317,7 @@
     }
   });
 
-  // src/charts/pie_chart_controller.js
+  // src/charts/pie_chart_controller.ts
   function describeArcPie(x, y, radius, startAngle, endAngle) {
     var start = polarToCartesian(x, y, radius, endAngle);
     var end = polarToCartesian(x, y, radius, startAngle);
@@ -890,14 +1345,14 @@
   }
   var PieController;
   var init_pie_chart_controller = __esm({
-    "src/charts/pie_chart_controller.js"() {
+    "src/charts/pie_chart_controller.ts"() {
       init_utils();
       init_controller();
       init_donut_or_pie_utils();
       PieController = class extends Controller {
         /**
          * Draws chart.
-         * @param {HTMLElement} currentSerieGroupElement Current serie group element.
+         * @param {SVGElement} currentSerieGroupElement Current serie group element.
          */
         draw(currentSerieGroupElement) {
           draw(this.svgChart, currentSerieGroupElement, function(centerX, centerY, radius, startAngle, endAngle) {
@@ -908,464 +1363,8 @@
     }
   });
 
-  // src/config.ts
-  function string2Direction(value) {
-    switch (value) {
-      case "rtl" /* Rtl */:
-        return "rtl" /* Rtl */;
-      default:
-        return "ltr" /* Ltr */;
-    }
-  }
-  var SvgChartConfig;
-  var init_config = __esm({
-    "src/config.ts"() {
-      SvgChartConfig = class {
-        constructor() {
-          /**
-           * @prop {String} dir - Language direction.
-           * @default ltr
-           */
-          this.dir = "ltr" /* Ltr */;
-          /**
-           * @prop {Array} series - Series array.
-           */
-          this.series = null;
-          /**
-           * @prop {String} title - Title of chart.
-           */
-          this.title = null;
-          /**
-           * @prop {String} chartType - Chart type. Required. Possible values: line, bar, lineAndBar, pie, donut.
-           */
-          this.chartType = null;
-          /**
-           * @prop {Function} onXAxisLabelGroupSelect - Callback when x axis label is selected. Parameters are SvgChart and x axis column index.
-           */
-          this.onXAxisLabelGroupSelect = null;
-          /**
-           * @prop {Object} padding - Padding object.
-           * @example {start: 40, end: 20, top: 100, bottom: 40}
-           */
-          this.padding = {
-            start: 40,
-            end: 20,
-            top: 100,
-            bottom: 40,
-            left: 40,
-            right: 20
-          };
-          /**
-           * @prop {Number} paddingDefault - Default padding for space between elements.
-           * @default 20
-           */
-          this.paddingDefault = 20;
-          /**
-           * @prop {Number} legendWidth - Width of legend squares or circles.
-           * @default 10
-           */
-          this.legendWidth = 10;
-          /**
-           * @prop {Boolean} focusedValueShow - Whether the value box should be displayed when an element has focus.
-           * @default true
-           */
-          this.focusedValueShow = true;
-          /**
-           * @prop {String} focusedValueFill - Fill color of focused value box.
-           * @default black
-           */
-          this.focusedValueFill = "black";
-          /**
-           * @prop {String} focusedValueColor - Font color of focused value box.
-           * @default white
-           */
-          this.focusedValueColor = "white";
-          /**
-           * @prop {Number} focusedValuePadding - Padding of focused value box.
-           * @default 6
-           */
-          this.focusedValuePadding = 6;
-          /**
-           * @prop {Function} drawOnConfig - Draw function to execute in the config phase. It receives a SvgChart and HTMLElement parameter.
-           * @example function(svgChart, groupNode) {
-           *     groupNode.appendChild(svgChart.el('rect', {
-           *         x: 10,
-           *         y: 10
-           *     }));
-           * }
-           */
-          this.drawOnConfig = null;
-          /**
-           * @prop {Function} drawOnData - Draw function to execute in the chart phase. It receives a SvgChart and HTMLElement parameter.
-           * @example function(svgChart, groupNode) {
-           *     groupNode.appendChild(svgChart.el('rect', {
-           *         x: 10,
-           *         y: 10
-           *     }));
-           * }
-           */
-          this.drawOnData = null;
-          /**
-           * @prop {Boolean} transition - Whether the chart elements should be faded in or nor.
-           * @default true
-           */
-          this.transition = true;
-          /**
-           * @prop {String} backgroundColor - Background color of the SVG element.
-           * @default white
-           */
-          this.backgroundColor = "white";
-          /**
-           * @prop {String} fontFamily - Font fanily for all text elements.
-           * @default sans-serif
-           */
-          this.fontFamily = "sans-serif";
-          /**
-           * @prop {String|Number} titleFontSize - Fontsize for the title.
-           * @default normal
-           * 
-           */
-          this.titleFontSize = "normal";
-          /**
-           * @prop {String} titleColor - Font color of title.
-           * @default black
-           */
-          this.titleColor = "black";
-          /**
-           * @prop {String} titleHorizontalPosition - Horizontal position of title. Can be one of: center, start, end.
-           * @default center
-           */
-          this.titleHorizontalPosition = "center";
-          // center (default); start; end
-          /**
-           * @prop {String} titleVerticalPosition - Vertical position of title. Can be one of: top, bottom, center.
-           * @default top
-           */
-          this.titleVerticalPosition = "top";
-          // top (default); bottom; center
-          /**
-           * @prop {Number} maxValue - Maximum value. Required for charts with Y-axes.
-           */
-          this.maxValue = null;
-          /**
-           * @prop {Number} minValue - Minumum value of Y axis. Required for charts with Y-axes.
-           */
-          this.minValue = null;
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          // X Axis
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          /**
-           * @prop {String} axisTitleFontSize - Font size of axes titles.
-           * @default smaller
-           */
-          this.axisTitleFontSize = "smaller";
-          /**
-           * @prop {String} axisLabelFontSize - Font size of axes labels.
-           * @default small
-           */
-          this.axisLabelFontSize = "small";
-          // X axis
-          /**
-           * @prop {String} xAxisTitle - X axis title.
-           */
-          this.xAxisTitle = null;
-          /**
-           * @prop {Number} xAxisTitleBottom - If this is a number X, than the x axis title will be positioned X pixels from the bottom.
-           * If this is null, then the title will be positioned paddingDefault pixesl from the bottom.
-           */
-          this.xAxisTitleBottom = null;
-          /**
-           * @prop {Number} xAxisGridLineWidth - Line width of the x axis grid.
-           * @default 1
-           */
-          this.xAxisGridLineWidth = 1;
-          /**
-           * @prop {String} xAxisGridLineColor - Color of x axis grid lines.
-           * @default #C0C0C0
-           */
-          this.xAxisGridLineColor = "#C0C0C0";
-          /**
-           * @prop {String} xAxisGridLineDashArray - Stroke dash array value for the x axis grid lines.
-           * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
-           * @default 1 1
-           */
-          this.xAxisGridLineDashArray = "1 1";
-          /**
-           * @prop {String} xAxisLabelColor - Font color of xaxis labels.
-           * @default #A0A0A0
-           */
-          this.xAxisLabelColor = "#A0A0A0";
-          /**
-           * @prop {String} xAxisTitleColor - Font color of x axis title.
-           * @default #A0A0A0
-           */
-          this.xAxisTitleColor = "#A0A0A0";
-          /**
-           * @prop {Boolean} xAxisGrid - Whether the xaxis grid should be displayed.
-           * @default true
-           */
-          this.xAxisGrid = true;
-          /**
-           * @prop {Number} xAxisGridPadding - Outside padding for x axis grid.
-           * @default 0
-           */
-          this.xAxisGridPadding = 0;
-          /**
-           * @prop {Boolean} xAxisLabels - Whether x axis labels should be displayed.
-           * @default true
-           */
-          this.xAxisLabels = true;
-          /**
-           * @prop {Boolean} xAxisGridColumns - Whether the x axis labels should be below (false)
-           * or between (true) the x axis grid lines. For bar charts this will always be set to true.
-           * @default false
-           */
-          this.xAxisGridColumns = false;
-          /**
-           * @prop {Boolean} xAxisGridColumnsSelectable - Whether xAxisGridColumns should be selectable.
-           * If this is true, the x axis labels can be clicked and selected.
-           * @default false
-           */
-          this.xAxisGridColumnsSelectable = false;
-          /**
-           * @prop {Number} xAxisGridSelectedColumnOpacity - Opacity value for the selected xAxisGridColumn.
-           * @default 0.2
-           */
-          this.xAxisGridSelectedColumnOpacity = 0.2;
-          /**
-           * @prop {String} xAxisGridColumnsSelectableColor - Background color for a selected xAxisGridColumn.
-           * @default black
-           */
-          this.xAxisGridColumnsSelectableColor = "black";
-          /**
-           * @prop {String} textAnchorXAxisLabels - The text anchor value for x axis labels.
-           * For example if you want vertical labels that should be aligned to the x axis, you can set this to 'start'.
-           * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/text-anchor}.
-           * @default middle
-           */
-          this.textAnchorXAxisLabels = "middle";
-          /**
-           * @prop {Number} xAxisLabelTop - Number of pixels that the x axsis labels will be positioned from the bottom x axis grid line.
-           * @default 10
-           */
-          this.xAxisLabelTop = 10;
-          /**
-           * @prop {Number} rotate - degrees for the x axis labels.
-           * @default 0
-           */
-          this.xAxisLabelRotation = 0;
-          /**
-           * @prop {Number} xAxisStep - Steps between x axis grid lines.
-           * @default 1
-           */
-          this.xAxisStep = 1;
-          /**
-           * @prop {Number} xAxisLabelStep - Steps between x axis labels.
-           * @default 1
-           */
-          this.xAxisLabelStep = 1;
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          // Y Axis
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          /**
-           * @prop {String} yAxisTitle - Y axis title.
-           */
-          this.yAxisTitle = null;
-          /**
-           * @prop {Number} yAxisTitleStart - Number of pixels the y axis labels should be positioned from the start. If this is null, this will be defaultPadding pixels.
-           */
-          this.yAxisTitleStart = null;
-          // if this is <> null; then this will be the X start position of the Y axis title.
-          /**
-           * @prop {Number} yAxisGridLineWidth - Line width of the y axis grid.
-           * @default 1
-           */
-          this.yAxisGridLineWidth = 1;
-          /**
-           * @prop {String} yAxisGridLineColor - Color of y axis grid lines.
-           * @default #C0C0C0
-           */
-          this.yAxisGridLineColor = "#C0C0C0";
-          /**
-           * @prop {String} yAxisGridLineDashArray - Stroke dash array value for the y axis grid lines.
-           * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
-           * @default 1 1
-           */
-          this.yAxisGridLineDashArray = "1 1";
-          /**
-           * @prop {String} yAxisLabelColor - Font color of y axis labels.
-           * @default #A0A0A0
-           */
-          this.yAxisLabelColor = "#A0A0A0";
-          /**
-           * @prop {String} yAxisTitleColor - Font color of y axis title.
-           * @default #A0A0A0
-           */
-          this.yAxisTitleColor = "#A0A0A0";
-          /**
-           * @prop {Number} yAxisStep - Steps between y axis grid lines.
-           * @default 10
-           */
-          this.yAxisStep = 10;
-          // how many steps between y axis grid lines
-          /**
-           * @prop {Number} yAxisLabelStep - Steps between y axis labels.
-           * @default 10
-           */
-          this.yAxisLabelStep = 10;
-          // how many steps between labels y axis
-          //yAxis = true;
-          /**
-           * @prop {Boolean} yAxisGrid - Whether the y axis grid should be displayed.
-           * @default true
-           */
-          this.yAxisGrid = true;
-          /**
-           * @prop {Boolean} yAxisLabels - Whether y axis labels should be displayed.
-           * @default true
-           */
-          this.yAxisLabels = true;
-          /**
-           * @prop {Number} yAxisGridPadding - Outside padding for y axis grid.
-           * @default 0
-           */
-          this.yAxisGridPadding = 0;
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          // Legend
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          /**
-           * @prop {String} legendFontSize - Font size for legend labels.
-           * @default smaller
-           */
-          this.legendFontSize = "smaller";
-          /**
-           * @prop {String} legendColor - Font color of legend labels.
-           * @default black
-           */
-          this.legendColor = "black";
-          /**
-           * @prop {Boolean} legendCircle - Whether legends should be squares (false) or circles (true)
-           * @default false
-           */
-          this.legendCircle = false;
-          /**
-           * @prop {Boolean} legend - Whether legends should be displayed.
-           * @default true
-           */
-          this.legend = true;
-          /**
-           * @prop {Boolean} legendSelect - Whether clicking on a legend hides and shows a the serie.
-           * @default true
-           */
-          this.legendSelect = true;
-          /**
-           * @prop {String} legendPosition - Position of legend. Possible values: bottom, top, end.
-           * @default top
-           */
-          this.legendPosition = "top";
-          /**
-           * @prop {Number} legendBottom - If not null, number of pixels the legend should be positioned from the bottom. Otherwise a default number of pixels will be used.
-           */
-          this.legendBottom = null;
-          /**
-           * @prop {Number} legendTop - If not null, number of pixels the legend should be positioned from the top. Otherwise a default number of pixels will be used.
-           */
-          this.legendTop = null;
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          // Line charts
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          /**
-           * @prop {Number} lineWidth - Width of line for line charts.
-           * @default 2
-           */
-          this.lineWidth = 2;
-          /**
-           * @prop {Number} pointRadius - Radius of line points for line charts.
-           * @default 2
-           */
-          this.pointRadius = 2;
-          /**
-           * @prop {Boolean} connectNullValues - Whether null values should be connected or not.
-           * @default false
-           */
-          this.connectNullValues = false;
-          /**
-           * @prop {Boolean} lineCurved - Whether lines should be curved or not.
-           * @default true
-           */
-          this.lineCurved = true;
-          /**
-           * @prop {Boolean} lineChartFilled - Whether line charts should be filled or not.
-           * @default false
-           */
-          this.lineChartFilled = false;
-          /**
-           * @prop {Boolean} points - Whether the lines should display points or not.
-           * @default true
-           */
-          this.points = true;
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          // Bar charts
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          /**
-           * @prop {Number} barFillOpacity - Opacity of bars.
-           * @default 0.5
-           */
-          this.barFillOpacity = 0.5;
-          /**
-           * @prop {Number} barSpacing - Spacing in pixels between bars.
-           * @default 4
-           */
-          this.barSpacing = 4;
-          /**
-           * @prop {Number} barStrokeWidth - Width of bar border.
-           * @default 1
-           */
-          this.barStrokeWidth = 1;
-          /**
-           * @prop {Boolean} barStacked - Whether bars should be stacked.
-           * @default false
-           */
-          this.barStacked = false;
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          // Pie and donut charts
-          ///////////////////////////////////////////////////////////////////////////////////////////////
-          /**
-           * @prop {Number} pieFillOpacity - Opacity of pie and donut charts.
-           * @default 0.6
-           */
-          this.pieFillOpacity = 0.6;
-          /**
-           * @prop {Number} donutWidth - With of donuts. Of not given a default value is used.
-           */
-          this.donutWidth = null;
-          /**
-           * @prop {String} pieStroke - Stroke color for pie charts.
-           * @default white
-           */
-          this.pieStroke = "white";
-          /**
-           * @prop {Number} pieStrokeWidth - Width of stroke for pie charts. If this is 0, no stroke is painted.
-           * @default 2
-           */
-          this.pieStrokeWidth = 2;
-          /**
-           * @prop {String} donutStroke - Stroke color for donut charts.
-           * @default white
-           */
-          this.donutStroke = "white";
-          /**
-           * @prop {Number} donutStrokeWidth - Width of stroke for donut charts. If this is 0, no stroke is painted.
-           * @default 2
-           */
-          this.donutStrokeWidth = 2;
-        }
-      };
-    }
-  });
-
   // src/svg.ts
-  var _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
+  var _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
   var init_svg = __esm({
     "src/svg.ts"() {
       init_utils();
@@ -1398,7 +1397,7 @@
           __privateAdd(this, _dataAfter);
           /**
            * When legend gets toggled (selected / deselected).
-           * @param {Node} target Legend node that gets toggled.
+           * @param {SVGElement} target Legend node that gets toggled.
            */
           __privateAdd(this, _onLegendToggle);
           /**
@@ -1426,11 +1425,11 @@
            * @param {Event} e Event object.
            */
           __privateAdd(this, _onSerieGroupFocus);
-          this.onLegendClickScoped = null;
-          this.onLegendKeypressScoped = null;
-          this.onSerieGroupTransitionendScoped = null;
-          this.onSerieGroupFocusScoped = null;
-          this.onSerieGroupBlurScoped = null;
+          __privateAdd(this, _onLegendClickScoped, null);
+          __privateAdd(this, _onLegendKeypressScoped, null);
+          __privateAdd(this, _onSerieGroupTransitionendScoped, null);
+          __privateAdd(this, _onSerieGroupFocusScoped, null);
+          __privateAdd(this, _onSerieGroupBlurScoped, null);
           if (!_SvgChart.cssAdded) {
             _SvgChart.cssAdded = true;
             const cssRules = [
@@ -1472,7 +1471,7 @@
           const newConfig = new SvgChartConfig();
           this.config = Object.assign({}, newConfig, config2);
           this.config.padding = Object.assign({}, newConfig.padding, this.config.padding);
-          this.isLTR = this.config.dir === "ltr" /* Ltr */;
+          this.isLTR = this.config.dir === SvgChartConfig.directions.ltr;
           this.config = Object.assign(this.config, _SvgChart.chartTypeControllers[this.config.chartType].requiredConfigWithValue);
           if (this.isLTR) {
             this.config.padding.left = this.config.padding.start;
@@ -1501,8 +1500,8 @@
           }
           this.defsElement = el("defs");
           this.svg.appendChild(this.defsElement);
-          if (!this.onSerieGroupTransitionendScoped) {
-            this.onSerieGroupTransitionendScoped = __privateMethod(this, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn).bind(this);
+          if (!__privateGet(this, _onSerieGroupTransitionendScoped)) {
+            __privateSet(this, _onSerieGroupTransitionendScoped, __privateMethod(this, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn).bind(this));
           }
           if (this.config.drawOnConfig) {
             this.drawOnConfigGroup = el("g", {
@@ -1643,20 +1642,25 @@
         }
       };
       SvgChart = _SvgChart;
+      _onLegendClickScoped = new WeakMap();
+      _onLegendKeypressScoped = new WeakMap();
+      _onSerieGroupTransitionendScoped = new WeakMap();
+      _onSerieGroupFocusScoped = new WeakMap();
+      _onSerieGroupBlurScoped = new WeakMap();
       _addSerieGroup = new WeakSet();
       addSerieGroup_fn = function() {
         this.serieGroupElement = el("g", {
           id: prefixed("serie-group")
         });
         this.svg.appendChild(this.serieGroupElement);
-        this.addEventListener(this.serieGroupElement, "transitionend", this.onSerieGroupTransitionendScoped, false);
+        this.addEventListener(this.serieGroupElement, "transitionend", __privateGet(this, _onSerieGroupTransitionendScoped), false);
         if (this.config.focusedValueShow) {
-          if (!this.onSerieGroupFocusScoped) {
-            this.onSerieGroupFocusScoped = __privateMethod(this, _onSerieGroupFocus, onSerieGroupFocus_fn).bind(this);
-            this.onSerieGroupBlurScoped = __privateMethod(this, _onSerieGroupBlur, onSerieGroupBlur_fn).bind(this);
+          if (!__privateGet(this, _onSerieGroupFocusScoped)) {
+            __privateSet(this, _onSerieGroupFocusScoped, __privateMethod(this, _onSerieGroupFocus, onSerieGroupFocus_fn).bind(this));
+            __privateSet(this, _onSerieGroupBlurScoped, __privateMethod(this, _onSerieGroupBlur, onSerieGroupBlur_fn).bind(this));
           }
-          this.addEventListener(this.serieGroupElement, "focus", this.onSerieGroupFocusScoped, true);
-          this.addEventListener(this.serieGroupElement, "blur", this.onSerieGroupBlurScoped, true);
+          this.addEventListener(this.serieGroupElement, "focus", __privateGet(this, _onSerieGroupFocusScoped), true);
+          this.addEventListener(this.serieGroupElement, "blur", __privateGet(this, _onSerieGroupBlurScoped), true);
           this.valueElGroup = el("g", {
             className: prefixed("value-element-group")
           });
@@ -1681,12 +1685,12 @@
           className: prefixed("legend-group")
         });
         if (this.config.legendSelect) {
-          if (!this.onLegendClickScoped) {
-            this.onLegendClickScoped = __privateMethod(this, _onLegendClick, onLegendClick_fn).bind(this);
-            this.onLegendKeypressScoped = __privateMethod(this, _onLegendKeypress, onLegendKeypress_fn).bind(this);
+          if (!__privateGet(this, _onLegendClickScoped)) {
+            __privateSet(this, _onLegendClickScoped, __privateMethod(this, _onLegendClick, onLegendClick_fn).bind(this));
+            __privateSet(this, _onLegendKeypressScoped, __privateMethod(this, _onLegendKeypress, onLegendKeypress_fn).bind(this));
           }
-          this.addEventListener(gLegend, "keydown", this.onLegendKeypressScoped, false);
-          this.addEventListener(gLegend, "click", this.onLegendClickScoped, false);
+          this.addEventListener(gLegend, "keydown", __privateGet(this, _onLegendKeypressScoped), false);
+          this.addEventListener(gLegend, "click", __privateGet(this, _onLegendClickScoped), false);
         }
         this.config.series.forEach(function(serie, serieIndex) {
           const gSerie = el("g", {
@@ -1909,13 +1913,6 @@
       SvgChart.cssAdded = false;
       SvgChart.colorPalettes = colors;
       SvgChart.activeColorPalette = colors.dutchFieldColorPalette;
-      SvgChart.chartTypes = {
-        line: "line",
-        bar: "bar",
-        pie: "pie",
-        donut: "donut",
-        lineAndBar: "lineAndBar"
-      };
       SvgChart.chartTypeControllers = {
         line: LineController,
         bar: BarController,
@@ -1948,7 +1945,7 @@
         numbers.push(sum);
         return numbers;
       }
-      var htmlDir = string2Direction(document.documentElement.getAttribute("dir"));
+      var htmlDir = document.documentElement.getAttribute("dir") in SvgChartConfig.directions ? SvgChartConfig.directions[document.documentElement.getAttribute("dir")] : SvgChartConfig.directions.ltr;
       var chartInfo = {
         chartBasicLine: {
           config: {

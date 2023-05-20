@@ -1,6 +1,6 @@
-import { polarToCartesian } from "../utils.js";
-import { Controller } from "./controller.js";
-import { draw as drawPieOrDonut } from "../donut_or_pie_utils.js";
+import { polarToCartesian } from "../utils";
+import { Controller } from "./controller";
+import { draw as drawPieOrDonut } from "../donut_or_pie_utils";
 
 /**
  * Class for displaying pie and donut charts.
@@ -10,10 +10,10 @@ class PieController extends Controller {
 
     /**
      * Draws chart.
-     * @param {HTMLElement} currentSerieGroupElement Current serie group element.
+     * @param {SVGElement} currentSerieGroupElement Current serie group element.
      */
-    draw(currentSerieGroupElement) {
-        drawPieOrDonut(this.svgChart, currentSerieGroupElement, function(centerX, centerY, radius, startAngle, endAngle) {
+    draw(currentSerieGroupElement: SVGElement) {
+        drawPieOrDonut(this.svgChart, currentSerieGroupElement, function(centerX: number, centerY: number, radius: number, startAngle: number, endAngle: number) {
             return describeArcPie(centerX, centerY, radius, startAngle, endAngle);
         });
     }
@@ -28,7 +28,7 @@ class PieController extends Controller {
  * @param {Number} endAngle End angle.
  * @returns {Array} Array of path coordinates.
  */
-function describeArcPie(x, y, radius, startAngle, endAngle) {
+function describeArcPie(x: number, y: number, radius: number, startAngle: number, endAngle: number): Array<any> {
     var start = polarToCartesian(x, y, radius, endAngle);
     var end = polarToCartesian(x, y, radius, startAngle);
 

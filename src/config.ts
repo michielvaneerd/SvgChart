@@ -1,3 +1,10 @@
+interface ChartConfigSerie {
+    id: string;
+    title: string;
+    type?: string;
+    fillGradient?: string;
+}
+
 /**
  * SvgChart config class.
  */
@@ -23,9 +30,9 @@ class SvgChartConfig {
     dir: string = SvgChartConfig.directions.ltr;
 
     /**
-     * @prop {Array} series - Series array.
+     * @prop {Array<ChartConfigSerie>} series - Series array.
      */
-    series: Array<any> = null;
+    series: Array<ChartConfigSerie> = null;
 
     /**
      * @prop {String} title - Title of chart.
@@ -54,11 +61,11 @@ class SvgChartConfig {
         /**
          * Left will be set by code, depends on direction.
          */
-        _left: 40,
+        left: 40,
         /**
          * Right will be set by code, depends on direction.
          */
-        _right: 20
+        right: 20
     };
 
     /**
@@ -543,4 +550,4 @@ class SvgChartConfig {
     donutStrokeWidth: number = 2;
 };
 
-export { SvgChartConfig };
+export { SvgChartConfig, ChartConfigSerie };
