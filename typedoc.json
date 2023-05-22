@@ -13,7 +13,8 @@
     // },
     //"categorizeByGroup": false,
     "navigationLinks": {
-        "GitHub": "https://github.com/michielvaneerd/SvgChart"
+        "GitHub": "https://github.com/michielvaneerd/SvgChart",
+        "Website": "https://michielvaneerd.github.io/SvgChart/"
     },
     // "sidebarLinks": {
     //     "API": "https://typedoc.org/api"
