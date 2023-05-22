@@ -30,14 +30,14 @@ class Controller {
      */
     draw(currentSerieGroupElement: SVGElement) {
         this.drawStart(currentSerieGroupElement);
-        this.config.series.forEach(function (serie, serieIndex) {
+        this.config.series.forEach((serie, serieIndex) => {
             const serieGroup = el('g', {
                 dataSerie: serie.id,
                 className: this.svgChart.unselectedSeries[serie.id] ? prefixed('unselected') : ''
             });
             this.drawSerie(serie, serieIndex, serieGroup);
             currentSerieGroupElement.appendChild(serieGroup);
-        }, this);
+        });
         this.drawEnd(currentSerieGroupElement);
     }
 

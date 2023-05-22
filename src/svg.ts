@@ -9,8 +9,8 @@ import { SvgChartConfig } from "./config";
 import { Controller } from "./charts/controller";
 
 interface ChartData {
-    series: { string: Array<number> };
-    xAxis: { columns: [] };
+    series: { string: number[] };
+    xAxis: { columns: string[] };
 };
 
 interface ChartPoint {
@@ -18,10 +18,33 @@ interface ChartPoint {
     y: number;
 }
 
+interface ChartEventInfo {
+    node: Node;
+    eventName: string;
+    callback: EventListenerOrEventListenerObject;
+    capture: boolean;
+}
+
+interface StringBooleanHash {
+    [index: string] : boolean;
+}
+
 /**
  * SvgChart class.
  */
 class SvgChart {
+
+    static colorPalettes = colors;
+
+    static #cssAdded = false;
+    static #activeColorPalette: Array<string> = colors.dutchFieldColorPalette;
+    static #chartTypeControllers = {
+        line: LineController,
+        bar: BarController,
+        lineAndBar: BarAndLineController,
+        pie: PieController,
+        donut: DonutController
+    };
 
     /**
      * Width of parent element.
@@ -42,16 +65,51 @@ class SvgChart {
      * Height of chart without paddings.s
      */
     chartHeight: number;
+
+    /**
+     * The generated root SVG element.
+     */
     svg: SVGElement;
+
+    /**
+     * Config object that is created in the constrructor or setConfig() methiod.
+     */
     config: SvgChartConfig;
+
+    /**
+     * Whether the direction is ltr.
+     */
     isLTR: boolean;
+
+    /**
+     * Controller that is in charge of drawing the chart.
+     */
     controller: Controller;
-    _listenersToRemoveAfterConfigChange: Array<{ node: Node, eventName: any, callback: any, capture: boolean }>;
-    unselectedSeries: Object;
+
+    /**
+     * Hash where key = serie and value = whether it is selected or nor not.
+     */
+    unselectedSeries: StringBooleanHash;
+
+    /**
+     * Chart data object. Set during the chart() method.
+     */
     data: ChartData;
-    defsElement: SVGElement;
-    drawOnConfigGroup: SVGElement;
-    drawOnDataGroup: SVGElement;
+
+    /**
+     * Element that contains definitions, for example for gradients.
+     */
+    #defsElement: SVGElement;
+
+    /**
+     * Element where the config.drawOnConfig method will paint in. Only created when config.drawOnConfig is specified.
+     */
+    #drawOnConfigGroup: SVGElement;
+
+    /**
+     * Element where the config.drawOnDarta method will paint in. Only created when config.drawOnData is specified.
+     */
+    #drawOnDataGroup: SVGElement;
     serieGroupElement: SVGElement;
     valueElGroup: SVGElement;
     valueElRect: SVGElement;
@@ -65,30 +123,21 @@ class SvgChart {
     columnWidth: number;
     barCountPerColumn: number;
 
-    static cssAdded = false;
-    static colorPalettes = colors;
-    static activeColorPalette: Array<string> = colors.dutchFieldColorPalette;
-
-    static chartTypeControllers = {
-        line: LineController,
-        bar: BarController,
-        lineAndBar: BarAndLineController,
-        pie: PieController,
-        donut: DonutController
-    };
+    
 
     #onLegendClickScoped = null;
     #onLegendKeypressScoped = null;
     #onSerieGroupTransitionendScoped = null;
     #onSerieGroupFocusScoped = null;
     #onSerieGroupBlurScoped = null;
+    #listenersToRemoveAfterConfigChange: Array<ChartEventInfo>;
 
     /**
      * Set a color palette for all chart instances.
      * @param {Array<string>} colors Array of colors.
      */
     static setActiveColorPalette(colors: Array<string>) {
-        SvgChart.activeColorPalette = colors;
+        SvgChart.#activeColorPalette = colors;
     }
 
     /**
@@ -98,8 +147,8 @@ class SvgChart {
      */
     constructor(parent: HTMLElement, config: SvgChartConfig) {
 
-        if (!SvgChart.cssAdded) {
-            SvgChart.cssAdded = true;
+        if (!SvgChart.#cssAdded) {
+            SvgChart.#cssAdded = true;
             // TODO: split between chart types.
             const cssRules = [
                 '.' + prefixed('line-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
@@ -143,7 +192,7 @@ class SvgChart {
 
         this.isLTR = this.config.dir === SvgChartConfig.directions.ltr;
 
-        this.config = Object.assign(this.config, SvgChart.chartTypeControllers[this.config.chartType].requiredConfigWithValue);
+        this.config = Object.assign(this.config, SvgChart.#chartTypeControllers[this.config.chartType].requiredConfigWithValue);
 
         if (this.isLTR) {
             this.config.padding.left = this.config.padding.start;
@@ -153,17 +202,17 @@ class SvgChart {
             this.config.padding.right = this.config.padding.start;
         }
 
-        this.controller = new SvgChart.chartTypeControllers[config.chartType](this);
+        this.controller = new SvgChart.#chartTypeControllers[config.chartType](this);
 
         this.svg.setAttribute('direction', this.config.dir);
 
         // First remove event listener from a previous config if they exist.
-        if (this._listenersToRemoveAfterConfigChange && this._listenersToRemoveAfterConfigChange.length) {
-            this._listenersToRemoveAfterConfigChange.forEach(function (item) {
+        if (this.#listenersToRemoveAfterConfigChange && this.#listenersToRemoveAfterConfigChange.length) {
+            this.#listenersToRemoveAfterConfigChange.forEach((item) => {
                 item.node.removeEventListener(item.eventName, item.callback, item.capture);
             });
         }
-        this._listenersToRemoveAfterConfigChange = [];
+        this.#listenersToRemoveAfterConfigChange = [];
 
         // And then remove child nodes from a previous config if they exist.
         while (this.svg.childNodes.length) {
@@ -171,7 +220,7 @@ class SvgChart {
         }
 
         this.data = null;
-        this.unselectedSeries = {};
+        this.unselectedSeries = {} as StringBooleanHash;
 
         this.chartWidth = this.width - this.config.padding.start - this.config.padding.end - (this.config.xAxisGridPadding * 2);
         this.chartHeight = this.height - this.config.padding.top - this.config.padding.bottom - (this.config.yAxisGridPadding * 2);
@@ -179,18 +228,18 @@ class SvgChart {
         if (this.config.backgroundColor) {
             this.svg.style.backgroundColor = this.config.backgroundColor;
         }
-        this.defsElement = el('defs');
-        this.svg.appendChild(this.defsElement);
+        this.#defsElement = el('defs');
+        this.svg.appendChild(this.#defsElement);
 
         if (!this.#onSerieGroupTransitionendScoped) {
             this.#onSerieGroupTransitionendScoped = this.#onSerieGroupTransitionend.bind(this);
         }
 
         if (this.config.drawOnConfig) {
-            this.drawOnConfigGroup = el('g', {
+            this.#drawOnConfigGroup = el('g', {
                 className: prefixed('draw-on-config-group')
             });
-            this.svg.appendChild(this.drawOnConfigGroup);
+            this.svg.appendChild(this.#drawOnConfigGroup);
         }
 
         if (this.config.title) {
@@ -203,7 +252,7 @@ class SvgChart {
 
         this.controller.configBefore();
 
-        this.config.series.forEach(function (serie) {
+        this.config.series.forEach((serie) => {
 
             this.controller.configSerieBefore(serie);
 
@@ -223,22 +272,22 @@ class SvgChart {
                     offset: "100%",
                     stopColor: serie.fillGradient[1]
                 }));
-                this.defsElement.appendChild(lg);
+                this.#defsElement.appendChild(lg);
             }
 
             this.controller.configSerieAfter(serie);
 
-        }, this);
+        });
 
         if (this.config.drawOnConfig) {
-            this.config.drawOnConfig(this, this.drawOnConfigGroup);
+            this.config.drawOnConfig(this, this.#drawOnConfigGroup);
         }
 
         if (this.config.drawOnData) {
-            this.drawOnDataGroup = el('g', {
+            this.#drawOnDataGroup = el('g', {
                 className: prefixed('draw-on-data-group')
             });
-            this.svg.appendChild(this.drawOnDataGroup);
+            this.svg.appendChild(this.#drawOnDataGroup);
         }
 
         this.#addSerieGroup();
@@ -264,7 +313,7 @@ class SvgChart {
         this.#dataAfter(currentSerieGroupElement);
 
         if (this.config.drawOnData) {
-            this.config.drawOnData(this, this.drawOnDataGroup);
+            this.config.drawOnData(this, this.#drawOnDataGroup);
         }
 
     }
@@ -530,7 +579,7 @@ class SvgChart {
         if (serie.color) {
             return serie.color;
         }
-        return SvgChart.activeColorPalette[serieIndex];
+        return SvgChart.#activeColorPalette[serieIndex];
     }
 
     getSeriePointColor(serie, serieIndex) {
@@ -546,7 +595,7 @@ class SvgChart {
     }
 
     /**
-     * Adds an event listener to a node and adds it to the _listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
+     * Adds an event listener to a node and adds it to the #listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
      * @param {Node} node Node to add the listener to.
      * @param {string} eventName Name of event.
      * @param {Function} callback Function that needs to be executed.
@@ -554,7 +603,7 @@ class SvgChart {
      */
     addEventListener(node: Node, eventName: string, callback: any, capture: boolean) {
         node.addEventListener(eventName, callback, capture);
-        this._listenersToRemoveAfterConfigChange.push({
+        this.#listenersToRemoveAfterConfigChange.push({
             node: node,
             eventName: eventName,
             callback: callback,
@@ -678,4 +727,4 @@ class SvgChart {
 // to use it in the drawOnConfig or drawOnData callbacks.
 SvgChart.prototype.el = el;
 
-export { SvgChart, ChartPoint, ChartData };
+export { SvgChart, ChartPoint, ChartData, StringBooleanHash, ChartEventInfo };

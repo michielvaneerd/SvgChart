@@ -1,16 +1,7 @@
-/**
- * @module
- * @ignore
- */
-
 import { SvgChartConfig } from "./config";
 import { SvgChart } from "./svg";
 import { el, prefixed, directionForEach } from "./utils";
 
-/**
- * @class
- * @ignore
- */
 class AxisController {
 
     #onXAxisLabelGroupClickScoped = null;

@@ -1,8 +1,3 @@
-/**
- * @module
- * @ignore
- */
-
 import { AxisController } from "./axis";
 import { SvgChart } from "./svg";
 import { el, prefixed } from "./utils";

@@ -127,14 +127,14 @@
          */
         draw(currentSerieGroupElement) {
           this.drawStart(currentSerieGroupElement);
-          this.config.series.forEach(function(serie, serieIndex) {
+          this.config.series.forEach((serie, serieIndex) => {
             const serieGroup = el("g", {
               dataSerie: serie.id,
               className: this.svgChart.unselectedSeries[serie.id] ? prefixed("unselected") : ""
             });
             this.drawSerie(serie, serieIndex, serieGroup);
             currentSerieGroupElement.appendChild(serieGroup);
-          }, this);
+          });
           this.drawEnd(currentSerieGroupElement);
         }
         /**
@@ -750,44 +750,38 @@
           // X Axis
           ///////////////////////////////////////////////////////////////////////////////////////////////
           /**
-           * @prop {string} axisTitleFontSize - Font size of axes titles.
-           * @default smaller
+           * Font size of axes titles.
            */
           this.axisTitleFontSize = "smaller";
           /**
-           * @prop {string} axisLabelFontSize - Font size of axes labels.
-           * @default small
+           * Font size of axes labels.
            */
           this.axisLabelFontSize = "small";
           // X axis
           /**
-           * @prop {string} xAxisTitle - X axis title.
+           * X axis title.
            */
           this.xAxisTitle = null;
           /**
-           * @prop {Number} xAxisTitleBottom - If this is a number X, than the x axis title will be positioned X pixels from the bottom.
+           * If this is a number X, than the x axis title will be positioned X pixels from the bottom.
            * If this is null, then the title will be positioned paddingDefault pixesl from the bottom.
            */
           this.xAxisTitleBottom = null;
           /**
-           * @prop {number} xAxisGridLineWidth - Line width of the x axis grid.
-           * @default 1
+           * Line width of the x axis grid.
            */
           this.xAxisGridLineWidth = 1;
           /**
-           * @prop {string} xAxisGridLineColor - Color of x axis grid lines.
-           * @default #C0C0C0
+           * Color of x axis grid lines.
            */
           this.xAxisGridLineColor = "#C0C0C0";
           /**
-           * @prop {string} xAxisGridLineDashArray - Stroke dash array value for the x axis grid lines.
+           * Stroke dash array value for the x axis grid lines.
            * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
-           * @default 1 1
            */
           this.xAxisGridLineDashArray = "1 1";
           /**
-           * @prop {string} xAxisLabelColor - Font color of xaxis labels.
-           * @default #A0A0A0
+           * Font color of xaxis labels.
            */
           this.xAxisLabelColor = "#A0A0A0";
           /**
@@ -833,30 +827,25 @@
            */
           this.xAxisGridColumnsSelectableColor = "black";
           /**
-           * @prop {string} textAnchorXAxisLabels - The text anchor value for x axis labels.
+           * The text anchor value for x axis labels.
            * For example if you want vertical labels that should be aligned to the x axis, you can set this to 'start'.
            * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/text-anchor}.
-           * @default middle
            */
           this.textAnchorXAxisLabels = "middle";
           /**
-           * @prop {number} xAxisLabelTop - Number of pixels that the x axsis labels will be positioned from the bottom x axis grid line.
-           * @default 10
+           * Number of pixels that the x axsis labels will be positioned from the bottom x axis grid line.
            */
           this.xAxisLabelTop = 10;
           /**
-           * @prop {number} rotate - degrees for the x axis labels.
-           * @default 0
+           * Degrees for the x axis labels.
            */
           this.xAxisLabelRotation = 0;
           /**
-           * @prop {number} xAxisStep - Steps between x axis grid lines.
-           * @default 1
+           * Steps between x axis grid lines.
            */
           this.xAxisStep = 1;
           /**
-           * @prop {number} xAxisLabelStep - Steps between x axis labels.
-           * @default 1
+           * Steps between x axis labels.
            */
           this.xAxisLabelStep = 1;
           ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -867,99 +856,83 @@
            */
           this.yAxisTitle = null;
           /**
-           * @prop {number} yAxisTitleStart - Number of pixels the y axis labels should be positioned from the start. If this is null, this will be defaultPadding pixels.
+           *  Number of pixels the y axis labels should be positioned from the start. If this is null, this will be defaultPadding pixels.
            */
           this.yAxisTitleStart = null;
           // if this is <> null; then this will be the X start position of the Y axis title.
           /**
-           * @prop {number} yAxisGridLineWidth - Line width of the y axis grid.
-           * @default 1
+           * Line width of the y axis grid.
            */
           this.yAxisGridLineWidth = 1;
           /**
-           * @prop {string} yAxisGridLineColor - Color of y axis grid lines.
-           * @default #C0C0C0
+           * Color of y axis grid lines.
            */
           this.yAxisGridLineColor = "#C0C0C0";
           /**
-           * @prop {string} yAxisGridLineDashArray - Stroke dash array value for the y axis grid lines.
+           * Stroke dash array value for the y axis grid lines.
            * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
-           * @default 1 1
            */
           this.yAxisGridLineDashArray = "1 1";
           /**
-           * @prop {string} yAxisLabelColor - Font color of y axis labels.
-           * @default #A0A0A0
+           * Font color of y axis labels.
            */
           this.yAxisLabelColor = "#A0A0A0";
           /**
-           * @prop {string} yAxisTitleColor - Font color of y axis title.
-           * @default #A0A0A0
+           * Font color of y axis title.
            */
           this.yAxisTitleColor = "#A0A0A0";
           /**
-           * @prop {number} yAxisStep - Steps between y axis grid lines.
-           * @default 10
+           * Steps between y axis grid lines.
            */
           this.yAxisStep = 10;
           // how many steps between y axis grid lines
           /**
-           * @prop {number} yAxisLabelStep - Steps between y axis labels.
-           * @default 10
+           * Steps between y axis labels.
            */
           this.yAxisLabelStep = 10;
           // how many steps between labels y axis
           //yAxis = true;
           /**
-           * @prop {boolean} yAxisGrid - Whether the y axis grid should be displayed.
-           * @default true
+           * Whether the y axis grid should be displayed.
            */
           this.yAxisGrid = true;
           /**
-           * @prop {boolean} yAxisLabels - Whether y axis labels should be displayed.
-           * @default true
+           * Whether y axis labels should be displayed.
            */
           this.yAxisLabels = true;
           /**
-           * @prop {number} yAxisGridPadding - Outside padding for y axis grid.
-           * @default 0
+           * Outside padding for y axis grid.
            */
           this.yAxisGridPadding = 0;
           ///////////////////////////////////////////////////////////////////////////////////////////////
           // Legend
           ///////////////////////////////////////////////////////////////////////////////////////////////
           /**
-           * @prop {string} legendFontSize - Font size for legend labels.
-           * @default smaller
+           * Font size for legend labels.
            */
           this.legendFontSize = "smaller";
           /**
-           * @prop {string} legendColor - Font color of legend labels.
-           * @default black
+           * Font color of legend labels.
            */
           this.legendColor = "black";
           /**
-           * @prop {boolean} legendCircle - Whether legends should be squares (false) or circles (true)
-           * @default false
+           * Whether legends should be squares (false) or circles (true)
            */
           this.legendCircle = false;
           /**
            * @prop {boolean} legend - Whether legends should be displayed.
-           * @default true
            */
           this.legend = true;
           /**
-           * @prop {boolean} legendSelect - Whether clicking on a legend hides and shows a the serie.
-           * @default true
+           * Whether clicking on a legend hides and shows a the serie.
            */
           this.legendSelect = true;
           /**
-           * @prop {string} legendPosition - Position of legend. Possible values: bottom, top, end.
-           * @default top
+           * Position of legend. Possible values: bottom, top, end.
            */
           this.legendPosition = "top";
           /**
-           * @prop {number} legendBottom - If not null, number of pixels the legend should be positioned from the bottom. Otherwise a default number of pixels will be used.
+           * If not null, number of pixels the legend should be positioned from the bottom. Otherwise a default number of pixels will be used.
            */
           this.legendBottom = null;
           /**
@@ -970,23 +943,19 @@
           // Line charts
           ///////////////////////////////////////////////////////////////////////////////////////////////
           /**
-           * @prop {number} lineWidth - Width of line for line charts.
-           * @default 2
+           * Width of line for line charts.
            */
           this.lineWidth = 2;
           /**
-           * @prop {number} pointRadius - Radius of line points for line charts.
-           * @default 2
+           * Radius of line points for line charts.
            */
           this.pointRadius = 2;
           /**
-           * @prop {boolean} connectNullValues - Whether null values should be connected or not.
-           * @default false
+           * Whether null values should be connected or not.
            */
           this.connectNullValues = false;
           /**
-           * @prop {boolean} lineCurved - Whether lines should be curved or not.
-           * @default true
+           * Whether lines should be curved or not.
            */
           this.lineCurved = true;
           /**
@@ -1364,7 +1333,7 @@
   });
 
   // src/svg.ts
-  var _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
+  var _cssAdded, _activeColorPalette, _chartTypeControllers, _defsElement, _drawOnConfigGroup, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
   var init_svg = __esm({
     "src/svg.ts"() {
       init_utils();
@@ -1425,13 +1394,26 @@
            * @param {Event} e Event object.
            */
           __privateAdd(this, _onSerieGroupFocus);
+          /**
+           * Element that contains definitions, for example for gradients.
+           */
+          __privateAdd(this, _defsElement, void 0);
+          /**
+           * Element where the config.drawOnConfig method will paint in. Only created when config.drawOnConfig is specified.
+           */
+          __privateAdd(this, _drawOnConfigGroup, void 0);
+          /**
+           * Element where the config.drawOnDarta method will paint in. Only created when config.drawOnData is specified.
+           */
+          __privateAdd(this, _drawOnDataGroup, void 0);
           __privateAdd(this, _onLegendClickScoped, null);
           __privateAdd(this, _onLegendKeypressScoped, null);
           __privateAdd(this, _onSerieGroupTransitionendScoped, null);
           __privateAdd(this, _onSerieGroupFocusScoped, null);
           __privateAdd(this, _onSerieGroupBlurScoped, null);
-          if (!_SvgChart.cssAdded) {
-            _SvgChart.cssAdded = true;
+          __privateAdd(this, _listenersToRemoveAfterConfigChange, void 0);
+          if (!__privateGet(_SvgChart, _cssAdded)) {
+            __privateSet(_SvgChart, _cssAdded, true);
             const cssRules = [
               "." + prefixed("line-point") + ", g." + prefixed("legend-group") + " g, ." + prefixed("x-axis-grid-column-selectable-label") + " { cursor: pointer; }",
               "." + prefixed("line-point") + ":hover, circle." + prefixed("line-point") + ":focus { stroke-width: 6; outline: none; }",
@@ -1461,7 +1443,7 @@
          * @param {Array<string>} colors Array of colors.
          */
         static setActiveColorPalette(colors2) {
-          _SvgChart.activeColorPalette = colors2;
+          __privateSet(_SvgChart, _activeColorPalette, colors2);
         }
         /**
          * Set the configuration for this chart instance.
@@ -1472,7 +1454,7 @@
           this.config = Object.assign({}, newConfig, config2);
           this.config.padding = Object.assign({}, newConfig.padding, this.config.padding);
           this.isLTR = this.config.dir === SvgChartConfig.directions.ltr;
-          this.config = Object.assign(this.config, _SvgChart.chartTypeControllers[this.config.chartType].requiredConfigWithValue);
+          this.config = Object.assign(this.config, __privateGet(_SvgChart, _chartTypeControllers)[this.config.chartType].requiredConfigWithValue);
           if (this.isLTR) {
             this.config.padding.left = this.config.padding.start;
             this.config.padding.right = this.config.padding.end;
@@ -1480,14 +1462,14 @@
             this.config.padding.left = this.config.padding.end;
             this.config.padding.right = this.config.padding.start;
           }
-          this.controller = new _SvgChart.chartTypeControllers[config2.chartType](this);
+          this.controller = new (__privateGet(_SvgChart, _chartTypeControllers))[config2.chartType](this);
           this.svg.setAttribute("direction", this.config.dir);
-          if (this._listenersToRemoveAfterConfigChange && this._listenersToRemoveAfterConfigChange.length) {
-            this._listenersToRemoveAfterConfigChange.forEach(function(item) {
+          if (__privateGet(this, _listenersToRemoveAfterConfigChange) && __privateGet(this, _listenersToRemoveAfterConfigChange).length) {
+            __privateGet(this, _listenersToRemoveAfterConfigChange).forEach((item) => {
               item.node.removeEventListener(item.eventName, item.callback, item.capture);
             });
           }
-          this._listenersToRemoveAfterConfigChange = [];
+          __privateSet(this, _listenersToRemoveAfterConfigChange, []);
           while (this.svg.childNodes.length) {
             this.svg.firstChild.remove();
           }
@@ -1498,16 +1480,16 @@
           if (this.config.backgroundColor) {
             this.svg.style.backgroundColor = this.config.backgroundColor;
           }
-          this.defsElement = el("defs");
-          this.svg.appendChild(this.defsElement);
+          __privateSet(this, _defsElement, el("defs"));
+          this.svg.appendChild(__privateGet(this, _defsElement));
           if (!__privateGet(this, _onSerieGroupTransitionendScoped)) {
             __privateSet(this, _onSerieGroupTransitionendScoped, __privateMethod(this, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn).bind(this));
           }
           if (this.config.drawOnConfig) {
-            this.drawOnConfigGroup = el("g", {
+            __privateSet(this, _drawOnConfigGroup, el("g", {
               className: prefixed("draw-on-config-group")
-            });
-            this.svg.appendChild(this.drawOnConfigGroup);
+            }));
+            this.svg.appendChild(__privateGet(this, _drawOnConfigGroup));
           }
           if (this.config.title) {
             __privateMethod(this, _addTitle, addTitle_fn).call(this);
@@ -1516,7 +1498,7 @@
             __privateMethod(this, _addLegend, addLegend_fn).call(this);
           }
           this.controller.configBefore();
-          this.config.series.forEach(function(serie) {
+          this.config.series.forEach((serie) => {
             this.controller.configSerieBefore(serie);
             if (serie.fillGradient) {
               var lg = el("linearGradient", {
@@ -1534,18 +1516,18 @@
                 offset: "100%",
                 stopColor: serie.fillGradient[1]
               }));
-              this.defsElement.appendChild(lg);
+              __privateGet(this, _defsElement).appendChild(lg);
             }
             this.controller.configSerieAfter(serie);
-          }, this);
+          });
           if (this.config.drawOnConfig) {
-            this.config.drawOnConfig(this, this.drawOnConfigGroup);
+            this.config.drawOnConfig(this, __privateGet(this, _drawOnConfigGroup));
           }
           if (this.config.drawOnData) {
-            this.drawOnDataGroup = el("g", {
+            __privateSet(this, _drawOnDataGroup, el("g", {
               className: prefixed("draw-on-data-group")
-            });
-            this.svg.appendChild(this.drawOnDataGroup);
+            }));
+            this.svg.appendChild(__privateGet(this, _drawOnDataGroup));
           }
           __privateMethod(this, _addSerieGroup, addSerieGroup_fn).call(this);
           this.controller.configAfter();
@@ -1562,7 +1544,7 @@
           this.controller.draw(currentSerieGroupElement);
           __privateMethod(this, _dataAfter, dataAfter_fn).call(this, currentSerieGroupElement);
           if (this.config.drawOnData) {
-            this.config.drawOnData(this, this.drawOnDataGroup);
+            this.config.drawOnData(this, __privateGet(this, _drawOnDataGroup));
           }
         }
         // setSelectedIndex(index) {
@@ -1613,7 +1595,7 @@
           if (serie.color) {
             return serie.color;
           }
-          return _SvgChart.activeColorPalette[serieIndex];
+          return __privateGet(_SvgChart, _activeColorPalette)[serieIndex];
         }
         getSeriePointColor(serie, serieIndex) {
           return this.getSeriePropertyColor(["pointColor", "strokeColor"], serie, serieIndex);
@@ -1625,7 +1607,7 @@
           return this.getSeriePropertyColor(["fillGradient"], serie, serieIndex);
         }
         /**
-         * Adds an event listener to a node and adds it to the _listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
+         * Adds an event listener to a node and adds it to the #listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
          * @param {Node} node Node to add the listener to.
          * @param {string} eventName Name of event.
          * @param {Function} callback Function that needs to be executed.
@@ -1633,7 +1615,7 @@
          */
         addEventListener(node, eventName, callback, capture) {
           node.addEventListener(eventName, callback, capture);
-          this._listenersToRemoveAfterConfigChange.push({
+          __privateGet(this, _listenersToRemoveAfterConfigChange).push({
             node,
             eventName,
             callback,
@@ -1642,11 +1624,18 @@
         }
       };
       SvgChart = _SvgChart;
+      _cssAdded = new WeakMap();
+      _activeColorPalette = new WeakMap();
+      _chartTypeControllers = new WeakMap();
+      _defsElement = new WeakMap();
+      _drawOnConfigGroup = new WeakMap();
+      _drawOnDataGroup = new WeakMap();
       _onLegendClickScoped = new WeakMap();
       _onLegendKeypressScoped = new WeakMap();
       _onSerieGroupTransitionendScoped = new WeakMap();
       _onSerieGroupFocusScoped = new WeakMap();
       _onSerieGroupBlurScoped = new WeakMap();
+      _listenersToRemoveAfterConfigChange = new WeakMap();
       _addSerieGroup = new WeakSet();
       addSerieGroup_fn = function() {
         this.serieGroupElement = el("g", {
@@ -1910,16 +1899,16 @@
           this.valueElGroup.setAttribute("transform", "translate(" + x + ", " + y + ")");
         }
       };
-      SvgChart.cssAdded = false;
       SvgChart.colorPalettes = colors;
-      SvgChart.activeColorPalette = colors.dutchFieldColorPalette;
-      SvgChart.chartTypeControllers = {
+      __privateAdd(SvgChart, _cssAdded, false);
+      __privateAdd(SvgChart, _activeColorPalette, colors.dutchFieldColorPalette);
+      __privateAdd(SvgChart, _chartTypeControllers, {
         line: LineController,
         bar: BarController,
         lineAndBar: BarAndLineController,
         pie: PieController,
         donut: DonutController
-      };
+      });
       SvgChart.prototype.el = el;
     }
   });

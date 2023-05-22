@@ -1,7 +1,25 @@
 {
-    "entryPoints": [
-        "src/**"
-    ],
-    "out": "typedocs",
-    "entryPointStrategy": "expand"
+    "$schema": "https://typedoc.org/schema.json",
+    "name": "SvgChart API",
+    // "entryPoints": [
+    //     "src/svg.ts",
+    //     "src/config.ts",
+    // ],
+    "entryPoints": ["./src", "./src/charts"],
+    "out": "docs/api",
+    // "navigation": {
+    //     "includeCategories": false,
+    //     "includeGroups": false
+    // },
+    //"categorizeByGroup": false,
+    // "navigationLinks": {
+    //     "Docs": "https://typedoc.org/guides/overview",
+    //     "GitHub": "https://github.com/TypeStrong/typedoc"
+    // },
+    // "sidebarLinks": {
+    //     "API": "https://typedoc.org/api"
+    // },
+    "sort": ["kind"],
+    //"excludePrivate": true
+    //"entryPointStrategy": "expand"
 }

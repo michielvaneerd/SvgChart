@@ -184,51 +184,45 @@ class SvgChartConfig {
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @prop {string} axisTitleFontSize - Font size of axes titles.
-     * @default smaller
+     * Font size of axes titles.
      */
     axisTitleFontSize: string = 'smaller';
 
     /**
-     * @prop {string} axisLabelFontSize - Font size of axes labels.
-     * @default small
+     * Font size of axes labels.
      */
     axisLabelFontSize: string = 'small';
 
     // X axis
     /**
-     * @prop {string} xAxisTitle - X axis title.
+     * X axis title.
      */
     xAxisTitle: string = null;
 
     /**
-     * @prop {Number} xAxisTitleBottom - If this is a number X, than the x axis title will be positioned X pixels from the bottom.
+     * If this is a number X, than the x axis title will be positioned X pixels from the bottom.
      * If this is null, then the title will be positioned paddingDefault pixesl from the bottom.
      */
     xAxisTitleBottom: number = null;
 
     /**
-     * @prop {number} xAxisGridLineWidth - Line width of the x axis grid.
-     * @default 1
+     * Line width of the x axis grid.
      */
     xAxisGridLineWidth: number = 1;
 
     /**
-     * @prop {string} xAxisGridLineColor - Color of x axis grid lines.
-     * @default #C0C0C0
+     * Color of x axis grid lines.
      */
     xAxisGridLineColor: string = '#C0C0C0';
 
     /**
-     * @prop {string} xAxisGridLineDashArray - Stroke dash array value for the x axis grid lines.
+     * Stroke dash array value for the x axis grid lines.
      * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
-     * @default 1 1
      */
     xAxisGridLineDashArray: string = '1 1';
 
     /**
-     * @prop {string} xAxisLabelColor - Font color of xaxis labels.
-     * @default #A0A0A0
+     * Font color of xaxis labels.
      */
     xAxisLabelColor: string = '#A0A0A0';
 
@@ -283,34 +277,29 @@ class SvgChartConfig {
     xAxisGridColumnsSelectableColor: string = 'black';
 
     /**
-     * @prop {string} textAnchorXAxisLabels - The text anchor value for x axis labels.
+     * The text anchor value for x axis labels.
      * For example if you want vertical labels that should be aligned to the x axis, you can set this to 'start'.
      * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/text-anchor}.
-     * @default middle
      */
     textAnchorXAxisLabels: string = 'middle';
 
     /**
-     * @prop {number} xAxisLabelTop - Number of pixels that the x axsis labels will be positioned from the bottom x axis grid line.
-     * @default 10
+     * Number of pixels that the x axsis labels will be positioned from the bottom x axis grid line.
      */
     xAxisLabelTop: number = 10;
 
     /**
-     * @prop {number} rotate - degrees for the x axis labels.
-     * @default 0
+     * Degrees for the x axis labels.
      */
     xAxisLabelRotation: number = 0;
 
     /**
-     * @prop {number} xAxisStep - Steps between x axis grid lines.
-     * @default 1
+     * Steps between x axis grid lines.
      */
     xAxisStep: number = 1;
 
     /**
-     * @prop {number} xAxisLabelStep - Steps between x axis labels.
-     * @default 1
+     * Steps between x axis labels.
      */
     xAxisLabelStep: number = 1;
 
@@ -325,50 +314,43 @@ class SvgChartConfig {
     yAxisTitle: string = null;
 
     /**
-     * @prop {number} yAxisTitleStart - Number of pixels the y axis labels should be positioned from the start. If this is null, this will be defaultPadding pixels.
+     *  Number of pixels the y axis labels should be positioned from the start. If this is null, this will be defaultPadding pixels.
      */
     yAxisTitleStart: number = null; // if this is <> null; then this will be the X start position of the Y axis title.
 
     /**
-     * @prop {number} yAxisGridLineWidth - Line width of the y axis grid.
-     * @default 1
+     * Line width of the y axis grid.
      */
     yAxisGridLineWidth: number = 1;
 
     /**
-     * @prop {string} yAxisGridLineColor - Color of y axis grid lines.
-     * @default #C0C0C0
+     * Color of y axis grid lines.
      */
     yAxisGridLineColor: string = '#C0C0C0';
 
     /**
-     * @prop {string} yAxisGridLineDashArray - Stroke dash array value for the y axis grid lines.
+     * Stroke dash array value for the y axis grid lines.
      * See {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray}.
-     * @default 1 1
      */
     yAxisGridLineDashArray: string = '1 1';
 
     /**
-     * @prop {string} yAxisLabelColor - Font color of y axis labels.
-     * @default #A0A0A0
+     * Font color of y axis labels.
      */
     yAxisLabelColor: string = '#A0A0A0';
 
     /**
-     * @prop {string} yAxisTitleColor - Font color of y axis title.
-     * @default #A0A0A0
+     * Font color of y axis title.
      */
     yAxisTitleColor: string = '#A0A0A0';
 
     /**
-     * @prop {number} yAxisStep - Steps between y axis grid lines.
-     * @default 10
+     * Steps between y axis grid lines.
      */
     yAxisStep: number = 10; // how many steps between y axis grid lines
 
     /**
-     * @prop {number} yAxisLabelStep - Steps between y axis labels.
-     * @default 10
+     * Steps between y axis labels.
      */
     yAxisLabelStep: number = 10; // how many steps between labels y axis
 
@@ -376,20 +358,17 @@ class SvgChartConfig {
     //yAxis = true;
 
     /**
-     * @prop {boolean} yAxisGrid - Whether the y axis grid should be displayed.
-     * @default true
+     * Whether the y axis grid should be displayed.
      */
     yAxisGrid: boolean = true;
 
     /**
-     * @prop {boolean} yAxisLabels - Whether y axis labels should be displayed.
-     * @default true
+     * Whether y axis labels should be displayed.
      */
     yAxisLabels: boolean = true;
 
     /**
-     * @prop {number} yAxisGridPadding - Outside padding for y axis grid.
-     * @default 0
+     * Outside padding for y axis grid.
      */
     yAxisGridPadding: number = 0;
 
@@ -398,43 +377,37 @@ class SvgChartConfig {
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @prop {string} legendFontSize - Font size for legend labels.
-     * @default smaller
+     * Font size for legend labels.
      */
     legendFontSize: string = 'smaller';
 
     /**
-     * @prop {string} legendColor - Font color of legend labels.
-     * @default black
+     * Font color of legend labels.
      */
     legendColor: string = 'black';
 
     /**
-     * @prop {boolean} legendCircle - Whether legends should be squares (false) or circles (true)
-     * @default false
+     * Whether legends should be squares (false) or circles (true)
      */
     legendCircle: boolean = false;
 
     /**
      * @prop {boolean} legend - Whether legends should be displayed.
-     * @default true
      */
     legend: boolean = true;
 
     /**
-     * @prop {boolean} legendSelect - Whether clicking on a legend hides and shows a the serie.
-     * @default true
+     * Whether clicking on a legend hides and shows a the serie.
      */
     legendSelect: boolean = true;
 
     /**
-     * @prop {string} legendPosition - Position of legend. Possible values: bottom, top, end.
-     * @default top
+     * Position of legend. Possible values: bottom, top, end.
      */
     legendPosition: string = 'top';
 
     /**
-     * @prop {number} legendBottom - If not null, number of pixels the legend should be positioned from the bottom. Otherwise a default number of pixels will be used.
+     * If not null, number of pixels the legend should be positioned from the bottom. Otherwise a default number of pixels will be used.
      */
     legendBottom: number = null;
 
@@ -447,26 +420,22 @@ class SvgChartConfig {
     // Line charts
     ///////////////////////////////////////////////////////////////////////////////////////////////
     /**
-     * @prop {number} lineWidth - Width of line for line charts.
-     * @default 2
+     * Width of line for line charts.
      */
     lineWidth: number = 2;
 
     /**
-     * @prop {number} pointRadius - Radius of line points for line charts.
-     * @default 2
+     * Radius of line points for line charts.
      */
     pointRadius: number = 2;
 
     /**
-     * @prop {boolean} connectNullValues - Whether null values should be connected or not.
-     * @default false
+     * Whether null values should be connected or not.
      */
     connectNullValues: boolean = false;
 
     /**
-     * @prop {boolean} lineCurved - Whether lines should be curved or not.
-     * @default true
+     * Whether lines should be curved or not.
      */
     lineCurved: boolean = true;
 
