@@ -12,10 +12,9 @@
     //     "includeGroups": false
     // },
     //"categorizeByGroup": false,
-    // "navigationLinks": {
-    //     "Docs": "https://typedoc.org/guides/overview",
-    //     "GitHub": "https://github.com/TypeStrong/typedoc"
-    // },
+    "navigationLinks": {
+        "GitHub": "https://github.com/michielvaneerd/SvgChart"
+    },
     // "sidebarLinks": {
     //     "API": "https://typedoc.org/api"
     // },
