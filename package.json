@@ -7,17 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-esbuild-dev": "esbuild ./docs/app_svg.js --bundle --sourcemap --outfile=./docs/bundle-dev.js",
     "build-esbuild-watch": "esbuild ./docs/app_svg.js --bundle --sourcemap --outfile=./docs/bundle-dev.js --watch",
-    "build-esbuild-prod": "esbuild ./docs/app_svg.js --bundle --minify --outfile=./docs/bundle-prod.js",
-    "build-webpack-prod": "webpack"
+    "build-esbuild-prod": "esbuild ./docs/app_svg.js --bundle --minify --outfile=./docs/bundle-prod.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "esbuild": "0.17.18",
-    "ts-loader": "^9.4.2",
-    "typedoc": "^0.24.7",
-    "webpack": "^5.83.1",
-    "webpack-cli": "^5.1.1"
+    "typedoc": "^0.24.7"
   }
 }
