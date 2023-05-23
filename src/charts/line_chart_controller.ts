@@ -1,9 +1,9 @@
 import { prefixed, directionForEach, el } from "../utils";
 import { Controller } from "./controller";
-import { ChartPoint, SvgChart } from "../svg";
+import { SvgChart } from "../svg";
 import { AxisController } from "../axis";
 import { onConfigBeforeBarAndLine, onDrawStartBarAndLine } from "./bar_and_line_utils";
-import { ChartConfigSerie } from "../types";
+import { ChartConfigSerie, ChartPoint } from "../types";
 
 /**
  * Controller class for bar and line charts.

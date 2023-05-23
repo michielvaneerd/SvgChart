@@ -24,4 +24,37 @@ enum ChartType {
     Donut
 }
 
-export { ScopedEventCallback, ChartConfigSerie, ChartType };
+/**
+ * Data object with series data and columns.
+ */
+interface ChartData {
+    series: { string: number[] };
+    xAxis: { columns: string[] };
+};
+
+/**
+ * Data point with x and y values.
+ */
+interface ChartPoint {
+    x: number;
+    y: number;
+}
+
+/**
+ * Object with information about an event for a specific node.
+ */
+interface ChartEventInfo {
+    node: Node;
+    eventName: string;
+    callback: EventListenerOrEventListenerObject;
+    capture: boolean;
+}
+
+/**
+ * Hash with string as key and boolean as value.
+ */
+type StringBooleanHash = {
+    [index: string]: boolean;
+}
+
+export { ScopedEventCallback, ChartConfigSerie, ChartType, ChartData, ChartPoint, ChartEventInfo, StringBooleanHash };

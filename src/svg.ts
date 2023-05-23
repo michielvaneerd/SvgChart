@@ -7,28 +7,7 @@ import { DonutController } from "./charts/donut_chart_controller";
 import { PieController } from "./charts/pie_chart_controller";
 import { SvgChartConfig } from "./config";
 import { Controller } from "./charts/controller";
-import { ChartType } from "./types";
-
-interface ChartData {
-    series: { string: number[] };
-    xAxis: { columns: string[] };
-};
-
-interface ChartPoint {
-    x: number;
-    y: number;
-}
-
-interface ChartEventInfo {
-    node: Node;
-    eventName: string;
-    callback: EventListenerOrEventListenerObject;
-    capture: boolean;
-}
-
-interface StringBooleanHash {
-    [index: string]: boolean;
-}
+import { ChartData, ChartEventInfo, ChartType, StringBooleanHash } from "./types";
 
 /**
  * SvgChart class.
@@ -723,4 +702,4 @@ class SvgChart {
 // to use it in the drawOnConfig or drawOnData callbacks.
 SvgChart.prototype.el = el;
 
-export { SvgChart, ChartPoint, ChartData, StringBooleanHash, ChartEventInfo };
+export { SvgChart };

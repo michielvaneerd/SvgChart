@@ -1,4 +1,4 @@
-import { ChartPoint } from "./svg";
+import { ChartPoint } from "./types";
 
 /**
  * Callback function that is called by the {@link directionForEach} function.
