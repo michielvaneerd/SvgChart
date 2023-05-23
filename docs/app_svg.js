@@ -1,5 +1,6 @@
 import { SvgChart } from "../src/svg.js";
 import { SvgChartConfig } from "../src/config.js";
+import { ChartType } from "../src/types.js";
 
 //SvgChart.setActiveColorPalette(SvgChart.colorPalettes.springPastelsColorPalette);
 
@@ -28,7 +29,7 @@ var htmlDir = (document.documentElement.getAttribute('dir') in SvgChartConfig.di
 var chartInfo = {
     chartBasicLine: {
         config: {
-            chartType: 'line',
+            chartType: ChartType.Line,
             transition: true,
             dir: htmlDir,
             title: 'Basic line chart',
@@ -59,7 +60,7 @@ var chartInfo = {
     },
     chartBasicLineDark: {
         config: {
-            chartType: 'line',
+            chartType: ChartType.Line,
             backgroundColor: 'black',
             titleColor: 'white',
             xAxisGridLineColor: 'green',
@@ -110,7 +111,7 @@ var chartInfo = {
     },
     chartBasicLineBig: {
         config: {
-            chartType: 'line',
+            chartType: ChartType.Line,
             dir: htmlDir,
             title: 'Basic line chart with many values',
             minValue: 0,
@@ -177,7 +178,7 @@ var chartInfo = {
     },
     chartBasicBar: {
         config: {
-            chartType: 'bar',
+            chartType: ChartType.Bar,
             dir: htmlDir,
             title: 'Basic bar chart',
             minValue: 0,
@@ -207,7 +208,7 @@ var chartInfo = {
     },
     chartStackedBar: {
         config: {
-            chartType: 'bar',
+            chartType: ChartType.Bar,
             dir: htmlDir,
             title: 'Stacked bar chart',
             legendPosition: 'top',
@@ -261,7 +262,7 @@ var chartInfo = {
     },
     chartBasicPie: {
         config: {
-            chartType: 'pie',
+            chartType: ChartType.Pie,
             dir: htmlDir,
             title: 'Basic pie chart',
             legendPosition: 'top',
@@ -290,7 +291,7 @@ var chartInfo = {
     },
     chartBasicDonut: {
         config: {
-            chartType: 'donut',
+            chartType: ChartType.Donut,
             dir: htmlDir,
             title: 'Basic donut chart',
             legendPosition: 'top',
@@ -319,7 +320,7 @@ var chartInfo = {
     },
     chartBarAndLine: {
         config: {
-            chartType: 'lineAndBar',
+            chartType: ChartType.LineAndBar,
             dir: htmlDir,
             title: 'Bar and line chart',
             legendPosition: 'top',
@@ -357,7 +358,7 @@ var chartInfo = {
                 bottom: 70,
                 start: 80
             },
-            chartType: 'line',
+            chartType: ChartType.Line,
             dir: htmlDir,
             title: 'Custom line chart',
             legendPosition: 'top',
@@ -444,7 +445,7 @@ var chartInfo = {
                 bottom: 70,
                 start: 80
             },
-            chartType: 'line',
+            chartType: ChartType.Line,
             dir: htmlDir,
             title: 'Dynamic chart',
             legendPosition: 'top',
@@ -494,7 +495,7 @@ Function.prototype.toJSON = function () {
 }
 
 function setChartData(id) {
-    var isPieOrDonut = ['pie', 'donut'].indexOf(chartInfo[id].config.chartType) !== -1;
+    var isPieOrDonut = [ChartType.Pie, ChartType.Donut].indexOf(chartInfo[id].config.chartType) !== -1;
     var serieData = {};
     chartInfo[id].config.series.forEach(function (serie) {
         serieData[serie.id] = !isPieOrDonut ? Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)) : getRandomIntInclusive(0, 100);

@@ -3,8 +3,7 @@ import { Controller } from "./controller";
 import { SvgChart } from "../svg";
 import { AxisController } from "../axis";
 import { onDrawStartBarAndLine, onConfigBeforeBarAndLine } from "./bar_and_line_utils";
-import { SvgChartConfig } from "../config";
-import { ChartConfigSerie } from "../types";
+import { ChartConfigSerie, ChartType } from "../types";
 
 /**
  * Controller class for bar and line charts.
@@ -118,7 +117,7 @@ class BarController extends Controller {
      */
     onConfigSerieBefore(serie: ChartConfigSerie) {
         super.onConfigSerieBefore(serie);
-        if (!this.config.barStacked && (serie.type === SvgChartConfig.chartTypes.bar || this.config.chartType === SvgChartConfig.chartTypes.bar)) {
+        if (!this.config.barStacked && (serie.type === ChartType.Bar || this.config.chartType === ChartType.Bar)) {
             this.svgChart.barCountPerColumn += 1;
         }
     }

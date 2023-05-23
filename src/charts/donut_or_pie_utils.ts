@@ -2,6 +2,7 @@ import { el, prefixed } from "../utils";
 import { SvgChart } from "../svg";
 import { DonutController } from "./donut_chart_controller";
 import { PieController } from "./pie_chart_controller";
+import { ChartType } from "../types";
 
 /**
  * Function that is called from within the {@link drawPieOrDonut} function.
@@ -53,8 +54,8 @@ function drawPieOrDonut(svgChart: SvgChart, currentSerieGroupElement: SVGElement
             fillOpacity: svgChart.config.pieFillOpacity || 1,
             className: prefixed('pie-piece'),
             tabindex: 0,
-            stroke: svgChart.config[svgChart.config.chartType + 'Stroke'],
-            strokeWidth: svgChart.config[svgChart.config.chartType + 'StrokeWidth'],
+            stroke: svgChart.config[ChartType[svgChart.config.chartType].toLowerCase() + 'Stroke'],
+            strokeWidth: svgChart.config[ChartType[svgChart.config.chartType].toLowerCase() + 'StrokeWidth'],
             dataValue: value
         }));
 

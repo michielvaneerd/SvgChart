@@ -649,6 +649,334 @@
     }
   });
 
+  // src/types.ts
+  var ChartType;
+  var init_types = __esm({
+    "src/types.ts"() {
+      ChartType = /* @__PURE__ */ ((ChartType2) => {
+        ChartType2[ChartType2["Line"] = 0] = "Line";
+        ChartType2[ChartType2["Bar"] = 1] = "Bar";
+        ChartType2[ChartType2["LineAndBar"] = 2] = "LineAndBar";
+        ChartType2[ChartType2["Pie"] = 3] = "Pie";
+        ChartType2[ChartType2["Donut"] = 4] = "Donut";
+        return ChartType2;
+      })(ChartType || {});
+    }
+  });
+
+  // src/charts/bar_chart_controller.ts
+  var _axisController2, BarController;
+  var init_bar_chart_controller = __esm({
+    "src/charts/bar_chart_controller.ts"() {
+      init_utils();
+      init_controller();
+      init_axis();
+      init_bar_and_line_utils();
+      init_types();
+      BarController = class extends Controller {
+        /**
+         * @param svgChart - SvgChart instance.
+         */
+        constructor(svgChart) {
+          super(svgChart);
+          __privateAdd(this, _axisController2, void 0);
+          __privateSet(this, _axisController2, new AxisController(svgChart));
+        }
+        /**
+         * Draws chart element for this serie and attached it to the serieGroup.
+         * 
+         * @override
+         * 
+         * @param serie - Serie object.
+         * @param serieIndex - Serie index.
+         * @param serieGroup - DOM group element for this serie.
+         */
+        onDrawSerie(serie, serieIndex, serieGroup) {
+          directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, (value, valueIndex) => {
+            var x = null;
+            var y = null;
+            var height = null;
+            if (this.config.barStacked) {
+              if (!this.stackedBarValues[valueIndex]) {
+                this.stackedBarValues[valueIndex] = this.config.minValue;
+              }
+              ;
+              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.svgChart.columnWidth + this.config.barSpacing;
+              y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight - this.stackedBarValues[valueIndex] * this.svgChart.lineAndBarValueHeight;
+              height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight;
+              this.stackedBarValues[valueIndex] = this.stackedBarValues[valueIndex] += value;
+            } else {
+              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.svgChart.columnWidth + this.barWidth * this.currentBarIndex + this.config.barSpacing * (this.currentBarIndex + 1);
+              if (isNaN(x)) {
+                console.log(this.currentBarIndex);
+              }
+              height = y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight;
+            }
+            serieGroup.appendChild(el("rect", {
+              x,
+              y,
+              width: this.barWidth,
+              height: this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
+              fill: this.svgChart.getSerieFill(serie, serieIndex),
+              className: prefixed("bar"),
+              fillOpacity: this.config.barFillOpacity || "",
+              strokeWidth: this.config.barStrokeWidth || 0,
+              stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
+              dataValue: value,
+              tabindex: this.config.focusedValueShow ? 0 : null
+            }));
+          });
+          this.currentBarIndex += 1;
+        }
+        /**
+         * Do things at the start of the draw for this chart.
+         * 
+         * @override
+         * 
+         * @param currentSerieGroupElement - DOM group element.
+         */
+        onDrawStart(currentSerieGroupElement) {
+          onDrawStartBarAndLine(this.svgChart, __privateGet(this, _axisController2), currentSerieGroupElement);
+          const barWidth = (this.svgChart.columnWidth - this.config.barSpacing * (this.svgChart.barCountPerColumn + 1)) / (this.svgChart.barCountPerColumn || 1);
+          this.barWidth = barWidth;
+          this.currentBarIndex = 0;
+          this.stackedBarValues = {};
+        }
+        /**
+         * Execute config things before global config things are done.
+         * 
+         * @override
+         */
+        onConfigBefore() {
+          super.onConfigBefore();
+          onConfigBeforeBarAndLine(this.svgChart, __privateGet(this, _axisController2));
+        }
+        /**
+         * Execute serie config things before global config serie things are done.
+         * 
+         * @override
+         * 
+         * @param serie - Serie object
+         */
+        onConfigSerieBefore(serie) {
+          super.onConfigSerieBefore(serie);
+          if (!this.config.barStacked && (serie.type === 1 /* Bar */ || this.config.chartType === 1 /* Bar */)) {
+            this.svgChart.barCountPerColumn += 1;
+          }
+        }
+      };
+      _axisController2 = new WeakMap();
+      /** @override */
+      BarController.requiredConfigWithValue = {
+        xAxisGridColumns: true
+      };
+    }
+  });
+
+  // src/charts/bar_and_line_chart_controller.ts
+  var _lineChartController, _barChartController, BarAndLineController;
+  var init_bar_and_line_chart_controller = __esm({
+    "src/charts/bar_and_line_chart_controller.ts"() {
+      init_controller();
+      init_line_chart_controller();
+      init_bar_chart_controller();
+      init_types();
+      BarAndLineController = class extends Controller {
+        /**
+         * @param svgChart - SvgChart instance.
+         */
+        constructor(svgChart) {
+          super(svgChart);
+          __privateAdd(this, _lineChartController, void 0);
+          __privateAdd(this, _barChartController, void 0);
+          __privateSet(this, _barChartController, new BarController(svgChart));
+          __privateSet(this, _lineChartController, new LineController(svgChart));
+        }
+        /** @override */
+        onDrawSerie(serie, serieIndex, serieGroup) {
+          const serieType = serie.type || (this.config.chartType === 2 /* LineAndBar */ ? 0 /* Line */ : this.config.chartType);
+          switch (serieType) {
+            case 0 /* Line */:
+              __privateGet(this, _lineChartController).onDrawSerie(serie, serieIndex, serieGroup);
+              break;
+            case 1 /* Bar */:
+              __privateGet(this, _barChartController).onDrawSerie(serie, serieIndex, serieGroup);
+              break;
+          }
+        }
+        /** @override */
+        onDrawStart(currentSerieGroupElement) {
+          __privateGet(this, _barChartController).onDrawStart(currentSerieGroupElement);
+        }
+        /** @override */
+        onConfigBefore() {
+          __privateGet(this, _barChartController).onConfigBefore();
+        }
+        /** @override */
+        onConfigSerieBefore(serie) {
+          __privateGet(this, _barChartController).onConfigSerieBefore(serie);
+        }
+      };
+      _lineChartController = new WeakMap();
+      _barChartController = new WeakMap();
+      /** @override */
+      BarAndLineController.requiredConfigWithValue = {
+        xAxisGridColumns: true
+      };
+    }
+  });
+
+  // src/charts/donut_or_pie_utils.ts
+  function drawPieOrDonut(svgChart, currentSerieGroupElement, describeArcCallback) {
+    var radius = svgChart.chartHeight / 2;
+    var centerX = svgChart.width / 2;
+    var centerY = svgChart.chartHeight / 2 + svgChart.config.padding.top;
+    var total = 0;
+    for (let key in svgChart.data.series) {
+      total += svgChart.data.series[key];
+    }
+    var totalToDegree = 360 / total;
+    var currentTotal = 0;
+    svgChart.config.series.forEach((serie, serieIndex) => {
+      var serieGroup = el("g", {
+        dataSerie: serie.id,
+        className: svgChart.unselectedSeries[serie.id] ? prefixed("unselected") : ""
+      });
+      const value = svgChart.data.series[serie.id];
+      var startAngle = currentTotal * totalToDegree;
+      currentTotal += value;
+      var endAngle = currentTotal * totalToDegree;
+      var path = describeArcCallback(centerX, centerY, radius, startAngle, endAngle);
+      serieGroup.appendChild(el("path", {
+        d: path.join(" "),
+        fill: svgChart.getSerieFill(serie, serieIndex),
+        fillOpacity: svgChart.config.pieFillOpacity || 1,
+        className: prefixed("pie-piece"),
+        tabindex: 0,
+        stroke: svgChart.config[ChartType[svgChart.config.chartType].toLowerCase() + "Stroke"],
+        strokeWidth: svgChart.config[ChartType[svgChart.config.chartType].toLowerCase() + "StrokeWidth"],
+        dataValue: value
+      }));
+      currentSerieGroupElement.appendChild(serieGroup);
+    });
+  }
+  var init_donut_or_pie_utils = __esm({
+    "src/charts/donut_or_pie_utils.ts"() {
+      init_utils();
+      init_types();
+    }
+  });
+
+  // src/charts/donut_chart_controller.ts
+  function describeArcDonut(x, y, radius, spread, startAngle, endAngle) {
+    var innerStart = polarToCartesian(x, y, radius, endAngle);
+    var innerEnd = polarToCartesian(x, y, radius, startAngle);
+    var outerStart = polarToCartesian(x, y, radius + spread, endAngle);
+    var outerEnd = polarToCartesian(x, y, radius + spread, startAngle);
+    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    var d = [
+      "M",
+      outerStart.x,
+      outerStart.y,
+      "A",
+      radius + spread,
+      radius + spread,
+      0,
+      largeArcFlag,
+      0,
+      outerEnd.x,
+      outerEnd.y,
+      "L",
+      innerEnd.x,
+      innerEnd.y,
+      "A",
+      radius,
+      radius,
+      0,
+      largeArcFlag,
+      1,
+      innerStart.x,
+      innerStart.y,
+      "L",
+      outerStart.x,
+      outerStart.y,
+      "Z"
+    ];
+    return d;
+  }
+  var DonutController;
+  var init_donut_chart_controller = __esm({
+    "src/charts/donut_chart_controller.ts"() {
+      init_utils();
+      init_controller();
+      init_donut_or_pie_utils();
+      DonutController = class extends Controller {
+        /**
+         * Draw donut chart.
+         * 
+         * @override
+         * 
+         * @param currentSerieGroupElement - Current serie group element.
+         */
+        onDraw(currentSerieGroupElement) {
+          const donutWidth = this.config.donutWidth || this.svgChart.chartHeight / 4;
+          drawPieOrDonut(this.svgChart, currentSerieGroupElement, (centerX, centerY, radius, startAngle, endAngle) => {
+            return describeArcDonut(centerX, centerY, radius - donutWidth, donutWidth, startAngle, endAngle);
+          });
+        }
+      };
+    }
+  });
+
+  // src/charts/pie_chart_controller.ts
+  function describeArcPie(x, y, radius, startAngle, endAngle) {
+    var start = polarToCartesian(x, y, radius, endAngle);
+    var end = polarToCartesian(x, y, radius, startAngle);
+    var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
+    var d = [
+      "M",
+      start.x,
+      start.y,
+      "A",
+      radius,
+      radius,
+      0,
+      arcSweep,
+      0,
+      end.x,
+      end.y,
+      "L",
+      x,
+      y,
+      "L",
+      start.x,
+      start.y
+    ];
+    return d;
+  }
+  var PieController;
+  var init_pie_chart_controller = __esm({
+    "src/charts/pie_chart_controller.ts"() {
+      init_utils();
+      init_controller();
+      init_donut_or_pie_utils();
+      PieController = class extends Controller {
+        /**
+         * Draws pie chart.
+         * 
+         * @override
+         * 
+         * @param currentSerieGroupElement - Current serie group element.
+         */
+        onDraw(currentSerieGroupElement) {
+          drawPieOrDonut(this.svgChart, currentSerieGroupElement, (centerX, centerY, radius, startAngle, endAngle) => {
+            return describeArcPie(centerX, centerY, radius, startAngle, endAngle);
+          });
+        }
+      };
+    }
+  });
+
   // src/config.ts
   var _SvgChartConfig, SvgChartConfig;
   var init_config = __esm({
@@ -669,7 +997,7 @@
            */
           this.title = null;
           /**
-           * @prop {String} chartType - Chart type. Required. Possible values: line, bar, lineAndBar, pie, donut.
+           * Chart type.
            */
           this.chartType = null;
           /**
@@ -1074,330 +1402,11 @@
         ltr: "ltr",
         rtl: "rtl"
       };
-      SvgChartConfig.chartTypes = {
-        line: "line",
-        bar: "bar",
-        pie: "pie",
-        donut: "donut",
-        lineAndBar: "lineAndBar"
-      };
-    }
-  });
-
-  // src/charts/bar_chart_controller.ts
-  var _axisController2, BarController;
-  var init_bar_chart_controller = __esm({
-    "src/charts/bar_chart_controller.ts"() {
-      init_utils();
-      init_controller();
-      init_axis();
-      init_bar_and_line_utils();
-      init_config();
-      BarController = class extends Controller {
-        /**
-         * @param svgChart - SvgChart instance.
-         */
-        constructor(svgChart) {
-          super(svgChart);
-          __privateAdd(this, _axisController2, void 0);
-          __privateSet(this, _axisController2, new AxisController(svgChart));
-        }
-        /**
-         * Draws chart element for this serie and attached it to the serieGroup.
-         * 
-         * @override
-         * 
-         * @param serie - Serie object.
-         * @param serieIndex - Serie index.
-         * @param serieGroup - DOM group element for this serie.
-         */
-        onDrawSerie(serie, serieIndex, serieGroup) {
-          directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, (value, valueIndex) => {
-            var x = null;
-            var y = null;
-            var height = null;
-            if (this.config.barStacked) {
-              if (!this.stackedBarValues[valueIndex]) {
-                this.stackedBarValues[valueIndex] = this.config.minValue;
-              }
-              ;
-              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.svgChart.columnWidth + this.config.barSpacing;
-              y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight - this.stackedBarValues[valueIndex] * this.svgChart.lineAndBarValueHeight;
-              height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight;
-              this.stackedBarValues[valueIndex] = this.stackedBarValues[valueIndex] += value;
-            } else {
-              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.svgChart.columnWidth + this.barWidth * this.currentBarIndex + this.config.barSpacing * (this.currentBarIndex + 1);
-              if (isNaN(x)) {
-                console.log(this.currentBarIndex);
-              }
-              height = y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight;
-            }
-            serieGroup.appendChild(el("rect", {
-              x,
-              y,
-              width: this.barWidth,
-              height: this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
-              fill: this.svgChart.getSerieFill(serie, serieIndex),
-              className: prefixed("bar"),
-              fillOpacity: this.config.barFillOpacity || "",
-              strokeWidth: this.config.barStrokeWidth || 0,
-              stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
-              dataValue: value,
-              tabindex: this.config.focusedValueShow ? 0 : null
-            }));
-          });
-          this.currentBarIndex += 1;
-        }
-        /**
-         * Do things at the start of the draw for this chart.
-         * 
-         * @override
-         * 
-         * @param currentSerieGroupElement - DOM group element.
-         */
-        onDrawStart(currentSerieGroupElement) {
-          onDrawStartBarAndLine(this.svgChart, __privateGet(this, _axisController2), currentSerieGroupElement);
-          const barWidth = (this.svgChart.columnWidth - this.config.barSpacing * (this.svgChart.barCountPerColumn + 1)) / (this.svgChart.barCountPerColumn || 1);
-          this.barWidth = barWidth;
-          this.currentBarIndex = 0;
-          this.stackedBarValues = {};
-        }
-        /**
-         * Execute config things before global config things are done.
-         * 
-         * @override
-         */
-        onConfigBefore() {
-          super.onConfigBefore();
-          onConfigBeforeBarAndLine(this.svgChart, __privateGet(this, _axisController2));
-        }
-        /**
-         * Execute serie config things before global config serie things are done.
-         * 
-         * @override
-         * 
-         * @param serie - Serie object
-         */
-        onConfigSerieBefore(serie) {
-          super.onConfigSerieBefore(serie);
-          if (!this.config.barStacked && (serie.type === SvgChartConfig.chartTypes.bar || this.config.chartType === SvgChartConfig.chartTypes.bar)) {
-            this.svgChart.barCountPerColumn += 1;
-          }
-        }
-      };
-      _axisController2 = new WeakMap();
-      /** @override */
-      BarController.requiredConfigWithValue = {
-        xAxisGridColumns: true
-      };
-    }
-  });
-
-  // src/charts/bar_and_line_chart_controller.ts
-  var _lineChartController, _barChartController, BarAndLineController;
-  var init_bar_and_line_chart_controller = __esm({
-    "src/charts/bar_and_line_chart_controller.ts"() {
-      init_controller();
-      init_line_chart_controller();
-      init_bar_chart_controller();
-      init_config();
-      BarAndLineController = class extends Controller {
-        /**
-         * @param svgChart - SvgChart instance.
-         */
-        constructor(svgChart) {
-          super(svgChart);
-          __privateAdd(this, _lineChartController, void 0);
-          __privateAdd(this, _barChartController, void 0);
-          __privateSet(this, _barChartController, new BarController(svgChart));
-          __privateSet(this, _lineChartController, new LineController(svgChart));
-        }
-        /** @override */
-        onDrawSerie(serie, serieIndex, serieGroup) {
-          const serieType = serie.type || (this.config.chartType === SvgChartConfig.chartTypes.lineAndBar ? SvgChartConfig.chartTypes.line : this.config.chartType);
-          switch (serieType) {
-            case SvgChartConfig.chartTypes.line:
-              __privateGet(this, _lineChartController).onDrawSerie(serie, serieIndex, serieGroup);
-              break;
-            case SvgChartConfig.chartTypes.bar:
-              __privateGet(this, _barChartController).onDrawSerie(serie, serieIndex, serieGroup);
-              break;
-          }
-        }
-        /** @override */
-        onDrawStart(currentSerieGroupElement) {
-          __privateGet(this, _barChartController).onDrawStart(currentSerieGroupElement);
-        }
-        /** @override */
-        onConfigBefore() {
-          __privateGet(this, _barChartController).onConfigBefore();
-        }
-        /** @override */
-        onConfigSerieBefore(serie) {
-          __privateGet(this, _barChartController).onConfigSerieBefore(serie);
-        }
-      };
-      _lineChartController = new WeakMap();
-      _barChartController = new WeakMap();
-      /** @override */
-      BarAndLineController.requiredConfigWithValue = {
-        xAxisGridColumns: true
-      };
-    }
-  });
-
-  // src/charts/donut_or_pie_utils.ts
-  function drawPieOrDonut(svgChart, currentSerieGroupElement, describeArcCallback) {
-    var radius = svgChart.chartHeight / 2;
-    var centerX = svgChart.width / 2;
-    var centerY = svgChart.chartHeight / 2 + svgChart.config.padding.top;
-    var total = 0;
-    for (let key in svgChart.data.series) {
-      total += svgChart.data.series[key];
-    }
-    var totalToDegree = 360 / total;
-    var currentTotal = 0;
-    svgChart.config.series.forEach((serie, serieIndex) => {
-      var serieGroup = el("g", {
-        dataSerie: serie.id,
-        className: svgChart.unselectedSeries[serie.id] ? prefixed("unselected") : ""
-      });
-      const value = svgChart.data.series[serie.id];
-      var startAngle = currentTotal * totalToDegree;
-      currentTotal += value;
-      var endAngle = currentTotal * totalToDegree;
-      var path = describeArcCallback(centerX, centerY, radius, startAngle, endAngle);
-      serieGroup.appendChild(el("path", {
-        d: path.join(" "),
-        fill: svgChart.getSerieFill(serie, serieIndex),
-        fillOpacity: svgChart.config.pieFillOpacity || 1,
-        className: prefixed("pie-piece"),
-        tabindex: 0,
-        stroke: svgChart.config[svgChart.config.chartType + "Stroke"],
-        strokeWidth: svgChart.config[svgChart.config.chartType + "StrokeWidth"],
-        dataValue: value
-      }));
-      currentSerieGroupElement.appendChild(serieGroup);
-    });
-  }
-  var init_donut_or_pie_utils = __esm({
-    "src/charts/donut_or_pie_utils.ts"() {
-      init_utils();
-    }
-  });
-
-  // src/charts/donut_chart_controller.ts
-  function describeArcDonut(x, y, radius, spread, startAngle, endAngle) {
-    var innerStart = polarToCartesian(x, y, radius, endAngle);
-    var innerEnd = polarToCartesian(x, y, radius, startAngle);
-    var outerStart = polarToCartesian(x, y, radius + spread, endAngle);
-    var outerEnd = polarToCartesian(x, y, radius + spread, startAngle);
-    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-    var d = [
-      "M",
-      outerStart.x,
-      outerStart.y,
-      "A",
-      radius + spread,
-      radius + spread,
-      0,
-      largeArcFlag,
-      0,
-      outerEnd.x,
-      outerEnd.y,
-      "L",
-      innerEnd.x,
-      innerEnd.y,
-      "A",
-      radius,
-      radius,
-      0,
-      largeArcFlag,
-      1,
-      innerStart.x,
-      innerStart.y,
-      "L",
-      outerStart.x,
-      outerStart.y,
-      "Z"
-    ];
-    return d;
-  }
-  var DonutController;
-  var init_donut_chart_controller = __esm({
-    "src/charts/donut_chart_controller.ts"() {
-      init_utils();
-      init_controller();
-      init_donut_or_pie_utils();
-      DonutController = class extends Controller {
-        /**
-         * Draw donut chart.
-         * 
-         * @override
-         * 
-         * @param currentSerieGroupElement - Current serie group element.
-         */
-        onDraw(currentSerieGroupElement) {
-          const donutWidth = this.config.donutWidth || this.svgChart.chartHeight / 4;
-          drawPieOrDonut(this.svgChart, currentSerieGroupElement, (centerX, centerY, radius, startAngle, endAngle) => {
-            return describeArcDonut(centerX, centerY, radius - donutWidth, donutWidth, startAngle, endAngle);
-          });
-        }
-      };
-    }
-  });
-
-  // src/charts/pie_chart_controller.ts
-  function describeArcPie(x, y, radius, startAngle, endAngle) {
-    var start = polarToCartesian(x, y, radius, endAngle);
-    var end = polarToCartesian(x, y, radius, startAngle);
-    var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
-    var d = [
-      "M",
-      start.x,
-      start.y,
-      "A",
-      radius,
-      radius,
-      0,
-      arcSweep,
-      0,
-      end.x,
-      end.y,
-      "L",
-      x,
-      y,
-      "L",
-      start.x,
-      start.y
-    ];
-    return d;
-  }
-  var PieController;
-  var init_pie_chart_controller = __esm({
-    "src/charts/pie_chart_controller.ts"() {
-      init_utils();
-      init_controller();
-      init_donut_or_pie_utils();
-      PieController = class extends Controller {
-        /**
-         * Draws pie chart.
-         * 
-         * @override
-         * 
-         * @param currentSerieGroupElement - Current serie group element.
-         */
-        onDraw(currentSerieGroupElement) {
-          drawPieOrDonut(this.svgChart, currentSerieGroupElement, (centerX, centerY, radius, startAngle, endAngle) => {
-            return describeArcPie(centerX, centerY, radius, startAngle, endAngle);
-          });
-        }
-      };
     }
   });
 
   // src/svg.ts
-  var _cssAdded, _activeColorPalette, _chartTypeControllers, _defsElement, _drawOnConfigGroup, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
+  var _chartTypeControllers, _cssAdded, _activeColorPalette, _defsElement, _drawOnConfigGroup, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
   var init_svg = __esm({
     "src/svg.ts"() {
       init_utils();
@@ -1408,6 +1417,8 @@
       init_donut_chart_controller();
       init_pie_chart_controller();
       init_config();
+      init_controller();
+      init_types();
       _SvgChart = class {
         /**
          * Constructor - create a new chart instance.
@@ -1688,9 +1699,9 @@
         }
       };
       SvgChart = _SvgChart;
+      _chartTypeControllers = new WeakMap();
       _cssAdded = new WeakMap();
       _activeColorPalette = new WeakMap();
-      _chartTypeControllers = new WeakMap();
       _defsElement = new WeakMap();
       _drawOnConfigGroup = new WeakMap();
       _drawOnDataGroup = new WeakMap();
@@ -1947,14 +1958,14 @@
           var type = serieItem.type || this.config.chartType;
           var x, y = null;
           switch (type) {
-            case "line":
-            case "bar":
-            case "lineAndBar":
+            case 0 /* Line */:
+            case 1 /* Bar */:
+            case 2 /* LineAndBar */:
               x = (circle.getAttribute("cx") || parseFloat(circle.getAttribute("x")) + circle.getAttribute("width") / 2) - width / 2;
               y = (circle.getAttribute("cy") || circle.getAttribute("y")) - 10 - height;
               break;
-            case "pie":
-            case "donut":
+            case 3 /* Pie */:
+            case 4 /* Donut */:
               var d = circle.getAttribute("d").split(" ");
               x = d[1].trim();
               y = d[2].trim();
@@ -1963,16 +1974,17 @@
           this.valueElGroup.setAttribute("transform", "translate(" + x + ", " + y + ")");
         }
       };
+      __privateAdd(SvgChart, _chartTypeControllers, { ChartType: Controller });
       SvgChart.colorPalettes = colors;
       __privateAdd(SvgChart, _cssAdded, false);
       __privateAdd(SvgChart, _activeColorPalette, colors.dutchFieldColorPalette);
-      __privateAdd(SvgChart, _chartTypeControllers, {
-        line: LineController,
-        bar: BarController,
-        lineAndBar: BarAndLineController,
-        pie: PieController,
-        donut: DonutController
-      });
+      (() => {
+        __privateGet(_SvgChart, _chartTypeControllers)[0 /* Line */] = LineController;
+        __privateGet(_SvgChart, _chartTypeControllers)[1 /* Bar */] = BarController;
+        __privateGet(_SvgChart, _chartTypeControllers)[2 /* LineAndBar */] = BarAndLineController;
+        __privateGet(_SvgChart, _chartTypeControllers)[3 /* Pie */] = PieController;
+        __privateGet(_SvgChart, _chartTypeControllers)[4 /* Donut */] = DonutController;
+      })();
       SvgChart.prototype.el = el;
     }
   });
@@ -1982,6 +1994,7 @@
     "docs/app_svg.js"(exports, module) {
       init_svg();
       init_config();
+      init_types();
       function getRandomIntInclusive(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -2002,7 +2015,7 @@
       var chartInfo = {
         chartBasicLine: {
           config: {
-            chartType: "line",
+            chartType: 0 /* Line */,
             transition: true,
             dir: htmlDir,
             title: "Basic line chart",
@@ -2033,7 +2046,7 @@
         },
         chartBasicLineDark: {
           config: {
-            chartType: "line",
+            chartType: 0 /* Line */,
             backgroundColor: "black",
             titleColor: "white",
             xAxisGridLineColor: "green",
@@ -2084,7 +2097,7 @@
         },
         chartBasicLineBig: {
           config: {
-            chartType: "line",
+            chartType: 0 /* Line */,
             dir: htmlDir,
             title: "Basic line chart with many values",
             minValue: 0,
@@ -2154,7 +2167,7 @@
         },
         chartBasicBar: {
           config: {
-            chartType: "bar",
+            chartType: 1 /* Bar */,
             dir: htmlDir,
             title: "Basic bar chart",
             minValue: 0,
@@ -2184,7 +2197,7 @@
         },
         chartStackedBar: {
           config: {
-            chartType: "bar",
+            chartType: 1 /* Bar */,
             dir: htmlDir,
             title: "Stacked bar chart",
             legendPosition: "top",
@@ -2239,7 +2252,7 @@
         },
         chartBasicPie: {
           config: {
-            chartType: "pie",
+            chartType: 3 /* Pie */,
             dir: htmlDir,
             title: "Basic pie chart",
             legendPosition: "top",
@@ -2268,7 +2281,7 @@
         },
         chartBasicDonut: {
           config: {
-            chartType: "donut",
+            chartType: 4 /* Donut */,
             dir: htmlDir,
             title: "Basic donut chart",
             legendPosition: "top",
@@ -2297,7 +2310,7 @@
         },
         chartBarAndLine: {
           config: {
-            chartType: "lineAndBar",
+            chartType: 2 /* LineAndBar */,
             dir: htmlDir,
             title: "Bar and line chart",
             legendPosition: "top",
@@ -2335,7 +2348,7 @@
               bottom: 70,
               start: 80
             },
-            chartType: "line",
+            chartType: 0 /* Line */,
             dir: htmlDir,
             title: "Custom line chart",
             legendPosition: "top",
@@ -2422,7 +2435,7 @@
               bottom: 70,
               start: 80
             },
-            chartType: "line",
+            chartType: 0 /* Line */,
             dir: htmlDir,
             title: "Dynamic chart",
             legendPosition: "top",
@@ -2470,7 +2483,7 @@
         return this.toString().replace(/\n/g, "<br>").replace("function(", "FUNC[");
       };
       function setChartData(id) {
-        var isPieOrDonut = ["pie", "donut"].indexOf(chartInfo[id].config.chartType) !== -1;
+        var isPieOrDonut = [3 /* Pie */, 4 /* Donut */].indexOf(chartInfo[id].config.chartType) !== -1;
         var serieData = {};
         chartInfo[id].config.series.forEach(function(serie) {
           serieData[serie.id] = !isPieOrDonut ? Array(7).fill(1).map((item) => getRandomIntInclusive(0, 100)) : getRandomIntInclusive(0, 100);

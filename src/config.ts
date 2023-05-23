@@ -1,4 +1,4 @@
-import { ChartConfigSerie } from "./types";
+import { ChartConfigSerie, ChartType } from "./types";
 
 /**
  * SvgChart config class.
@@ -8,14 +8,6 @@ class SvgChartConfig {
     static directions = {
         ltr: 'ltr',
         rtl: 'rtl'
-    };
-
-    static chartTypes = {
-        line: 'line',
-        bar: 'bar',
-        pie: 'pie',
-        donut: 'donut',
-        lineAndBar: 'lineAndBar'
     };
 
     /**
@@ -35,9 +27,9 @@ class SvgChartConfig {
     title: string = null;
 
     /**
-     * @prop {String} chartType - Chart type. Required. Possible values: line, bar, lineAndBar, pie, donut.
+     * Chart type.
      */
-    chartType: string = null;
+    chartType: ChartType = null;
 
     /**
      * @prop {Function} onXAxisLabelGroupSelect - Callback when x axis label is selected. Parameters are SvgChart and x axis column index.

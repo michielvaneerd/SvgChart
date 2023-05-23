@@ -9,8 +9,19 @@ type ScopedEventCallback = (e: Event) => void;
 type ChartConfigSerie = {
     id: string;
     title: string;
-    type?: string;
+    type?: ChartType;
     fillGradient?: string;
 }
 
-export { ScopedEventCallback, ChartConfigSerie };
+/**
+ * Possible type of charts.
+ */
+enum ChartType {
+    Line,
+    Bar,
+    LineAndBar,
+    Pie,
+    Donut
+}
+
+export { ScopedEventCallback, ChartConfigSerie, ChartType };

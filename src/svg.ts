@@ -7,6 +7,7 @@ import { DonutController } from "./charts/donut_chart_controller";
 import { PieController } from "./charts/pie_chart_controller";
 import { SvgChartConfig } from "./config";
 import { Controller } from "./charts/controller";
+import { ChartType } from "./types";
 
 interface ChartData {
     series: { string: number[] };
@@ -26,7 +27,7 @@ interface ChartEventInfo {
 }
 
 interface StringBooleanHash {
-    [index: string] : boolean;
+    [index: string]: boolean;
 }
 
 /**
@@ -34,17 +35,19 @@ interface StringBooleanHash {
  */
 class SvgChart {
 
+    static #chartTypeControllers = { ChartType: Controller };
     static colorPalettes = colors;
 
     static #cssAdded = false;
     static #activeColorPalette: Array<string> = colors.dutchFieldColorPalette;
-    static #chartTypeControllers = {
-        line: LineController,
-        bar: BarController,
-        lineAndBar: BarAndLineController,
-        pie: PieController,
-        donut: DonutController
-    };
+
+    static {
+        SvgChart.#chartTypeControllers[ChartType.Line] = LineController;
+        SvgChart.#chartTypeControllers[ChartType.Bar] = BarController;
+        SvgChart.#chartTypeControllers[ChartType.LineAndBar] = BarAndLineController;
+        SvgChart.#chartTypeControllers[ChartType.Pie] = PieController;
+        SvgChart.#chartTypeControllers[ChartType.Donut] = DonutController;
+    }
 
     /**
      * Width of parent element.
@@ -123,7 +126,7 @@ class SvgChart {
     columnWidth: number;
     barCountPerColumn: number;
 
-    
+
 
     #onLegendClickScoped = null;
     #onLegendKeypressScoped = null;
@@ -704,14 +707,14 @@ class SvgChart {
             var type = serieItem.type || this.config.chartType;
             var x: number, y: number = null;
             switch (type) {
-                case 'line':
-                case 'bar':
-                case 'lineAndBar':
+                case ChartType.Line:
+                case ChartType.Bar:
+                case ChartType.LineAndBar:
                     x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (width / 2);
                     y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - height;
                     break;
-                case 'pie':
-                case 'donut':
+                case ChartType.Pie:
+                case ChartType.Donut:
                     var d = circle.getAttribute('d').split(' ');
                     x = d[1].trim();
                     y = d[2].trim();
