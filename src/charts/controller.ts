@@ -1,4 +1,5 @@
-import { SvgChartConfig, ChartConfigSerie } from "../config";
+import { SvgChartConfig } from "../config";
+import { ChartConfigSerie } from "../types";
 import { SvgChart } from "../svg";
 import { el, prefixed } from "../utils";
 
@@ -14,7 +15,8 @@ class Controller {
 
     /**
      * Create new Controller class.
-     * @param {SvgChart} svgChart SvgChart instance.
+     * 
+     * @param svgChart - SvgChart instance.
      */
     constructor(svgChart: SvgChart) {
         if (new.target === Controller) {
@@ -26,76 +28,72 @@ class Controller {
 
     /**
      * Draws chart.
-     * @param {SVGElement} currentSerieGroupElement Group element where the chart can be appended to.
+     * 
+     * @param currentSerieGroupElement - Group element where the chart can be appended to.
      */
-    draw(currentSerieGroupElement: SVGElement) {
-        this.drawStart(currentSerieGroupElement);
+    onDraw(currentSerieGroupElement: SVGElement) {
+        this.onDrawStart(currentSerieGroupElement);
         this.config.series.forEach((serie, serieIndex) => {
             const serieGroup = el('g', {
                 dataSerie: serie.id,
                 className: this.svgChart.unselectedSeries[serie.id] ? prefixed('unselected') : ''
             });
-            this.drawSerie(serie, serieIndex, serieGroup);
+            this.onDrawSerie(serie, serieIndex, serieGroup);
             currentSerieGroupElement.appendChild(serieGroup);
         });
-        this.drawEnd(currentSerieGroupElement);
+        this.onDrawEnd(currentSerieGroupElement);
     }
 
     /**
      * Do things at the start of the draw for this chart.
-     * @param {SVGElement} currentSerieGroupElement DOM group element.
+     * 
+     * @param currentSerieGroupElement - DOM group element.
      */
-    drawStart(currentSerieGroupElement: SVGElement) {
+    onDrawStart(currentSerieGroupElement: SVGElement) {
 
     }
 
     /**
      * Do things at the end of the draw for this chart.
-     * @param {SVGElement} currentSerieGroupElement DOM group element.
+     * 
+     * @param currentSerieGroupElement - DOM group element.
      */
-    drawEnd(currentSerieGroupElement: SVGElement) {
+    onDrawEnd(currentSerieGroupElement: SVGElement) {
 
     }
 
     /**
      * Draws chart element for this serie and attached it to the serieGroup.
-     * @param {ChartConfigSerie} serie Serie object.
-     * @param {number} serieIndex Serie index.
-     * @param {SVGElement} serieGroup DOM group element for this serie.
+     * 
+     * @param serie - Serie object.
+     * @param serieIndex - Serie index.
+     * @param serieGroup - DOM group element for this serie.
      */
-    drawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
-
-    }
+    onDrawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) { }
 
     /**
      * Execute config things before global config things are done.
      */
-    configBefore() {
-        //console.log('configBefore');
-    }
+    onConfigBefore() { }
 
     /**
      * Execute config things after global config things are done.
      */
-    configAfter() {
-        //console.log('configAfter');
-    }
+    onConfigAfter() { }
 
     /**
      * Execute serie config things before global config serie things are done.
-     * @param {ChartConfigSerie} serie - Serie object
+     * 
+     * @param serie - Serie object
      */
-    configSerieBefore(serie: ChartConfigSerie) {
-        //console.log(`configSerieBefore for serie ${serie.id}`);
-    }
+    onConfigSerieBefore(serie: ChartConfigSerie) { }
 
     /**
      * Execute config things after global config things are done.
-     * @param {ChartConfigSerie} serie - Serie object
+     * 
+     * @param serie - Serie object
      */
-    configSerieAfter(serie: ChartConfigSerie) {
-        //console.log(`configSerieAfter for serie ${serie.id}`);
-    }
+    onConfigSerieAfter(serie: ChartConfigSerie) { }
 
 }
 

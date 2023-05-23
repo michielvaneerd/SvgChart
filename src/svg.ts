@@ -250,11 +250,11 @@ class SvgChart {
             this.#addLegend();
         }
 
-        this.controller.configBefore();
+        this.controller.onConfigBefore();
 
         this.config.series.forEach((serie) => {
 
-            this.controller.configSerieBefore(serie);
+            this.controller.onConfigSerieBefore(serie);
 
             if (serie.fillGradient) {
                 var lg = el('linearGradient', {
@@ -275,7 +275,7 @@ class SvgChart {
                 this.#defsElement.appendChild(lg);
             }
 
-            this.controller.configSerieAfter(serie);
+            this.controller.onConfigSerieAfter(serie);
 
         });
 
@@ -292,7 +292,7 @@ class SvgChart {
 
         this.#addSerieGroup();
 
-        this.controller.configAfter();
+        this.controller.onConfigAfter();
 
     }
 
@@ -308,7 +308,7 @@ class SvgChart {
 
         const currentSerieGroupElement = this.#dataBefore();
 
-        this.controller.draw(currentSerieGroupElement);
+        this.controller.onDraw(currentSerieGroupElement);
 
         this.#dataAfter(currentSerieGroupElement);
 
@@ -408,7 +408,7 @@ class SvgChart {
             this.addEventListener(gLegend, 'click', this.#onLegendClickScoped, false);
         }
 
-        this.config.series.forEach(function (serie, serieIndex) {
+        this.config.series.forEach((serie, serieIndex) => {
 
             const gSerie = el('g', {
                 dataSerie: serie.id,
@@ -465,7 +465,7 @@ class SvgChart {
                 gSerie.appendChild(rect);
             }
             gLegend.appendChild(gSerie);
-        }, this);
+        });
 
         this.svg.appendChild(gLegend);
 
@@ -476,7 +476,7 @@ class SvgChart {
 
             let totalLegendWidth = 0;
             let curX = this.isLTR ? 0 : (this.width - this.config.legendWidth);
-            gLegend.querySelectorAll('g').forEach(function (g) {
+            gLegend.querySelectorAll('g').forEach((g) => {
                 const box = g.getBBox();
                 g.querySelector('rect').setAttribute('x', curX.toString());
                 g.querySelector('text').setAttribute('x', (this.isLTR ? (curX + (this.config.legendWidth * 2)) : (curX - 10)).toString());
@@ -486,7 +486,7 @@ class SvgChart {
                     curX -= (box.width + this.config.paddingDefault);
                 }
                 totalLegendWidth += (box.width + this.config.paddingDefault);
-            }, this);
+            });
             if (this.isLTR) {
                 curX -= this.config.paddingDefault;
                 gLegend.setAttribute('transform', 'translate(' + ((this.width / 2) - (curX / 2)) + ', 0)');

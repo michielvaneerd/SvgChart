@@ -2,19 +2,18 @@ import { prefixed, directionForEach, el } from "../utils";
 import { Controller } from "./controller";
 import { ChartPoint, SvgChart } from "../svg";
 import { AxisController } from "../axis";
-import { configBefore as barAndLineConfigBefore, drawStart as barAndLineDrawStart } from "../bar_and_line_utils";
-import { ChartConfigSerie } from "../config";
+import { onConfigBeforeBarAndLine, onDrawStartBarAndLine } from "./bar_and_line_utils";
+import { ChartConfigSerie } from "../types";
 
 /**
  * Controller class for bar and line charts.
- * @extends Controller
  */
 class LineController extends Controller {
 
-    #axisController = null;
+    #axisController: AxisController;
 
     /**
-     * @param {SvgChart} svgChart SvgChart instance.
+     * @param svgChart - SvgChart instance.
      */
     constructor(svgChart: SvgChart) {
         super(svgChart);
@@ -23,15 +22,18 @@ class LineController extends Controller {
 
     /**
      * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
-     * @param {ChartConfigSerie} serie Serie object.
-     * @param {number} serieIndex Serie index.
-     * @param {SVGElement} serieGroup DOM group element for this serie.
+     * 
+     * @override
+     * 
+     * @param serie - Serie object.
+     * @param serieIndex - Serie index.
+     * @param serieGroup - DOM group element for this serie.
      */
-    drawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
+    onDrawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
         var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
         var flatNonNullPoints = [];
 
-        directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, function (value: number, valueIndex: number, values: Array<number>) {
+        directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, (value: number, valueIndex: number, values: Array<number>) => {
             var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + (this.config.xAxisGridColumns ? (this.svgChart.columnWidth / 2) : 0);
             var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.svgChart.lineAndBarValueHeight);
 
@@ -101,15 +103,19 @@ class LineController extends Controller {
 
     /**
      * Do things at the start of the draw for this chart.
-     * @param {SVGElement} currentSerieGroupElement DOM group element.
+     * 
+     * @override
+     * 
+     * @param currentSerieGroupElement - DOM group element.
      */
-    drawStart(currentSerieGroupElement: SVGElement) {
-        barAndLineDrawStart(this.svgChart, this.#axisController, currentSerieGroupElement);
+    onDrawStart(currentSerieGroupElement: SVGElement) {
+        onDrawStartBarAndLine(this.svgChart, this.#axisController, currentSerieGroupElement);
     }
 
     /**
      * Helper function to get a curved path from an array of points.
-     * @param {Array<ChartPoint>} points Array of points.
+     * 
+     * @param points - Array of points.
      * @returns Array of curved path coordinates.
      */
     #getCurvedPathFromPoints(points: Array<ChartPoint>): Array<any> {
@@ -128,8 +134,9 @@ class LineController extends Controller {
 
     /**
      * Closes path for filled line charts.
-     * @param {Array} path Array of path coordinates
-     * @param {Array} points Array of points
+     * 
+     * @param path - Array of path coordinates
+     * @param points - Array of points
      */
     #closePath(path: Array<any>, points: Array<ChartPoint>) {
         if (this.config.lineChartFilled && points.length > 1) {
@@ -144,12 +151,13 @@ class LineController extends Controller {
 
     /**
      * Helper function to get a straight path for line charts.
-     * @param {Array} points Array of points.
+     * 
+     * @param points - Array of points.
      * @returns Array of path coordinates.
      */
     #getStraightPathFromPoints(points: Array<ChartPoint>): Array<any> {
         let path = [];
-        points.forEach(function (point, pointIndex) {
+        points.forEach((point, pointIndex) => {
             if (pointIndex === 0) {
                 path.push(`M ${point.x} ${point.y}`);
             } else {
@@ -162,10 +170,12 @@ class LineController extends Controller {
 
     /**
      * Execute config things before global config things are done.
+     * 
+     * @override
      */
-    configBefore() {
-        super.configBefore();
-        barAndLineConfigBefore(this.svgChart, this.#axisController);
+    onConfigBefore() {
+        super.onConfigBefore();
+        onConfigBeforeBarAndLine(this.svgChart, this.#axisController);
     }
 
 }

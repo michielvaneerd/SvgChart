@@ -1,0 +1,38 @@
+.tsd-page-navigation ul {
+    padding-left: 0;
+}
+
+.tsd-accordion-summary h3 svg {
+    display: none;
+}
+
+.tsd-navigation.settings summary {
+    display: none;
+}
+
+.tsd-accordion-details .uppercase {
+    text-transform: none;
+}
+
+.tsd-accordion-summary h3 {
+    font-size: unset;
+    margin-bottom: 1rem;
+}
+
+.tsd-nested-navigation {
+    margin-left: 2rem;
+}
+
+.container {
+    padding: 0 1rem;
+}
+
+@media (min-width: 770px) {
+    .container-main {
+        margin: 1rem auto;
+    }
+}
+
+.tsd-page-toolbar {
+    padding: 0.5rem 0;
+}

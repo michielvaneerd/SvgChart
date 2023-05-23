@@ -1,9 +1,9 @@
-/**
- * @module
- * @ignore
- */
-
 import { ChartPoint } from "./svg";
+
+/**
+ * Callback function that is called by the {@link directionForEach} function.
+ */
+type DirectionForEachCallback = (item: any, index: number, items: Array<any>) => void;
 
 /**
  * SVG namespace.
@@ -22,14 +22,15 @@ const classNamePrefix = 'svg-chart-';
 
 /**
  * Creates a new HTML element.
- * @param {string} name Tag name for new HTML element.
- * @param {object} [attributes] Key value pair of attributes to set.
- * @param {Node} [child] Child node to add to new HTML element.
- * @returns {SVGElement} The new HTML element.
+ * 
+ * @param name Tag name for new HTML element.
+ * @param attributes - Key value pair of attributes to set.
+ * @param child - Child node to add to new HTML element.
+ * @returns The new HTML element.
  */
 function el(name: string, attributes: object = {}, child: Node = null): SVGElement {
     var el = document.createElementNS(ns, name);
-    Object.keys(attributes).forEach(function (key) {
+    Object.keys(attributes).forEach((key) => {
         if (attributes[key] === null) {
             return;
         }
@@ -53,9 +54,10 @@ function el(name: string, attributes: object = {}, child: Node = null): SVGEleme
 
 /**
  * Searches up from currentElement until an element is found with the parentName. 
- * @param {SVGElement} currentElement HTML element to search up from.
- * @param {string} parentName Tag name of element to search for.
- * @returns {Node|null} Found HTML element or null.
+ * 
+ * @param currentElement - HTML element to search up from.
+ * @param parentName - Tag name of element to search for.
+ * @returns Found HTML element or null.
  */
 function parent(currentElement: SVGElement, parentName: string): SVGElement | null {
     var el = currentElement;
@@ -67,8 +69,9 @@ function parent(currentElement: SVGElement, parentName: string): SVGElement | nu
 
 /**
  * Returns the className with prefix.
- * @param {string} className Class name to prefix.
- * @returns {string} Classname with prefix.
+ * 
+ * @param className - Class name to prefix.
+ * @returns Classname with prefix.
  */
 function prefixed(className: string): string {
     return classNamePrefix + className;
@@ -76,12 +79,13 @@ function prefixed(className: string): string {
 
 /**
  * Loop through items in normal (isRTL = true) or reversed (isRTL = false) order and call the callback for each item.
- * @param {object} instance Instance of object that will be this in the callback.
- * @param {Array} items Array of items to loop through.
- * @param {boolean} isRTL Whether it is left-to-right or right-to-left.
- * @param {Function} callback Callback function. Arguments it receives: {Any} item, {Number} index, {Array} items
+ * 
+ * @param instance - Instance of object that will be this in the callback.
+ * @param items - Array of items to loop through.
+ * @param isRTL - Whether it is left-to-right or right-to-left.
+ * @param callback - Callback function that is called for each array item.
  */
-function directionForEach(instance: object, items: Array<any>, isRTL: boolean, callback: Function) {
+function directionForEach(instance: object, items: Array<any>, isRTL: boolean, callback: DirectionForEachCallback) {
     if (isRTL) {
         const length = items.length;
         for (let i = 0; i < length; i++) {
@@ -97,11 +101,12 @@ function directionForEach(instance: object, items: Array<any>, isRTL: boolean, c
 
 /**
  * Convert polar to cartesian point.
- * @param {Number} centerX Center x.
- * @param {Number} centerY Center y.
- * @param {Number} radius Radius of arc.
- * @param {Number} angleInDegrees Angle in degrees.
- * @returns {Object} Point.
+ * 
+ * @param centerX - Center x.
+ * @param centerY - Center y.
+ * @param radius - Radius of arc.
+ * @param angleInDegrees - Angle in degrees.
+ * @returns ChartPoint.
  */
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number): ChartPoint {
     var angleInRadians = (angleInDegrees - 90) * Math.PI / 180;
@@ -111,4 +116,4 @@ function polarToCartesian(centerX: number, centerY: number, radius: number, angl
     };
 }
 
-export { el, parent, prefixed, directionForEach, polarToCartesian };
+export { el, parent, prefixed, directionForEach, polarToCartesian, DirectionForEachCallback };

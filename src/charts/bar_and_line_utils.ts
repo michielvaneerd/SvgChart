@@ -1,6 +1,6 @@
-import { AxisController } from "./axis";
-import { SvgChart } from "./svg";
-import { el, prefixed } from "./utils";
+import { AxisController } from "../axis";
+import { SvgChart } from "../svg";
+import { el, prefixed } from "../utils";
 
 /**
      * Do things at the start of the draw for this chart.
@@ -8,7 +8,7 @@ import { el, prefixed } from "./utils";
      * @param {AxisController} axisController AxisController instance.
      * @param {SVGElement} currentSerieGroupElement DOM group element.
      */
-function drawStart(svgChart: SvgChart, axisController: AxisController, currentSerieGroupElement: SVGElement) {
+function onDrawStartBarAndLine(svgChart: SvgChart, axisController: AxisController, currentSerieGroupElement: SVGElement) {
     if (svgChart.xAxisGroupElement.firstChild) {
         svgChart.xAxisGroupElement.removeChild(svgChart.xAxisGroupElement.firstChild);
     }
@@ -30,7 +30,7 @@ function drawStart(svgChart: SvgChart, axisController: AxisController, currentSe
     
     svgChart.columnWidth = columnWidth;
     
-    axisController.addXAxisLabels(columnWidth);
+    axisController.addXAxisGridAndLabels(columnWidth);
 }
 
 /**
@@ -38,14 +38,14 @@ function drawStart(svgChart: SvgChart, axisController: AxisController, currentSe
  * @param {SvgChart} svgChart SvgChart instance.
  * @param {AxisController} axisController AxisController instance.
  */
-function configBefore(svgChart: SvgChart, axisController: AxisController) {
+function onConfigBeforeBarAndLine(svgChart: SvgChart, axisController: AxisController) {
 
     svgChart.lineAndBarSelectedColumnIndex = null;
     svgChart.lineAndBarValueHeight = svgChart.chartHeight / svgChart.config.maxValue;
     svgChart.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
 
     if (svgChart.config.yAxisGrid) {
-        axisController.addYAxisGrid();
+        axisController.addYAxisGridAndLabels();
     }
 
     if (svgChart.config.xAxisTitle) {
@@ -65,4 +65,4 @@ function configBefore(svgChart: SvgChart, axisController: AxisController) {
     }));
 }
 
-export { drawStart, configBefore };
+export { onDrawStartBarAndLine, onConfigBeforeBarAndLine };

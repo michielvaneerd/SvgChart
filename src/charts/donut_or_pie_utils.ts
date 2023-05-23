@@ -1,18 +1,27 @@
+import { el, prefixed } from "../utils";
+import { SvgChart } from "../svg";
+import { DonutController } from "./donut_chart_controller";
+import { PieController } from "./pie_chart_controller";
+
 /**
- * @module
- * @ignore
+ * Function that is called from within the {@link drawPieOrDonut} function.
  */
-
-import { el, prefixed } from "./utils";
-import { SvgChart } from "./svg";
+type ArcCallback = (
+    centerX: number,
+    centerY: number,
+    radius: number,
+    startAngle: number,
+    endAngle: number
+) => Array<string | number>;
 
 /**
+ * Shared functions that draws a pie or donut chart. Called from {@link DonutController} and {@link PieController}.
  * 
- * @param {SvgChart} svgChart SvgChart instance.
- * @param {SVGElement} currentSerieGroupElement Group node.
- * @param {Function} describeArcCallback Callback for gettting the path of the pie or donut.
+ * @param svgChart - SvgChart instance.
+ * @param currentSerieGroupElement - Group node.
+ * @param describeArcCallback - Callback for gettting the path of the pie or donut.
  */
-function draw(svgChart: SvgChart, currentSerieGroupElement: SVGElement, describeArcCallback: Function) {
+function drawPieOrDonut(svgChart: SvgChart, currentSerieGroupElement: SVGElement, describeArcCallback: ArcCallback) {
 
     var radius = svgChart.chartHeight / 2;
     var centerX = svgChart.width / 2;
@@ -26,7 +35,7 @@ function draw(svgChart: SvgChart, currentSerieGroupElement: SVGElement, describe
     var totalToDegree = 360 / total;
     var currentTotal = 0;
 
-    svgChart.config.series.forEach(function (serie, serieIndex) {
+    svgChart.config.series.forEach((serie, serieIndex) => {
         var serieGroup = el('g', {
             dataSerie: serie.id,
             className: svgChart.unselectedSeries[serie.id] ? prefixed('unselected') : ''
@@ -55,4 +64,4 @@ function draw(svgChart: SvgChart, currentSerieGroupElement: SVGElement, describe
 
 }
 
-export { draw };
+export { drawPieOrDonut, ArcCallback };

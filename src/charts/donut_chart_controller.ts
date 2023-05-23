@@ -1,6 +1,6 @@
 import { polarToCartesian } from "../utils";
 import { Controller } from "./controller";
-import { draw as drawPieOrDonut } from "../donut_or_pie_utils";
+import { drawPieOrDonut } from "./donut_or_pie_utils";
 
 /**
  * Class for displaying pie and donut charts.
@@ -9,28 +9,33 @@ import { draw as drawPieOrDonut } from "../donut_or_pie_utils";
 class DonutController extends Controller {
 
     /**
+     * Draw donut chart.
      * 
-     * @param {SVGElement} currentSerieGroupElement Current serie group element.
+     * @override
+     * 
+     * @param currentSerieGroupElement - Current serie group element.
      */
-    draw(currentSerieGroupElement: SVGElement) {
+    onDraw(currentSerieGroupElement: SVGElement) {
         const donutWidth = this.config.donutWidth || this.svgChart.chartHeight / 4;
-        drawPieOrDonut(this.svgChart, currentSerieGroupElement, function(centerX: number, centerY: number, radius: number, startAngle: number, endAngle: number) {
+        drawPieOrDonut(this.svgChart, currentSerieGroupElement, (centerX: number, centerY: number, radius: number, startAngle: number, endAngle: number) => {
             return describeArcDonut(centerX, centerY, radius - donutWidth, donutWidth, startAngle, endAngle);
         });
     }
+
 }
 
 /**
  * Get path for donut.
- * @param {Number} x X point.
- * @param {Number} y Y point.
- * @param {Number} radius Radius of arc.
- * @param {Number} spread Spread of the donut.
- * @param {Number} startAngle Start angle.
- * @param {Number} endAngle End angle.
- * @returns {Array} Array of path coordinates.
+ * 
+ * @param x - X point.
+ * @param y - Y point.
+ * @param radius - Radius of arc.
+ * @param spread - Spread of the donut.
+ * @param startAngle - Start angle.
+ * @param endAngle - End angle.
+ * @returns Array of path coordinates.
  */
-function describeArcDonut(x: number, y: number, radius: number, spread: number, startAngle: number, endAngle: number): Array<any> {
+function describeArcDonut(x: number, y: number, radius: number, spread: number, startAngle: number, endAngle: number): Array<string | number> {
     var innerStart = polarToCartesian(x, y, radius, endAngle);
     var innerEnd = polarToCartesian(x, y, radius, startAngle);
     var outerStart = polarToCartesian(x, y, radius + spread, endAngle);

@@ -2,12 +2,12 @@ import { prefixed, directionForEach, el } from "../utils";
 import { Controller } from "./controller";
 import { SvgChart } from "../svg";
 import { AxisController } from "../axis";
-import { configBefore as barAndLineConfigBefore, drawStart as barAndLineDrawStart } from "../bar_and_line_utils";
-import { SvgChartConfig, ChartConfigSerie } from "../config";
+import { onDrawStartBarAndLine, onConfigBeforeBarAndLine } from "./bar_and_line_utils";
+import { SvgChartConfig } from "../config";
+import { ChartConfigSerie } from "../types";
 
 /**
  * Controller class for bar and line charts.
- * @extends Controller
  */
 class BarController extends Controller {
 
@@ -16,31 +16,32 @@ class BarController extends Controller {
     stackedBarValues: object;
     barWidth: number;
 
-    #axisController = null;
+    #axisController: AxisController;
 
     /**
-     * @param {SvgChart} svgChart SvgChart instance.
+     * @param svgChart - SvgChart instance.
      */
     constructor(svgChart: SvgChart) {
         super(svgChart);
         this.#axisController = new AxisController(svgChart);
     }
 
-    /**
-     * Required config property values for this type of chart.
-     */
+    /** @override */
     static requiredConfigWithValue = {
         xAxisGridColumns: true
     };
 
     /**
      * Draws chart element for this serie and attached it to the serieGroup.
-     * @param {ChartConfigSerie} serie Serie object.
-     * @param {number} serieIndex Serie index.
-     * @param {HTMLElement} serieGroup DOM group element for this serie.
+     * 
+     * @override
+     * 
+     * @param serie - Serie object.
+     * @param serieIndex - Serie index.
+     * @param serieGroup - DOM group element for this serie.
      */
-    drawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
-        directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, function (value, valueIndex) {
+    onDrawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
+        directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, (value: number, valueIndex: number) => {
 
             var x = null;
             var y = null;
@@ -82,11 +83,14 @@ class BarController extends Controller {
 
     /**
      * Do things at the start of the draw for this chart.
-     * @param {HTMLElement} currentSerieGroupElement DOM group element.
+     * 
+     * @override
+     * 
+     * @param currentSerieGroupElement - DOM group element.
      */
-    drawStart(currentSerieGroupElement: SVGElement) {
+    onDrawStart(currentSerieGroupElement: SVGElement) {
 
-        barAndLineDrawStart(this.svgChart, this.#axisController, currentSerieGroupElement);
+        onDrawStartBarAndLine(this.svgChart, this.#axisController, currentSerieGroupElement);
         const barWidth = (this.svgChart.columnWidth - (this.config.barSpacing * (this.svgChart.barCountPerColumn + 1))) / (this.svgChart.barCountPerColumn || 1);
 
         this.barWidth = barWidth;
@@ -97,18 +101,23 @@ class BarController extends Controller {
 
     /**
      * Execute config things before global config things are done.
+     * 
+     * @override
      */
-    configBefore() {
-        super.configBefore();
-        barAndLineConfigBefore(this.svgChart, this.#axisController);
+    onConfigBefore() {
+        super.onConfigBefore();
+        onConfigBeforeBarAndLine(this.svgChart, this.#axisController);
     }
 
     /**
      * Execute serie config things before global config serie things are done.
-     * @param {ChartConfigSerie} serie - Serie object
+     * 
+     * @override
+     * 
+     * @param serie - Serie object
      */
-    configSerieBefore(serie: ChartConfigSerie) {
-        super.configSerieBefore(serie);
+    onConfigSerieBefore(serie: ChartConfigSerie) {
+        super.onConfigSerieBefore(serie);
         if (!this.config.barStacked && (serie.type === SvgChartConfig.chartTypes.bar || this.config.chartType === SvgChartConfig.chartTypes.bar)) {
             this.svgChart.barCountPerColumn += 1;
         }

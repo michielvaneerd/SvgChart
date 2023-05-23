@@ -1,25 +1,28 @@
 import { SvgChartConfig } from "./config";
 import { SvgChart } from "./svg";
+import { ScopedEventCallback } from "./types";
 import { el, prefixed, directionForEach } from "./utils";
 
 class AxisController {
 
-    #onXAxisLabelGroupClickScoped = null;
-    #onXAxisLabelGroupKeypressScoped = null;
+    #onXAxisLabelGroupClickScoped: ScopedEventCallback;
+    #onXAxisLabelGroupKeypressScoped: ScopedEventCallback;
 
     svgChart: SvgChart;
     config: SvgChartConfig;
 
     /**
-     * 
-     * @param {SvgChart} svgChart SvgChart instance.
+     * @param svgChart SvgChart instance.
      */
     constructor(svgChart: SvgChart) {
         this.svgChart = svgChart;
         this.config = svgChart.config;
     }
 
-    addYAxisGrid() {
+    /**
+     * Add Y axis grid lines and labels.
+     */
+    addYAxisGridAndLabels() {
         var gYAxis = el('g', {
             className: prefixed('y-axis-group')
         });
@@ -59,7 +62,12 @@ class AxisController {
         this.svgChart.svg.appendChild(gYAxis);
     }
 
-    addXAxisLabels(columnWidth: number) {
+    /**
+     * Add X axis grid lines and labels.
+     * 
+     * @param columnWidth - Width of each column.
+     */
+    addXAxisGridAndLabels(columnWidth: number) {
         // Draw xAxis lines
         var currentXAxisGroupElement = el('g');
 
@@ -68,7 +76,7 @@ class AxisController {
         });
 
         var currentXAxisGridColumnsSelectableGroupElement = (this.config.xAxisGridColumnsSelectable) ? el('g') : null;
-        directionForEach(this, this.svgChart.data.xAxis.columns, this.svgChart.isLTR, function (colValue: number, colIndex: number) {
+        directionForEach(this, this.svgChart.data.xAxis.columns, this.svgChart.isLTR, (colValue: number, colIndex: number) => {
             if (this.config.xAxisGrid) {
                 const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
                 if (colIndex === 0 || ((colIndex + 0) % this.config.xAxisStep === 0)) {
@@ -113,6 +121,12 @@ class AxisController {
         this.svgChart.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
     }
 
+    /**
+     * Draws an X axis line.
+     * 
+     * @param parent - Parent element where to attach the line to.
+     * @param x X position.
+     */
     #addXAxisLine(parent: SVGElement, x: number) {
         parent.appendChild(el('line', {
             x1: x,
@@ -126,6 +140,9 @@ class AxisController {
         }));
     }
 
+    /**
+     * Draws the X axis title.
+     */
     addXAxisTitle() {
         var x = this.svgChart.isLTR ? (this.svgChart.width - this.config.padding.right - this.config.xAxisGridPadding) : (this.config.padding.left);
         this.svgChart.svg.appendChild(el('text', {
@@ -141,6 +158,9 @@ class AxisController {
         }, document.createTextNode(this.config.xAxisTitle)));
     }
 
+    /**
+     * Draws the Y axis title.
+     */
     addYAxisTitle() {
         var yAxisTitleG = el('g');
         var x = 0;
@@ -188,7 +208,8 @@ class AxisController {
 
     /**
      * When a label on the x axis receives a click when focussed.
-     * @param {Event} e Event object.
+     * 
+     * @param e Event object.
      */
     #onXAxisLabelGroupClick(e: Event) {
         this.#onXAxisLabelGroupSelect(e.target as SVGElement);
@@ -196,7 +217,8 @@ class AxisController {
 
     /**
      * Display the selected column indicator and fires the onXAxisLabelGroupSelect callback (if defined).
-     * @param {SVGElement} label Node (x axis label) that is selected.
+     * 
+     * @param label - Node (x axis label) that is selected.
      */
     #onXAxisLabelGroupSelect(label: SVGElement) {
         var textNodes = this.svgChart.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
@@ -220,6 +242,11 @@ class AxisController {
         }
     }
 
+    /**
+     * When a X axis label receives a ENTER key event.
+     * 
+     * @param e Keyboard event.
+     */
     #onXAxisLabelGroupKeypress(e: KeyboardEvent) {
         if (e.key === 'Enter') {
             this.#onXAxisLabelGroupSelect(e.target as SVGElement);

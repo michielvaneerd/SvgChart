@@ -20,6 +20,7 @@
     //     "API": "https://typedoc.org/api"
     // },
     "sort": ["kind"],
+    "customCss": "my-typedoc.css"
     //"excludePrivate": true
     //"entryPointStrategy": "expand"
 }

@@ -2,19 +2,19 @@ import { Controller } from "./controller";
 import { LineController } from "./line_chart_controller";
 import { BarController } from "./bar_chart_controller";
 import { SvgChart } from "../svg";
-import { ChartConfigSerie, SvgChartConfig } from "../config";
+import { SvgChartConfig } from "../config";
+import { ChartConfigSerie } from "../types";
 
 /**
  * Controller class for bar and line charts.
- * @extends Controller
  */
 class BarAndLineController extends Controller {
 
-    #lineChartController = null;
-    #barChartController = null;
+    #lineChartController: LineController;
+    #barChartController: BarController;
 
     /**
-     * @param {SvgChart} svgChart SvgChart instance.
+     * @param svgChart - SvgChart instance.
      */
     constructor(svgChart: SvgChart) {
         super(svgChart);
@@ -22,32 +22,37 @@ class BarAndLineController extends Controller {
         this.#lineChartController = new LineController(svgChart);
     }
 
+    /** @override */
     static requiredConfigWithValue = {
         xAxisGridColumns: true
     };
 
-    drawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
+    /** @override */
+    onDrawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
         const serieType = serie.type || (this.config.chartType === SvgChartConfig.chartTypes.lineAndBar ? SvgChartConfig.chartTypes.line : this.config.chartType);
         switch (serieType) {
             case SvgChartConfig.chartTypes.line:
-                this.#lineChartController.drawSerie(serie, serieIndex, serieGroup);
+                this.#lineChartController.onDrawSerie(serie, serieIndex, serieGroup);
                 break;
             case SvgChartConfig.chartTypes.bar:
-                this.#barChartController.drawSerie(serie, serieIndex, serieGroup);
+                this.#barChartController.onDrawSerie(serie, serieIndex, serieGroup);
                 break;
         }
     }
 
-    drawStart(currentSerieGroupElement: SVGElement) {
-        this.#barChartController.drawStart(currentSerieGroupElement);
+    /** @override */
+    onDrawStart(currentSerieGroupElement: SVGElement) {
+        this.#barChartController.onDrawStart(currentSerieGroupElement);
     }
 
-    configBefore() {
-        this.#barChartController.configBefore();
+    /** @override */
+    onConfigBefore() {
+        this.#barChartController.onConfigBefore();
     }
 
-    configSerieBefore(serie) {
-        this.#barChartController.configSerieBefore(serie);
+    /** @override */
+    onConfigSerieBefore(serie) {
+        this.#barChartController.onConfigSerieBefore(serie);
     }
 
 }

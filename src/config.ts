@@ -1,9 +1,4 @@
-interface ChartConfigSerie {
-    id: string;
-    title: string;
-    type?: string;
-    fillGradient?: string;
-}
+import { ChartConfigSerie } from "./types";
 
 /**
  * SvgChart config class.
@@ -519,4 +514,4 @@ class SvgChartConfig {
     donutStrokeWidth: number = 2;
 };
 
-export { SvgChartConfig, ChartConfigSerie };
+export { SvgChartConfig };

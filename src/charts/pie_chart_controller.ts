@@ -1,6 +1,6 @@
 import { polarToCartesian } from "../utils";
 import { Controller } from "./controller";
-import { draw as drawPieOrDonut } from "../donut_or_pie_utils";
+import { drawPieOrDonut } from "./donut_or_pie_utils";
 
 /**
  * Class for displaying pie and donut charts.
@@ -9,26 +9,31 @@ import { draw as drawPieOrDonut } from "../donut_or_pie_utils";
 class PieController extends Controller {
 
     /**
-     * Draws chart.
-     * @param {SVGElement} currentSerieGroupElement Current serie group element.
+     * Draws pie chart.
+     * 
+     * @override
+     * 
+     * @param currentSerieGroupElement - Current serie group element.
      */
-    draw(currentSerieGroupElement: SVGElement) {
-        drawPieOrDonut(this.svgChart, currentSerieGroupElement, function(centerX: number, centerY: number, radius: number, startAngle: number, endAngle: number) {
+    onDraw(currentSerieGroupElement: SVGElement) {
+        drawPieOrDonut(this.svgChart, currentSerieGroupElement, (centerX: number, centerY: number, radius: number, startAngle: number, endAngle: number) => {
             return describeArcPie(centerX, centerY, radius, startAngle, endAngle);
         });
     }
+
 }
 
 /**
  * Get path for pie.
- * @param {Number} x X point.
- * @param {Number} y Y point.
- * @param {Number} radius Radius of arc.
- * @param {Number} startAngle Start angle.
- * @param {Number} endAngle End angle.
- * @returns {Array} Array of path coordinates.
+ * 
+ * @param x - X point.
+ * @param y - Y point.
+ * @param radius - Radius of arc.
+ * @param startAngle - Start angle.
+ * @param endAngle - End angle.
+ * @returns Array of path coordinates.
  */
-function describeArcPie(x: number, y: number, radius: number, startAngle: number, endAngle: number): Array<any> {
+function describeArcPie(x: number, y: number, radius: number, startAngle: number, endAngle: number): Array<string | number> {
     var start = polarToCartesian(x, y, radius, endAngle);
     var end = polarToCartesian(x, y, radius, startAngle);
 
