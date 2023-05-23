@@ -5,16 +5,14 @@ import { ChartConfigSerie, ChartType } from "./types";
  */
 class SvgChartConfig {
 
-    static directions = {
-        ltr: 'ltr',
-        rtl: 'rtl'
-    };
+    static getDirection(config: SvgChartConfig) {
+        return config.ltr ? 'ltr' : 'rtl';
+    }
 
     /**
-     * @prop {String} dir - Language direction.
-     * @default SvgChartConfig.directions.ltr
+     * Whether language direction is ltr.
      */
-    dir: string = SvgChartConfig.directions.ltr;
+    ltr: boolean = true;
 
     /**
      * @prop {Array<ChartConfigSerie>} series - Series array.

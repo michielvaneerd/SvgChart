@@ -22,16 +22,14 @@ function getRandomNumbersSummedUpTo(count, maxSum) {
     return numbers;
 }
 
-var htmlDir = (document.documentElement.getAttribute('dir') in SvgChartConfig.directions)
-    ? SvgChartConfig.directions[document.documentElement.getAttribute('dir')]
-    : SvgChartConfig.directions.ltr;
+var htmlDirIsLtr = document.documentElement.getAttribute('dir') !== 'rtl';
 
 var chartInfo = {
     chartBasicLine: {
         config: {
             chartType: ChartType.Line,
             transition: true,
-            dir: htmlDir,
+            ltr: htmlDirIsLtr,
             title: 'Basic line chart',
             minValue: 0,
             maxValue: 100,
@@ -74,7 +72,7 @@ var chartInfo = {
             lineChartFilled: true,
             legendColor: 'white',
             transition: true,
-            dir: htmlDir,
+            ltr: htmlDirIsLtr,
             title: 'Basic line chart dark',
             minValue: 0,
             maxValue: 100,
@@ -112,7 +110,7 @@ var chartInfo = {
     chartBasicLineBig: {
         config: {
             chartType: ChartType.Line,
-            dir: htmlDir,
+            ltr: htmlDirIsLtr,
             title: 'Basic line chart with many values',
             minValue: 0,
             maxValue: 100,
@@ -179,7 +177,7 @@ var chartInfo = {
     chartBasicBar: {
         config: {
             chartType: ChartType.Bar,
-            dir: htmlDir,
+            ltr: htmlDirIsLtr,
             title: 'Basic bar chart',
             minValue: 0,
             maxValue: 100,
@@ -209,7 +207,7 @@ var chartInfo = {
     chartStackedBar: {
         config: {
             chartType: ChartType.Bar,
-            dir: htmlDir,
+            ltr: htmlDirIsLtr,
             title: 'Stacked bar chart',
             legendPosition: 'top',
             minValue: 0,
@@ -263,7 +261,7 @@ var chartInfo = {
     chartBasicPie: {
         config: {
             chartType: ChartType.Pie,
-            dir: htmlDir,
+            ltr: htmlDirIsLtr,
             title: 'Basic pie chart',
             legendPosition: 'top',
             legendTop: 60,
@@ -292,7 +290,7 @@ var chartInfo = {
     chartBasicDonut: {
         config: {
             chartType: ChartType.Donut,
-            dir: htmlDir,
+            ltr: htmlDirIsLtr,
             title: 'Basic donut chart',
             legendPosition: 'top',
             legendTop: 60,
@@ -321,7 +319,7 @@ var chartInfo = {
     chartBarAndLine: {
         config: {
             chartType: ChartType.LineAndBar,
-            dir: htmlDir,
+            ltr: htmlDirIsLtr,
             title: 'Bar and line chart',
             legendPosition: 'top',
             legendTop: 60,
@@ -332,20 +330,22 @@ var chartInfo = {
                 {
                     id: 'bike',
                     title: 'Bike',
-                    type: 'bar'
+                    type: ChartType.Bar
                 },
                 {
                     id: 'feet',
                     title: 'Feet',
-                    type: 'bar'
+                    type: ChartType.Bar
                 },
                 {
                     id: 'train',
                     title: 'Train',
+                    type: ChartType.Line
                 },
                 {
                     id: 'car',
                     title: 'Car',
+                    type: ChartType.Line
                 }
             ]
         },
@@ -359,7 +359,7 @@ var chartInfo = {
                 start: 80
             },
             chartType: ChartType.Line,
-            dir: htmlDir,
+            ltr: htmlDirIsLtr,
             title: 'Custom line chart',
             legendPosition: 'top',
             legendTop: 60,
@@ -383,8 +383,8 @@ var chartInfo = {
             },
             drawOnData: function (chart, groupNode) {
                 groupNode.appendChild(chart.el('text', {
-                    x: chart.isLTR ? (chart.width - chart.config.padding.end - 2) : (chart.config.padding.end + 2),
-                    direction: chart.config.dir,
+                    x: chart.config.ltr ? (chart.width - chart.config.padding.end - 2) : (chart.config.padding.end + 2),
+                    direction: SvgChartConfig.getDirection(chart.config),
                     y: chart.config.padding.top + 4,
                     textAnchor: 'end',
                     dominantBaseline: 'hanging',
@@ -446,7 +446,7 @@ var chartInfo = {
                 start: 80
             },
             chartType: ChartType.Line,
-            dir: htmlDir,
+            ltr: htmlDirIsLtr,
             title: 'Dynamic chart',
             legendPosition: 'top',
             legendTop: 60,

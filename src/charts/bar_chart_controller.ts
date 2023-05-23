@@ -40,7 +40,7 @@ class BarController extends Controller {
      * @param serieGroup - DOM group element for this serie.
      */
     onDrawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
-        directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, (value: number, valueIndex: number) => {
+        directionForEach(this, this.svgChart.data.series[serie.id], this.config.ltr, (value: number, valueIndex: number) => {
 
             var x = null;
             var y = null;

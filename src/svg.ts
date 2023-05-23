@@ -80,11 +80,6 @@ class SvgChart {
     config: SvgChartConfig;
 
     /**
-     * Whether the direction is ltr.
-     */
-    isLTR: boolean;
-
-    /**
      * Controller that is in charge of drawing the chart.
      */
     controller: Controller;
@@ -193,11 +188,9 @@ class SvgChart {
         this.config = Object.assign({}, newConfig, config);
         this.config.padding = Object.assign({}, newConfig.padding, this.config.padding);
 
-        this.isLTR = this.config.dir === SvgChartConfig.directions.ltr;
-
         this.config = Object.assign(this.config, SvgChart.#chartTypeControllers[this.config.chartType].requiredConfigWithValue);
 
-        if (this.isLTR) {
+        if (this.config.ltr) {
             this.config.padding.left = this.config.padding.start;
             this.config.padding.right = this.config.padding.end;
         } else {
@@ -207,7 +200,7 @@ class SvgChart {
 
         this.controller = new SvgChart.#chartTypeControllers[config.chartType](this);
 
-        this.svg.setAttribute('direction', this.config.dir);
+        this.svg.setAttribute('direction', SvgChartConfig.getDirection(this.config));
 
         // First remove event listener from a previous config if they exist.
         if (this.#listenersToRemoveAfterConfigChange && this.#listenersToRemoveAfterConfigChange.length) {
@@ -384,7 +377,7 @@ class SvgChart {
                 fill: this.config.focusedValueFill || 'black'
             });
             this.valueElText = el('text', {
-                direction: this.config.dir,
+                direction: SvgChartConfig.getDirection(this.config),
                 textAnchor: 'middle',
                 dominantBaseline: 'middle',
                 fontFamily: this.config.fontFamily,
@@ -428,7 +421,7 @@ class SvgChart {
                     y = this.config.legendBottom ? this.config.legendBottom : (this.height - (this.config.padding.bottom / 2));
                     break;
                 case 'end':
-                    if (this.isLTR) {
+                    if (this.config.ltr) {
                         x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + this.config.paddingDefault;
                         y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * this.config.paddingDefault);
                     } else {
@@ -449,8 +442,8 @@ class SvgChart {
             });
 
             const text = el('text', {
-                direction: this.config.dir,
-                x: this.isLTR ? (x + (this.config.legendWidth * 2)) : (x - this.config.legendWidth),
+                direction: SvgChartConfig.getDirection(this.config),
+                x: this.config.ltr ? (x + (this.config.legendWidth * 2)) : (x - this.config.legendWidth),
                 y: y + (this.config.legendWidth / 2) + 1, // + 1 don't know why
                 textAnchor: 'start',
                 dominantBaseline: 'middle',
@@ -460,7 +453,7 @@ class SvgChart {
             }, document.createTextNode(serie.title));
 
 
-            if (this.isLTR) {
+            if (this.config.ltr) {
                 gSerie.appendChild(rect);
                 gSerie.appendChild(text);
             } else {
@@ -478,19 +471,19 @@ class SvgChart {
             // and center the complete legend row.
 
             let totalLegendWidth = 0;
-            let curX = this.isLTR ? 0 : (this.width - this.config.legendWidth);
+            let curX = this.config.ltr ? 0 : (this.width - this.config.legendWidth);
             gLegend.querySelectorAll('g').forEach((g) => {
                 const box = g.getBBox();
                 g.querySelector('rect').setAttribute('x', curX.toString());
-                g.querySelector('text').setAttribute('x', (this.isLTR ? (curX + (this.config.legendWidth * 2)) : (curX - 10)).toString());
-                if (this.isLTR) {
+                g.querySelector('text').setAttribute('x', (this.config.ltr ? (curX + (this.config.legendWidth * 2)) : (curX - 10)).toString());
+                if (this.config.ltr) {
                     curX += (box.width + this.config.paddingDefault);
                 } else {
                     curX -= (box.width + this.config.paddingDefault);
                 }
                 totalLegendWidth += (box.width + this.config.paddingDefault);
             });
-            if (this.isLTR) {
+            if (this.config.ltr) {
                 curX -= this.config.paddingDefault;
                 gLegend.setAttribute('transform', 'translate(' + ((this.width / 2) - (curX / 2)) + ', 0)');
             } else {
@@ -508,11 +501,11 @@ class SvgChart {
         switch (this.config.titleHorizontalPosition) {
             case 'end':
                 x = this.width - this.config.paddingDefault;
-                textAnchor = this.isLTR ? 'end' : 'start';
+                textAnchor = this.config.ltr ? 'end' : 'start';
                 break;
             case 'start':
                 x = this.config.paddingDefault;
-                textAnchor = this.isLTR ? 'start' : 'end';
+                textAnchor = this.config.ltr ? 'start' : 'end';
                 break;
             default:
                 x = this.width / 2;
@@ -534,7 +527,7 @@ class SvgChart {
                 break;
         }
         this.svg.appendChild(el('text', {
-            direction: this.config.dir,
+            direction: SvgChartConfig.getDirection(this.config),
             x: x,
             y: this.config.paddingDefault,
             textAnchor: textAnchor,

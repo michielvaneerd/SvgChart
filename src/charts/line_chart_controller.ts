@@ -33,7 +33,7 @@ class LineController extends Controller {
         var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
         var flatNonNullPoints = [];
 
-        directionForEach(this, this.svgChart.data.series[serie.id], this.svgChart.isLTR, (value: number, valueIndex: number, values: Array<number>) => {
+        directionForEach(this, this.svgChart.data.series[serie.id], this.config.ltr, (value: number, valueIndex: number, values: Array<number>) => {
             var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + (this.config.xAxisGridColumns ? (this.svgChart.columnWidth / 2) : 0);
             var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.svgChart.lineAndBarValueHeight);
 

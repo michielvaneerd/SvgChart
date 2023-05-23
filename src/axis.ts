@@ -46,8 +46,8 @@ class AxisController {
             if (this.config.yAxisLabels && currentYAxisLabelValue <= this.config.maxValue) {
                 let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (currentYAxisLabelValue * this.svgChart.lineAndBarValueHeight);
                 gYAxis.appendChild(el('text', {
-                    direction: this.config.dir,
-                    x: this.svgChart.isLTR ? (this.config.padding.left - 10) : (this.config.padding.left + this.svgChart.chartWidth + 10),
+                    direction: SvgChartConfig.getDirection(this.config),
+                    x: this.config.ltr ? (this.config.padding.left - 10) : (this.config.padding.left + this.svgChart.chartWidth + 10),
                     y: y,
                     textAnchor: 'end',
                     dominantBaseline: 'middle',
@@ -76,7 +76,7 @@ class AxisController {
         });
 
         var currentXAxisGridColumnsSelectableGroupElement = (this.config.xAxisGridColumnsSelectable) ? el('g') : null;
-        directionForEach(this, this.svgChart.data.xAxis.columns, this.svgChart.isLTR, (colValue: number, colIndex: number) => {
+        directionForEach(this, this.svgChart.data.xAxis.columns, this.config.ltr, (colValue: number, colIndex: number) => {
             if (this.config.xAxisGrid) {
                 const x = this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth);
                 if (colIndex === 0 || ((colIndex + 0) % this.config.xAxisStep === 0)) {
@@ -99,7 +99,7 @@ class AxisController {
                     transform: `translate(${this.config.padding.left + this.config.xAxisGridPadding + (colIndex * columnWidth) + (this.config.xAxisGridColumns ? (columnWidth / 2) : 0)} ${this.svgChart.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2) + this.config.xAxisLabelTop})`
                 });
                 xlg.appendChild(el('text', {
-                    direction: this.config.dir,
+                    direction: SvgChartConfig.getDirection(this.config),
                     textAnchor: this.config.textAnchorXAxisLabels || 'middle',
                     dominantBaseline: 'hanging',
                     fontFamily: this.config.fontFamily || '',
@@ -144,9 +144,9 @@ class AxisController {
      * Draws the X axis title.
      */
     addXAxisTitle() {
-        var x = this.svgChart.isLTR ? (this.svgChart.width - this.config.padding.right - this.config.xAxisGridPadding) : (this.config.padding.left);
+        var x = this.config.ltr ? (this.svgChart.width - this.config.padding.right - this.config.xAxisGridPadding) : (this.config.padding.left);
         this.svgChart.svg.appendChild(el('text', {
-            direction: this.config.dir,
+            direction: SvgChartConfig.getDirection(this.config),
             x: x,
             y: this.svgChart.height - (this.config.xAxisTitleBottom !== null ? this.config.xAxisTitleBottom : this.config.paddingDefault),
             textAnchor: 'end',
@@ -164,14 +164,14 @@ class AxisController {
     addYAxisTitle() {
         var yAxisTitleG = el('g');
         var x = 0;
-        if (this.svgChart.isLTR) {
+        if (this.config.ltr) {
             x = this.config.yAxisTitleStart ? this.config.yAxisTitleStart : this.config.paddingDefault;
         } else {
             x = this.config.yAxisTitleStart ? (this.svgChart.width - this.config.yAxisTitleStart) : (this.svgChart.width - this.config.paddingDefault);
         }
         yAxisTitleG.setAttribute('transform', 'translate(' + x + ', ' + (this.config.padding.top + this.config.yAxisGridPadding) + ')');
         var yAxisTitleEl = el('text', {
-            direction: this.config.dir,
+            direction: SvgChartConfig.getDirection(this.config),
             textAnchor: 'end',
             dominantBaseline: 'hanging',
             fontFamily: this.config.fontFamily || '',
@@ -179,7 +179,7 @@ class AxisController {
             fill: this.config.yAxisTitleColor || '',
             className: prefixed('text-y-axis-title')
         }, document.createTextNode(this.config.yAxisTitle));
-        yAxisTitleEl.setAttribute('transform', this.svgChart.isLTR ? 'rotate(-90)' : 'rotate(90)');
+        yAxisTitleEl.setAttribute('transform', this.config.ltr ? 'rotate(-90)' : 'rotate(90)');
         yAxisTitleG.appendChild(yAxisTitleEl);
         this.svgChart.svg.appendChild(yAxisTitleG);
     }
