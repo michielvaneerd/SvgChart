@@ -205,52 +205,44 @@ class SvgChartConfig {
     xAxisLabelColor: string = '#A0A0A0';
 
     /**
-     * @prop {string} xAxisTitleColor - Font color of x axis title.
-     * @default #A0A0A0
+     * Font color of x axis title.
      */
     xAxisTitleColor: string = '#A0A0A0';
 
     /**
-     * @prop {boolean} xAxisGrid - Whether the xaxis grid should be displayed.
-     * @default true
+     * Whether the xaxis grid should be displayed.
      */
     xAxisGrid: boolean = true;
 
     /**
-     * @prop {number} xAxisGridPadding - Outside padding for x axis grid.
-     * @default 0
+     * Outside padding for x axis grid.
      */
     xAxisGridPadding: number = 0;
 
     /**
-     * @prop {boolean} xAxisLabels - Whether x axis labels should be displayed.
-     * @default true
+     * Whether x axis labels should be displayed.
      */
     xAxisLabels: boolean = true;
 
     /**
-     * @prop {boolean} xAxisGridColumns - Whether the x axis labels should be below (false)
+     * Whether the x axis labels should be below (false)
      * or between (true) the x axis grid lines. For bar charts this will always be set to true.
-     * @default false
      */
     xAxisGridColumns: boolean = false;
 
     /**
-     * @prop {boolean} xAxisGridColumnsSelectable - Whether xAxisGridColumns should be selectable.
+     * Whether xAxisGridColumns should be selectable.
      * If this is true, the x axis labels can be clicked and selected.
-     * @default false
      */
     xAxisGridColumnsSelectable: boolean = false;
 
     /**
-     * @prop {number} xAxisGridSelectedColumnOpacity - Opacity value for the selected xAxisGridColumn.
-     * @default 0.2
+     * Opacity value for the selected xAxisGridColumn.
      */
     xAxisGridSelectedColumnOpacity: number = 0.2;
 
     /**
-     * @prop {string} xAxisGridColumnsSelectableColor - Background color for a selected xAxisGridColumn.
-     * @default black
+     * Background color for a selected xAxisGridColumn.
      */
     xAxisGridColumnsSelectableColor: string = 'black';
 
@@ -418,14 +410,12 @@ class SvgChartConfig {
     lineCurved: boolean = true;
 
     /**
-     * @prop {boolean} lineChartFilled - Whether line charts should be filled or not.
-     * @default false
+     * Whether line charts should be filled or not.
      */
     lineChartFilled: boolean = false;
 
     /**
-     * @prop {boolean} points - Whether the lines should display points or not.
-     * @default true
+     * Whether the lines should display points or not.
      */
     points: boolean = true;
 
@@ -434,26 +424,22 @@ class SvgChartConfig {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     /**
-     * @prop {number} barFillOpacity - Opacity of bars.
-     * @default 0.5
+     * Opacity of bars.
      */
     barFillOpacity: number = 0.5;
 
     /**
-     * @prop {number} barSpacing - Spacing in pixels between bars.
-     * @default 4
+     * Spacing in pixels between bars.
      */
     barSpacing: number = 4;
 
     /**
-     * @prop {number} barStrokeWidth - Width of bar border.
-     * @default 1
+     * Width of bar border.
      */
     barStrokeWidth: number = 1;
 
     /**
-     * @prop {boolean} barStacked - Whether bars should be stacked.
-     * @default false
+     * Whether bars should be stacked.
      */
     barStacked: boolean = false;
 
@@ -462,37 +448,32 @@ class SvgChartConfig {
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @prop {number} pieFillOpacity - Opacity of pie and donut charts.
-     * @default 0.6
+     * Opacity of pie and donut charts.
      */
     pieFillOpacity: number = 0.6;
 
     /**
-     * @prop {number} donutWidth - With of donuts. Of not given a default value is used.
+     * With of donuts. Of not given a default value is used.
      */
     donutWidth: number = null;
 
     /**
-     * @prop {string} pieStroke - Stroke color for pie charts.
-     * @default white
+     * Stroke color for pie charts.
      */
     pieStroke: string = 'white';
 
     /**
-     * @prop {number} pieStrokeWidth - Width of stroke for pie charts. If this is 0, no stroke is painted.
-     * @default 2
+     * Width of stroke for pie charts. If this is 0, no stroke is painted.
      */
     pieStrokeWidth: number = 2;
 
     /**
-     * @prop {string} donutStroke - Stroke color for donut charts.
-     * @default white
+     * Stroke color for donut charts.
      */
     donutStroke: string = 'white';
 
     /**
-     * @prop {number} donutStrokeWidth - Width of stroke for donut charts. If this is 0, no stroke is painted.
-     * @default 2
+     * Width of stroke for donut charts. If this is 0, no stroke is painted.
      */
     donutStrokeWidth: number = 2;
 };
