@@ -2,13 +2,17 @@
     padding-left: 0;
 }
 
-.tsd-accordion-summary h3 svg {
-    display: none;
+.tsd-accordion-summary h3 {
+    display: flex;
 }
 
-.tsd-navigation.settings summary {
-    display: none;
+.tsd-accordion-summary h3 svg {
+    margin-left:-.5rem;
 }
+
+/* .tsd-navigation.settings summary {
+    display: none;
+} */
 
 .tsd-accordion-details .uppercase {
     text-transform: none;

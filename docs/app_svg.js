@@ -625,16 +625,16 @@ function dynamicChart() {
 }
 
 doChart('chartBasicLine');
-//doChart('chartBasicLineDark');
-//doChart('chartBasicLineBig');
-//doChart('chartBasicBar');
-//doChart('chartStackedBar');
-//doChart('chartBasicPie');
-//doChart('chartBasicDonut');
-//doChart('chartBarAndLine');
-//doChart('chartCustom');
-//dynamicChart();
-//createToc();
+doChart('chartBasicLineDark');
+doChart('chartBasicLineBig');
+doChart('chartBasicBar');
+doChart('chartStackedBar');
+doChart('chartBasicPie');
+doChart('chartBasicDonut');
+doChart('chartBarAndLine');
+doChart('chartCustom');
+dynamicChart();
+createToc();
 
 function createToc() {
     const toc = [];
