@@ -358,45 +358,37 @@
            */
           this.xAxisLabelColor = "#A0A0A0";
           /**
-           * @prop {string} xAxisTitleColor - Font color of x axis title.
-           * @default #A0A0A0
+           * Font color of x axis title.
            */
           this.xAxisTitleColor = "#A0A0A0";
           /**
-           * @prop {boolean} xAxisGrid - Whether the xaxis grid should be displayed.
-           * @default true
+           * Whether the xaxis grid should be displayed.
            */
           this.xAxisGrid = true;
           /**
-           * @prop {number} xAxisGridPadding - Outside padding for x axis grid.
-           * @default 0
+           * Outside padding for x axis grid.
            */
           this.xAxisGridPadding = 0;
           /**
-           * @prop {boolean} xAxisLabels - Whether x axis labels should be displayed.
-           * @default true
+           * Whether x axis labels should be displayed.
            */
           this.xAxisLabels = true;
           /**
-           * @prop {boolean} xAxisGridColumns - Whether the x axis labels should be below (false)
+           * Whether the x axis labels should be below (false)
            * or between (true) the x axis grid lines. For bar charts this will always be set to true.
-           * @default false
            */
           this.xAxisGridColumns = false;
           /**
-           * @prop {boolean} xAxisGridColumnsSelectable - Whether xAxisGridColumns should be selectable.
+           * Whether xAxisGridColumns should be selectable.
            * If this is true, the x axis labels can be clicked and selected.
-           * @default false
            */
           this.xAxisGridColumnsSelectable = false;
           /**
-           * @prop {number} xAxisGridSelectedColumnOpacity - Opacity value for the selected xAxisGridColumn.
-           * @default 0.2
+           * Opacity value for the selected xAxisGridColumn.
            */
           this.xAxisGridSelectedColumnOpacity = 0.2;
           /**
-           * @prop {string} xAxisGridColumnsSelectableColor - Background color for a selected xAxisGridColumn.
-           * @default black
+           * Background color for a selected xAxisGridColumn.
            */
           this.xAxisGridColumnsSelectableColor = "black";
           /**
@@ -532,68 +524,57 @@
            */
           this.lineCurved = true;
           /**
-           * @prop {boolean} lineChartFilled - Whether line charts should be filled or not.
-           * @default false
+           * Whether line charts should be filled or not.
            */
           this.lineChartFilled = false;
           /**
-           * @prop {boolean} points - Whether the lines should display points or not.
-           * @default true
+           * Whether the lines should display points or not.
            */
           this.points = true;
           ///////////////////////////////////////////////////////////////////////////////////////////////
           // Bar charts
           ///////////////////////////////////////////////////////////////////////////////////////////////
           /**
-           * @prop {number} barFillOpacity - Opacity of bars.
-           * @default 0.5
+           * Opacity of bars.
            */
           this.barFillOpacity = 0.5;
           /**
-           * @prop {number} barSpacing - Spacing in pixels between bars.
-           * @default 4
+           * Spacing in pixels between bars.
            */
           this.barSpacing = 4;
           /**
-           * @prop {number} barStrokeWidth - Width of bar border.
-           * @default 1
+           * Width of bar border.
            */
           this.barStrokeWidth = 1;
           /**
-           * @prop {boolean} barStacked - Whether bars should be stacked.
-           * @default false
+           * Whether bars should be stacked.
            */
           this.barStacked = false;
           ///////////////////////////////////////////////////////////////////////////////////////////////
           // Pie and donut charts
           ///////////////////////////////////////////////////////////////////////////////////////////////
           /**
-           * @prop {number} pieFillOpacity - Opacity of pie and donut charts.
-           * @default 0.6
+           * Opacity of pie and donut charts.
            */
           this.pieFillOpacity = 0.6;
           /**
-           * @prop {number} donutWidth - With of donuts. Of not given a default value is used.
+           * With of donuts. Of not given a default value is used.
            */
           this.donutWidth = null;
           /**
-           * @prop {string} pieStroke - Stroke color for pie charts.
-           * @default white
+           * Stroke color for pie charts.
            */
           this.pieStroke = "white";
           /**
-           * @prop {number} pieStrokeWidth - Width of stroke for pie charts. If this is 0, no stroke is painted.
-           * @default 2
+           * Width of stroke for pie charts. If this is 0, no stroke is painted.
            */
           this.pieStrokeWidth = 2;
           /**
-           * @prop {string} donutStroke - Stroke color for donut charts.
-           * @default white
+           * Stroke color for donut charts.
            */
           this.donutStroke = "white";
           /**
-           * @prop {number} donutStrokeWidth - Width of stroke for donut charts. If this is 0, no stroke is painted.
-           * @default 2
+           * Width of stroke for donut charts. If this is 0, no stroke is painted.
            */
           this.donutStrokeWidth = 2;
         }
@@ -1415,21 +1396,32 @@
       _SvgChart = class {
         /**
          * Constructor - create a new chart instance.
-         * @param {HTMLElement} parent Parent DOM node the SVG element will be attached to.
-         * @param {SvgChartConfig} config Configuration object.
+         * @param parent - Parent DOM node the SVG element will be attached to.
+         * @param config - Configuration object.
          */
         constructor(parent2, config2) {
+          /**
+           * Add serie group element. This is a SVG group element where the series data will be attached to.
+           */
           __privateAdd(this, _addSerieGroup);
+          /**
+           * Add legend.
+           */
           __privateAdd(this, _addLegend);
+          /**
+           * Add chart title.
+           */
           __privateAdd(this, _addTitle);
           /**
            * Things we need to do for all chart types before we start visualise the data.
-           * @returns {SVGElement} The current serie group element.
+           * 
+           * @returns The current serie group element.
            */
           __privateAdd(this, _dataBefore);
           /**
            * Things we need to do for all chart types after we visualised the data.
-           * @param {SVGElement} currentSerieGroupElement The current serie group element we got from #dataBefore().
+           * 
+           * @param currentSerieGroupElement - The current serie group element we got from #dataBefore().
            */
           __privateAdd(this, _dataAfter);
           /**
@@ -1449,17 +1441,20 @@
           __privateAdd(this, _onLegendClick);
           /**
            * When the tranisiton of a serie group has ended.
-           * @param {Event} e Event object.
+           * 
+           * @param e - Event object.
            */
           __privateAdd(this, _onSerieGroupTransitionend);
           /**
            * When a serie group node is blurred (this means loses focus).
-           * @param {Event} e Event object.
+           * 
+           * @param e - Event object.
            */
           __privateAdd(this, _onSerieGroupBlur);
           /**
            * When a serie group node gets focussed.
-           * @param {Event} e Event object.
+           * 
+           * @param e - Event object.
            */
           __privateAdd(this, _onSerieGroupFocus);
           /**
@@ -1508,14 +1503,16 @@
         }
         /**
          * Set a color palette for all chart instances.
-         * @param {Array<string>} colors Array of colors.
+         * 
+         * @param colors - Array of colors.
          */
         static setActiveColorPalette(colors2) {
           __privateSet(_SvgChart, _activeColorPalette, colors2);
         }
         /**
          * Set the configuration for this chart instance.
-         * @param {Object} config Configuration object.
+         * 
+         * @param config - Configuration object.
          */
         setConfig(config2) {
           const newConfig = new SvgChartConfig();
@@ -1601,7 +1598,7 @@
         }
         /**
          * Writing the charts.
-         * @param {ChartData} data Data object.
+         * @param data - Data object.
          */
         chart(data2 = null) {
           if (data2 !== null) {
@@ -1620,7 +1617,8 @@
         // }
         /**
          * Saves chart as PNG file.
-         * @param {String} filename Filename.
+         * 
+         * @param filename - Filename.
          */
         saveAsPng(filename) {
           var rect = this.svg.getBoundingClientRect();
@@ -1675,10 +1673,11 @@
         }
         /**
          * Adds an event listener to a node and adds it to the #listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
-         * @param {Node} node Node to add the listener to.
-         * @param {string} eventName Name of event.
-         * @param {Function} callback Function that needs to be executed.
-         * @param {boolean} capture Capture or not.
+         * 
+         * @param node - Node to add the listener to.
+         * @param eventName - Name of event.
+         * @param callback - Function that needs to be executed.
+         * @param capture - Capture or not.
          */
         addEventListener(node, eventName, callback, capture) {
           node.addEventListener(eventName, callback, capture);
@@ -1918,8 +1917,9 @@
       };
       _onSerieGroupTransitionend = new WeakSet();
       onSerieGroupTransitionend_fn = function(e) {
-        if (e.target.classList.contains(prefixed("unselected"))) {
-          e.target.setAttribute("display", "none");
+        const target = e.target;
+        if (target.classList.contains(prefixed("unselected"))) {
+          target.setAttribute("display", "none");
         }
       };
       _onSerieGroupBlur = new WeakSet();
@@ -1947,20 +1947,20 @@
           this.valueElRect.setAttribute("height", height.toString());
           this.valueElText.setAttribute("x", (width / 2).toString());
           this.valueElText.setAttribute("y", (height / 2).toString());
-          var type = serieItem.type || this.config.chartType;
-          var x, y = null;
+          const type = serieItem.type || this.config.chartType;
+          let x, y = null;
           switch (type) {
             case 0 /* Line */:
             case 1 /* Bar */:
             case 2 /* LineAndBar */:
-              x = (circle.getAttribute("cx") || parseFloat(circle.getAttribute("x")) + circle.getAttribute("width") / 2) - width / 2;
-              y = (circle.getAttribute("cy") || circle.getAttribute("y")) - 10 - height;
+              x = (parseFloat(circle.getAttribute("cx")) || parseFloat(circle.getAttribute("x")) + parseFloat(circle.getAttribute("width")) / 2) - width / 2;
+              y = (parseFloat(circle.getAttribute("cy")) || parseFloat(circle.getAttribute("y"))) - 10 - height;
               break;
             case 3 /* Pie */:
             case 4 /* Donut */:
               var d = circle.getAttribute("d").split(" ");
-              x = d[1].trim();
-              y = d[2].trim();
+              x = parseFloat(d[1].trim());
+              y = parseFloat(d[2].trim());
               break;
           }
           this.valueElGroup.setAttribute("transform", "translate(" + x + ", " + y + ")");
@@ -1977,7 +1977,6 @@
         __privateGet(_SvgChart, _chartTypeControllers)[3 /* Pie */] = PieController;
         __privateGet(_SvgChart, _chartTypeControllers)[4 /* Donut */] = DonutController;
       })();
-      SvgChart.prototype.el = el;
     }
   });
 
@@ -1987,6 +1986,7 @@
       init_svg();
       init_config();
       init_types();
+      init_utils();
       function getRandomIntInclusive(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -2366,7 +2366,7 @@
               document.getElementById("chartCustomCodeInfo").innerHTML = `Clicked on '${chart.data.xAxis.columns[index]}' with values: ${serieValues.join(", ")}`;
             },
             drawOnData: function(chart, groupNode) {
-              groupNode.appendChild(chart.el("text", {
+              groupNode.appendChild(el.call(chart, "text", {
                 x: chart.config.ltr ? chart.width - chart.config.padding.end - 2 : chart.config.padding.end + 2,
                 direction: SvgChartConfig.getDirection(chart.config),
                 y: chart.config.padding.top + 4,
@@ -2377,7 +2377,7 @@
               }, document.createTextNode(Date.now())));
             },
             drawOnConfig: function(chart, groupNode) {
-              groupNode.appendChild(chart.el("rect", {
+              groupNode.appendChild(el.call(chart, "rect", {
                 x: chart.config.padding.left,
                 y: chart.config.padding.top,
                 width: chart.chartWidth,
@@ -2385,7 +2385,7 @@
                 fill: "darkgreen",
                 fillOpacity: 0.2
               }));
-              groupNode.appendChild(chart.el("rect", {
+              groupNode.appendChild(el.call(chart, "rect", {
                 x: chart.config.padding.left,
                 y: chart.config.padding.top + chart.lineAndBarValueHeight * 20,
                 width: chart.chartWidth,
@@ -2393,7 +2393,7 @@
                 fill: "orange",
                 fillOpacity: 0.2
               }));
-              groupNode.appendChild(chart.el("rect", {
+              groupNode.appendChild(el.call(chart, "rect", {
                 x: chart.config.padding.left,
                 y: chart.config.padding.top + chart.lineAndBarValueHeight * 60,
                 width: chart.chartWidth,

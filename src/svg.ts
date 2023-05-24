@@ -7,7 +7,7 @@ import { DonutController } from "./charts/donut_chart_controller";
 import { PieController } from "./charts/pie_chart_controller";
 import { SvgChartConfig } from "./config";
 import { Controller } from "./charts/controller";
-import { ChartData, ChartEventInfo, ChartType, StringBooleanHash } from "./types";
+import { ChartConfigSerie, ChartData, ChartEventInfo, ChartType, StringBooleanHash } from "./types";
 
 /**
  * SvgChart class.
@@ -87,11 +87,27 @@ class SvgChart {
      * Element where the config.drawOnDarta method will paint in. Only created when config.drawOnData is specified.
      */
     #drawOnDataGroup: SVGElement;
+
+    /**
+     * Element where series will be attached to.
+     */
     serieGroupElement: SVGElement;
+
+    /**
+     * SVG group element that wraps the focused value element.
+     */
     valueElGroup: SVGElement;
+
+    /**
+     * SVG rect element for the focused value element.
+     */
     valueElRect: SVGElement;
+
+    /**
+     * SVG text element for the focused value element.
+     */
     valueElText: SVGGraphicsElement;
-    el: Function;
+
     lineAndBarValueHeight: number;
     xAxisGroupElement: SVGElement;
     xAxisLabelsGroupElement: SVGElement;
@@ -111,7 +127,8 @@ class SvgChart {
 
     /**
      * Set a color palette for all chart instances.
-     * @param {Array<string>} colors Array of colors.
+     * 
+     * @param colors - Array of colors.
      */
     static setActiveColorPalette(colors: Array<string>) {
         SvgChart.#activeColorPalette = colors;
@@ -119,8 +136,8 @@ class SvgChart {
 
     /**
      * Constructor - create a new chart instance.
-     * @param {HTMLElement} parent Parent DOM node the SVG element will be attached to.
-     * @param {SvgChartConfig} config Configuration object.
+     * @param parent - Parent DOM node the SVG element will be attached to.
+     * @param config - Configuration object.
      */
     constructor(parent: HTMLElement, config: SvgChartConfig) {
 
@@ -158,7 +175,8 @@ class SvgChart {
 
     /**
      * Set the configuration for this chart instance.
-     * @param {Object} config Configuration object.
+     * 
+     * @param config - Configuration object.
      */
     setConfig(config: SvgChartConfig) {
 
@@ -273,7 +291,7 @@ class SvgChart {
 
     /**
      * Writing the charts.
-     * @param {ChartData} data Data object.
+     * @param data - Data object.
      */
     chart(data: ChartData = null) {
 
@@ -300,7 +318,8 @@ class SvgChart {
 
     /**
      * Saves chart as PNG file.
-     * @param {String} filename Filename.
+     * 
+     * @param filename - Filename.
      */
     saveAsPng(filename: string) {
         var rect = this.svg.getBoundingClientRect();
@@ -333,6 +352,9 @@ class SvgChart {
         img.src = image64;
     }
 
+    /**
+     * Add serie group element. This is a SVG group element where the series data will be attached to.
+     */
     #addSerieGroup() {
         this.serieGroupElement = el('g', {
             id: prefixed('serie-group')
@@ -368,6 +390,9 @@ class SvgChart {
         }
     }
 
+    /**
+     * Add legend.
+     */
     #addLegend() {
 
         const gLegend = el('g', {
@@ -474,8 +499,10 @@ class SvgChart {
 
     }
 
+    /**
+     * Add chart title.
+     */
     #addTitle() {
-
         var x: number, y: number, dominantBaseline: string, textAnchor: string = null;
         switch (this.config.titleHorizontalPosition) {
             case 'end':
@@ -520,7 +547,8 @@ class SvgChart {
 
     /**
      * Things we need to do for all chart types before we start visualise the data.
-     * @returns {SVGElement} The current serie group element.
+     * 
+     * @returns The current serie group element.
      */
     #dataBefore(): SVGElement {
         if (this.serieGroupElement.firstChild) {
@@ -535,7 +563,8 @@ class SvgChart {
 
     /**
      * Things we need to do for all chart types after we visualised the data.
-     * @param {SVGElement} currentSerieGroupElement The current serie group element we got from #dataBefore().
+     * 
+     * @param currentSerieGroupElement - The current serie group element we got from #dataBefore().
      */
     #dataAfter(currentSerieGroupElement: SVGElement) {
         this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect(); // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
@@ -544,7 +573,7 @@ class SvgChart {
         }
     }
 
-    getSeriePropertyColor(props: Array<any>, serie: { id: string, color: string }, serieIndex: number) {
+    getSeriePropertyColor(props: Array<any>, serie: ChartConfigSerie, serieIndex: number) {
         for (var i = 0; i < props.length; i++) {
             var key = props[i];
             if (serie[key]) {
@@ -557,26 +586,27 @@ class SvgChart {
         return SvgChart.#activeColorPalette[serieIndex];
     }
 
-    getSeriePointColor(serie, serieIndex) {
+    getSeriePointColor(serie: ChartConfigSerie, serieIndex: number) {
         return this.getSeriePropertyColor(['pointColor', 'strokeColor'], serie, serieIndex);
     }
 
-    getSerieStrokeColor(serie, serieIndex) {
+    getSerieStrokeColor(serie: ChartConfigSerie, serieIndex: number) {
         return this.getSeriePropertyColor(['strokeColor'], serie, serieIndex);
     }
 
-    getSerieFill(serie, serieIndex) {
+    getSerieFill(serie: ChartConfigSerie, serieIndex: number) {
         return this.getSeriePropertyColor(['fillGradient'], serie, serieIndex);
     }
 
     /**
      * Adds an event listener to a node and adds it to the #listenersToRemoveAfterConfigChange array as well, so we can remove them in one place.
-     * @param {Node} node Node to add the listener to.
-     * @param {string} eventName Name of event.
-     * @param {Function} callback Function that needs to be executed.
-     * @param {boolean} capture Capture or not.
+     * 
+     * @param node - Node to add the listener to.
+     * @param eventName - Name of event.
+     * @param callback - Function that needs to be executed.
+     * @param capture - Capture or not.
      */
-    addEventListener(node: Node, eventName: string, callback: any, capture: boolean) {
+    addEventListener(node: Node, eventName: string, callback: EventListenerOrEventListenerObject, capture: boolean) {
         node.addEventListener(eventName, callback, capture);
         this.#listenersToRemoveAfterConfigChange.push({
             node: node,
@@ -632,22 +662,25 @@ class SvgChart {
 
     /**
      * When the tranisiton of a serie group has ended.
-     * @param {Event} e Event object.
+     * 
+     * @param e - Event object.
      */
-    #onSerieGroupTransitionend(e) {
+    #onSerieGroupTransitionend(e: Event) {
+        const target = e.target as SVGElement;
         // Currently only used to add display none to it when this serie group is unselected.
         // We have to add display none, so this node doesn't make part of the UI anymore and cannot hide other nodes.
-        if (e.target.classList.contains(prefixed('unselected'))) {
-            e.target.setAttribute('display', 'none');
+        if (target.classList.contains(prefixed('unselected'))) {
+            target.setAttribute('display', 'none');
         }
     }
 
     /**
      * When a serie group node is blurred (this means loses focus).
-     * @param {Event} e Event object.
+     * 
+     * @param e - Event object.
      */
-    #onSerieGroupBlur(e) {
-        var circle = e.target;
+    #onSerieGroupBlur(e: Event) {
+        var circle = e.target as SVGElement;
         var g = parent(circle, 'g');
         var serie = g.dataset.serie;
         if (serie) {
@@ -658,10 +691,11 @@ class SvgChart {
 
     /**
      * When a serie group node gets focussed.
-     * @param {Event} e Event object.
+     * 
+     * @param e - Event object.
      */
-    #onSerieGroupFocus(e) {
-        var circle = e.target;
+    #onSerieGroupFocus(e: Event) {
+        var circle = e.target as SVGElement;
         var g = parent(circle, 'g');
         var serie = g.dataset.serie;
         if (serie) {
@@ -676,20 +710,20 @@ class SvgChart {
             this.valueElText.setAttribute('x', (width / 2).toString());
             this.valueElText.setAttribute('y', (height / 2).toString());
 
-            var type = serieItem.type || this.config.chartType;
-            var x: number, y: number = null;
+            const type = serieItem.type || this.config.chartType;
+            let x: number, y: number = null;
             switch (type) {
                 case ChartType.Line:
                 case ChartType.Bar:
                 case ChartType.LineAndBar:
-                    x = (circle.getAttribute('cx') || (parseFloat(circle.getAttribute('x')) + (circle.getAttribute('width') / 2))) - (width / 2);
-                    y = (circle.getAttribute('cy') || circle.getAttribute('y')) - 10 - height;
+                    x = (parseFloat(circle.getAttribute('cx')) || (parseFloat(circle.getAttribute('x')) + (parseFloat(circle.getAttribute('width')) / 2))) - (width / 2);
+                    y = (parseFloat(circle.getAttribute('cy')) || parseFloat(circle.getAttribute('y'))) - 10 - height;
                     break;
                 case ChartType.Pie:
                 case ChartType.Donut:
                     var d = circle.getAttribute('d').split(' ');
-                    x = d[1].trim();
-                    y = d[2].trim();
+                    x = parseFloat(d[1].trim());
+                    y = parseFloat(d[2].trim());
                     break;
             }
             this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
@@ -697,9 +731,5 @@ class SvgChart {
     }
 
 }
-
-// Add el function to chart instance, so we can use it in the calling function, for example
-// to use it in the drawOnConfig or drawOnData callbacks.
-SvgChart.prototype.el = el;
 
 export { SvgChart };

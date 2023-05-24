@@ -1,6 +1,7 @@
 import { SvgChart } from "../src/svg.js";
 import { SvgChartConfig } from "../src/config.js";
 import { ChartType } from "../src/types.js";
+import { el } from "../src/utils.js";
 
 //SvgChart.setActiveColorPalette(SvgChart.colorPalettes.springPastelsColorPalette);
 
@@ -382,7 +383,7 @@ var chartInfo = {
                 document.getElementById('chartCustomCodeInfo').innerHTML = `Clicked on '${chart.data.xAxis.columns[index]}' with values: ${serieValues.join(", ")}`;
             },
             drawOnData: function (chart, groupNode) {
-                groupNode.appendChild(chart.el('text', {
+                groupNode.appendChild(el.call(chart, 'text', {
                     x: chart.config.ltr ? (chart.width - chart.config.padding.end - 2) : (chart.config.padding.end + 2),
                     direction: SvgChartConfig.getDirection(chart.config),
                     y: chart.config.padding.top + 4,
@@ -393,7 +394,7 @@ var chartInfo = {
                 }, document.createTextNode(Date.now())));
             },
             drawOnConfig: function (chart, groupNode) {
-                groupNode.appendChild(chart.el('rect', {
+                groupNode.appendChild(el.call(chart, 'rect', {
                     x: chart.config.padding.left,
                     y: chart.config.padding.top,
                     width: chart.chartWidth,
@@ -401,7 +402,7 @@ var chartInfo = {
                     fill: 'darkgreen',
                     fillOpacity: 0.2
                 }));
-                groupNode.appendChild(chart.el('rect', {
+                groupNode.appendChild(el.call(chart, 'rect', {
                     x: chart.config.padding.left,
                     y: chart.config.padding.top + (chart.lineAndBarValueHeight * 20),
                     width: chart.chartWidth,
@@ -409,7 +410,7 @@ var chartInfo = {
                     fill: 'orange',
                     fillOpacity: 0.2
                 }));
-                groupNode.appendChild(chart.el('rect', {
+                groupNode.appendChild(el.call(chart, 'rect', {
                     x: chart.config.padding.left,
                     y: chart.config.padding.top + (chart.lineAndBarValueHeight * 60),
                     width: chart.chartWidth,

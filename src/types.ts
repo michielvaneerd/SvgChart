@@ -13,6 +13,7 @@ type ChartConfigSerie = {
     title: string;
     type?: ChartType;
     fillGradient?: string;
+    color?: string;
 }
 
 /**
