@@ -228,9 +228,8 @@ class AxisController {
             if (textNodes[i] === label) {
                 this.svgChart.lineAndBarSelectedColumnIndex = i;
                 textNodes[i].classList.add(prefixed('selected'));
-                textNodes[i].setAttribute('font-weight', 'bold');
                 rects[i].classList.add(prefixed('selected'));
-                rects[i].setAttribute('fill-opacity', this.svgChart.config.xAxisGridSelectedColumnOpacity.toString());
+                rects[i].setAttribute('fill-opacity', this.config.xAxisGridSelectedColumnOpacity.toString());
                 if (this.config.onXAxisLabelGroupSelect) {
                     this.config.onXAxisLabelGroupSelect(this.svgChart, this.svgChart.lineAndBarSelectedColumnIndex);
                 }
@@ -238,7 +237,6 @@ class AxisController {
                 textNodes[i].classList.remove(prefixed('selected'));
                 rects[i].classList.remove(prefixed('selected'));
                 rects[i].setAttribute('fill-opacity', '0');
-                textNodes[i].setAttribute('font-weight', 'normal');
             }
         }
     }

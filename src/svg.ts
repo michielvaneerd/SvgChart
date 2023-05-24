@@ -7,18 +7,17 @@ import { DonutController } from "./charts/donut_chart_controller";
 import { PieController } from "./charts/pie_chart_controller";
 import { SvgChartConfig } from "./config";
 import { Controller } from "./charts/controller";
-import { ChartConfigSerie, ChartData, ChartEventInfo, ChartType, StringBooleanHash } from "./types";
+import { ChartConfigSerie, ChartData, ChartEventInfo, ChartPosition, ChartType, ScopedEventCallback, StringBooleanHash } from "./types";
 
 /**
  * SvgChart class.
  */
 class SvgChart {
 
+    /**
+     * Mapper for chart types and chart controllers.
+     */
     static #chartTypeControllers = { ChartType: Controller };
-    static colorPalettes = colors;
-
-    static #cssAdded = false;
-    static #activeColorPalette = colors.dutchFieldColorPalette;
 
     static {
         SvgChart.#chartTypeControllers[ChartType.Line] = LineController;
@@ -27,6 +26,21 @@ class SvgChart {
         SvgChart.#chartTypeControllers[ChartType.Pie] = PieController;
         SvgChart.#chartTypeControllers[ChartType.Donut] = DonutController;
     }
+
+    /**
+     * All embedded color palettes. Set another with {@link setActiveColorPalette}.
+     */
+    static colorPalettes = colors;
+
+    /**
+     * Some CSS rules for synamic styles are added to the HEAD of the document.
+     */
+    static #cssAdded = false;
+
+    /**
+     * Current color palette. Set another one with {@link setActiveColorPalette}.
+     */
+    static #activeColorPalette = colors.dutchFieldColorPalette;
 
     /**
      * Width of parent element.
@@ -108,21 +122,54 @@ class SvgChart {
      */
     valueElText: SVGGraphicsElement;
 
+    /**
+     * Height for 1 value.
+     */
     lineAndBarValueHeight: number;
+
+    /**
+     * SVG group element for X axis.
+     */
     xAxisGroupElement: SVGElement;
+
+    /**
+     * SVG group element for X axis labels.
+     */
     xAxisLabelsGroupElement: SVGElement;
+
+    /**
+     * SVG group element for selectable columns.
+     */
     xAxisGridColumnsSelectableGroupElement: SVGElement;
+
+    /**
+     * Current selected column index.
+     */
     lineAndBarSelectedColumnIndex: number;
+
+    /**
+     * Bar and line column width.
+     */
     columnWidth: number;
+
+    /**
+     * Number of bars per column.
+     */
     barCountPerColumn: number;
 
+    /**
+     * Scoped callback to call when a legend item gets clicked.
+     */
+    #onLegendClickScoped: ScopedEventCallback = null;
 
+    /**
+     * Scoped callback to call when a legend items receives a keyboard ENTER press.
+     */
+    #onLegendKeypressScoped: ScopedEventCallback = null;
+    #onSerieGroupTransitionendScoped: ScopedEventCallback = null;
+    #onSerieGroupFocusScoped: ScopedEventCallback = null;
+    #onSerieGroupBlurScoped: ScopedEventCallback = null;
 
-    #onLegendClickScoped = null;
-    #onLegendKeypressScoped = null;
-    #onSerieGroupTransitionendScoped = null;
-    #onSerieGroupFocusScoped = null;
-    #onSerieGroupBlurScoped = null;
     #listenersToRemoveAfterConfigChange: Array<ChartEventInfo>;
 
     /**
@@ -143,7 +190,6 @@ class SvgChart {
 
         if (!SvgChart.#cssAdded) {
             SvgChart.#cssAdded = true;
-            // TODO: split between chart types.
             const cssRules = [
                 '.' + prefixed('line-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
                 '.' + prefixed('line-point') + ':hover, circle.' + prefixed('line-point') + ':focus { stroke-width: 6; outline: none; }',
@@ -152,8 +198,8 @@ class SvgChart {
                 '#' + prefixed('serie-group-current') + ' { transition: opacity 1s; opacity: 1; }',
                 '#' + prefixed('serie-group-current') + '.' + prefixed('unattached') + ' { opacity: 0; }',
                 'g.' + prefixed('legend-group') + ' g.' + prefixed('unselected') + ' { opacity: 0.4; }',
+                'text.' + prefixed('x-axis-label') + '.' + prefixed('x-axis-grid-column-selectable-label') + '.' + prefixed('selected') + ' { font-weight: bold; }',
                 'rect.' + prefixed('bar') + ':hover, path.' + prefixed('pie-piece') + ':hover { fill-opacity: 0.7; }',
-                //'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; fill-opacity:1; }'
                 'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; fill-opacity:1; }'
             ];
             parent.ownerDocument.head.appendChild(document.createElement("style")).innerHTML = cssRules.join("\n");
@@ -418,13 +464,13 @@ class SvgChart {
             let x = 0, y = 0;
 
             switch (this.config.legendPosition) {
-                case 'top':
+                case ChartPosition.Top:
                     y = this.config.legendTop ? this.config.legendTop : (this.config.padding.top / 2);
                     break;
-                case 'bottom':
+                case ChartPosition.Bottom:
                     y = this.config.legendBottom ? this.config.legendBottom : (this.height - (this.config.padding.bottom / 2));
                     break;
-                case 'end':
+                case ChartPosition.End:
                     if (this.config.ltr) {
                         x = this.config.padding.start + this.chartWidth + (this.config.xAxisGridPadding * 2) + this.config.paddingDefault;
                         y = this.config.padding.top + this.config.yAxisGridPadding + (serieIndex * this.config.paddingDefault);
@@ -469,7 +515,7 @@ class SvgChart {
 
         this.svg.appendChild(gLegend);
 
-        if (['top', 'bottom'].indexOf(this.config.legendPosition) > -1) {
+        if ([ChartPosition.Top, ChartPosition.Bottom].indexOf(this.config.legendPosition) > -1) {
 
             // Measure the text so we can place the rects and texts next to each other
             // and center the complete legend row.
@@ -505,11 +551,11 @@ class SvgChart {
     #addTitle() {
         var x: number, y: number, dominantBaseline: string, textAnchor: string = null;
         switch (this.config.titleHorizontalPosition) {
-            case 'end':
+            case ChartPosition.End:
                 x = this.width - this.config.paddingDefault;
                 textAnchor = this.config.ltr ? 'end' : 'start';
                 break;
-            case 'start':
+            case ChartPosition.Start:
                 x = this.config.paddingDefault;
                 textAnchor = this.config.ltr ? 'start' : 'end';
                 break;
@@ -519,11 +565,11 @@ class SvgChart {
                 break;
         }
         switch (this.config.titleVerticalPosition) {
-            case 'center':
+            case ChartPosition.Center:
                 y = this.height / 2;
                 dominantBaseline = 'middle';
                 break;
-            case 'bottom':
+            case ChartPosition.Bottom:
                 y = this.height - this.config.paddingDefault;
                 dominantBaseline = 'auto';
                 break;

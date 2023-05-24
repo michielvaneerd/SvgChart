@@ -1,6 +1,6 @@
 import { SvgChart } from "../src/svg.js";
 import { SvgChartConfig } from "../src/config.js";
-import { ChartType } from "../src/types.js";
+import { ChartType, ChartPosition } from "../src/types.js";
 import { el } from "../src/utils.js";
 
 //SvgChart.setActiveColorPalette(SvgChart.colorPalettes.springPastelsColorPalette);
@@ -34,7 +34,7 @@ var chartInfo = {
             title: 'Basic line chart',
             minValue: 0,
             maxValue: 100,
-            legendPosition: 'end',
+            legendPosition: ChartPosition.End,
             xAxisTitle: 'Days',
             yAxisTitle: 'Count',
             padding: {
@@ -77,7 +77,7 @@ var chartInfo = {
             title: 'Basic line chart dark',
             minValue: 0,
             maxValue: 100,
-            legendPosition: 'end',
+            legendPosition: ChartPosition.End,
             xAxisTitle: 'Days',
             yAxisTitle: 'Count',
             padding: {
@@ -146,7 +146,7 @@ var chartInfo = {
             xAxisLabelTop: 30,
             xAxisGridPadding: 20,
             yAxisGridPadding: 20,
-            legendPosition: 'top',
+            legendPosition: ChartPosition.Top,
             legendTop: 60
         },
         dataFunc: function (id) {
@@ -182,7 +182,7 @@ var chartInfo = {
             title: 'Basic bar chart',
             minValue: 0,
             maxValue: 100,
-            legendPosition: 'top',
+            legendPosition: ChartPosition.Top,
             xAxisTitle: 'Days',
             yAxisTitle: 'Count',
             legendTop: 60,
@@ -210,7 +210,7 @@ var chartInfo = {
             chartType: ChartType.Bar,
             ltr: htmlDirIsLtr,
             title: 'Stacked bar chart',
-            legendPosition: 'top',
+            legendPosition: ChartPosition.Top,
             minValue: 0,
             maxValue: 100,
             legendTop: 60,
@@ -264,7 +264,7 @@ var chartInfo = {
             chartType: ChartType.Pie,
             ltr: htmlDirIsLtr,
             title: 'Basic pie chart',
-            legendPosition: 'top',
+            legendPosition: ChartPosition.Top,
             legendTop: 60,
             series: [
                 {
@@ -293,7 +293,7 @@ var chartInfo = {
             chartType: ChartType.Donut,
             ltr: htmlDirIsLtr,
             title: 'Basic donut chart',
-            legendPosition: 'top',
+            legendPosition: ChartPosition.Top,
             legendTop: 60,
             series: [
                 {
@@ -322,7 +322,7 @@ var chartInfo = {
             chartType: ChartType.LineAndBar,
             ltr: htmlDirIsLtr,
             title: 'Bar and line chart',
-            legendPosition: 'top',
+            legendPosition: ChartPosition.Top,
             legendTop: 60,
             minValue: 0,
             maxValue: 100,
@@ -362,7 +362,7 @@ var chartInfo = {
             chartType: ChartType.Line,
             ltr: htmlDirIsLtr,
             title: 'Custom line chart',
-            legendPosition: 'top',
+            legendPosition: ChartPosition.Top,
             legendTop: 60,
             xAxisTitle: 'Days',
             yAxisTitle: 'Count',
@@ -449,7 +449,7 @@ var chartInfo = {
             chartType: ChartType.Line,
             ltr: htmlDirIsLtr,
             title: 'Dynamic chart',
-            legendPosition: 'top',
+            legendPosition: ChartPosition.Top,
             legendTop: 60,
             xAxisTitle: 'Days',
             yAxisTitle: 'Count',

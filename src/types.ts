@@ -60,8 +60,39 @@ type StringBooleanHash = {
     [index: string]: boolean;
 }
 
+/**
+ * Callback function that is getting called when a X axis label is selected.
+ */
 type XAxisColumnSelectedCallback = (svgChart: SvgChart, selectedIndex: number) => void;
 
+/**
+ * Callback function that is getting called at a specific point during the chart drawing.
+ */
 type DrawCallback = (svgChart: SvgChart, groupNode: SVGElement) => void;
 
-export { ScopedEventCallback, ChartConfigSerie, ChartType, ChartData, ChartPoint, ChartEventInfo, StringBooleanHash, XAxisColumnSelectedCallback, DrawCallback };
+/**
+ * Position enum.
+ */
+enum ChartPosition {
+    Top,
+    End,
+    Bottom,
+    Start,
+    Left,
+    Right,
+    Center
+}
+
+
+export {
+    ScopedEventCallback,
+    ChartConfigSerie,
+    ChartType,
+    ChartData,
+    ChartPoint,
+    ChartEventInfo,
+    StringBooleanHash,
+    XAxisColumnSelectedCallback,
+    DrawCallback,
+    ChartPosition
+};

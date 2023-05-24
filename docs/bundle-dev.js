@@ -192,10 +192,26 @@
     }
   });
 
+  // src/types.ts
+  var ChartType;
+  var init_types = __esm({
+    "src/types.ts"() {
+      ChartType = /* @__PURE__ */ ((ChartType3) => {
+        ChartType3[ChartType3["Line"] = 0] = "Line";
+        ChartType3[ChartType3["Bar"] = 1] = "Bar";
+        ChartType3[ChartType3["LineAndBar"] = 2] = "LineAndBar";
+        ChartType3[ChartType3["Pie"] = 3] = "Pie";
+        ChartType3[ChartType3["Donut"] = 4] = "Donut";
+        return ChartType3;
+      })(ChartType || {});
+    }
+  });
+
   // src/config.ts
   var SvgChartConfig;
   var init_config = __esm({
     "src/config.ts"() {
+      init_types();
       SvgChartConfig = class {
         constructor() {
           /**
@@ -304,12 +320,12 @@
           /**
            * Horizontal position of title. Can be one of: center, start, end.
            */
-          this.titleHorizontalPosition = "center";
+          this.titleHorizontalPosition = 6 /* Center */;
           // center (default); start; end
           /**
            * Vertical position of title. Can be one of: top, bottom, center.
            */
-          this.titleVerticalPosition = "top";
+          this.titleVerticalPosition = 0 /* Top */;
           // top (default); bottom; center
           /**
            * Maximum value. Required for charts with Y-axes.
@@ -495,7 +511,7 @@
           /**
            * Position of legend. Possible values: bottom, top, end.
            */
-          this.legendPosition = "top";
+          this.legendPosition = 0 /* Top */;
           /**
            * If not null, number of pixels the legend should be positioned from the bottom. Otherwise a default number of pixels will be used.
            */
@@ -820,9 +836,8 @@
           if (textNodes[i] === label) {
             this.svgChart.lineAndBarSelectedColumnIndex = i;
             textNodes[i].classList.add(prefixed("selected"));
-            textNodes[i].setAttribute("font-weight", "bold");
             rects[i].classList.add(prefixed("selected"));
-            rects[i].setAttribute("fill-opacity", this.svgChart.config.xAxisGridSelectedColumnOpacity.toString());
+            rects[i].setAttribute("fill-opacity", this.config.xAxisGridSelectedColumnOpacity.toString());
             if (this.config.onXAxisLabelGroupSelect) {
               this.config.onXAxisLabelGroupSelect(this.svgChart, this.svgChart.lineAndBarSelectedColumnIndex);
             }
@@ -830,7 +845,6 @@
             textNodes[i].classList.remove(prefixed("selected"));
             rects[i].classList.remove(prefixed("selected"));
             rects[i].setAttribute("fill-opacity", "0");
-            textNodes[i].setAttribute("font-weight", "normal");
           }
         }
       };
@@ -1048,21 +1062,6 @@
         __privateMethod(this, _closePath, closePath_fn).call(this, path, points);
         return path;
       };
-    }
-  });
-
-  // src/types.ts
-  var ChartType;
-  var init_types = __esm({
-    "src/types.ts"() {
-      ChartType = /* @__PURE__ */ ((ChartType2) => {
-        ChartType2[ChartType2["Line"] = 0] = "Line";
-        ChartType2[ChartType2["Bar"] = 1] = "Bar";
-        ChartType2[ChartType2["LineAndBar"] = 2] = "LineAndBar";
-        ChartType2[ChartType2["Pie"] = 3] = "Pie";
-        ChartType2[ChartType2["Donut"] = 4] = "Donut";
-        return ChartType2;
-      })(ChartType || {});
     }
   });
 
@@ -1469,7 +1468,13 @@
            * Element where the config.drawOnDarta method will paint in. Only created when config.drawOnData is specified.
            */
           __privateAdd(this, _drawOnDataGroup, void 0);
+          /**
+           * Scoped callback to call when a legend item gets clicked.
+           */
           __privateAdd(this, _onLegendClickScoped, null);
+          /**
+           * Scoped callback to call when a legend items receives a keyboard ENTER press.
+           */
           __privateAdd(this, _onLegendKeypressScoped, null);
           __privateAdd(this, _onSerieGroupTransitionendScoped, null);
           __privateAdd(this, _onSerieGroupFocusScoped, null);
@@ -1485,8 +1490,8 @@
               "#" + prefixed("serie-group-current") + " { transition: opacity 1s; opacity: 1; }",
               "#" + prefixed("serie-group-current") + "." + prefixed("unattached") + " { opacity: 0; }",
               "g." + prefixed("legend-group") + " g." + prefixed("unselected") + " { opacity: 0.4; }",
+              "text." + prefixed("x-axis-label") + "." + prefixed("x-axis-grid-column-selectable-label") + "." + prefixed("selected") + " { font-weight: bold; }",
               "rect." + prefixed("bar") + ":hover, path." + prefixed("pie-piece") + ":hover { fill-opacity: 0.7; }",
-              //'path.' + prefixed('pie-piece') + ':focus, rect.' + prefixed('bar') + ':focus { outline: none; stroke-width:1; stroke:white; fill-opacity:1; }'
               "path." + prefixed("pie-piece") + ":focus, rect." + prefixed("bar") + ":focus { outline: none; fill-opacity:1; }"
             ];
             parent2.ownerDocument.head.appendChild(document.createElement("style")).innerHTML = cssRules.join("\n");
@@ -1754,13 +1759,13 @@
           });
           let x = 0, y = 0;
           switch (this.config.legendPosition) {
-            case "top":
+            case 0 /* Top */:
               y = this.config.legendTop ? this.config.legendTop : this.config.padding.top / 2;
               break;
-            case "bottom":
+            case 2 /* Bottom */:
               y = this.config.legendBottom ? this.config.legendBottom : this.height - this.config.padding.bottom / 2;
               break;
-            case "end":
+            case 1 /* End */:
               if (this.config.ltr) {
                 x = this.config.padding.start + this.chartWidth + this.config.xAxisGridPadding * 2 + this.config.paddingDefault;
                 y = this.config.padding.top + this.config.yAxisGridPadding + serieIndex * this.config.paddingDefault;
@@ -1800,7 +1805,7 @@
           gLegend.appendChild(gSerie);
         });
         this.svg.appendChild(gLegend);
-        if (["top", "bottom"].indexOf(this.config.legendPosition) > -1) {
+        if ([0 /* Top */, 2 /* Bottom */].indexOf(this.config.legendPosition) > -1) {
           let totalLegendWidth = 0;
           let curX = this.config.ltr ? 0 : this.width - this.config.legendWidth;
           gLegend.querySelectorAll("g").forEach((g) => {
@@ -1827,11 +1832,11 @@
       addTitle_fn = function() {
         var x, y, dominantBaseline, textAnchor = null;
         switch (this.config.titleHorizontalPosition) {
-          case "end":
+          case 1 /* End */:
             x = this.width - this.config.paddingDefault;
             textAnchor = this.config.ltr ? "end" : "start";
             break;
-          case "start":
+          case 3 /* Start */:
             x = this.config.paddingDefault;
             textAnchor = this.config.ltr ? "start" : "end";
             break;
@@ -1841,11 +1846,11 @@
             break;
         }
         switch (this.config.titleVerticalPosition) {
-          case "center":
+          case 6 /* Center */:
             y = this.height / 2;
             dominantBaseline = "middle";
             break;
-          case "bottom":
+          case 2 /* Bottom */:
             y = this.height - this.config.paddingDefault;
             dominantBaseline = "auto";
             break;
@@ -1966,10 +1971,10 @@
           this.valueElGroup.setAttribute("transform", "translate(" + x + ", " + y + ")");
         }
       };
+      /**
+       * Mapper for chart types and chart controllers.
+       */
       __privateAdd(SvgChart, _chartTypeControllers, { ChartType: Controller });
-      SvgChart.colorPalettes = colors;
-      __privateAdd(SvgChart, _cssAdded, false);
-      __privateAdd(SvgChart, _activeColorPalette, colors.dutchFieldColorPalette);
       (() => {
         __privateGet(_SvgChart, _chartTypeControllers)[0 /* Line */] = LineController;
         __privateGet(_SvgChart, _chartTypeControllers)[1 /* Bar */] = BarController;
@@ -1977,6 +1982,18 @@
         __privateGet(_SvgChart, _chartTypeControllers)[3 /* Pie */] = PieController;
         __privateGet(_SvgChart, _chartTypeControllers)[4 /* Donut */] = DonutController;
       })();
+      /**
+       * All embedded color palettes. Set another with {@link setActiveColorPalette}.
+       */
+      SvgChart.colorPalettes = colors;
+      /**
+       * Some CSS rules for synamic styles are added to the HEAD of the document.
+       */
+      __privateAdd(SvgChart, _cssAdded, false);
+      /**
+       * Current color palette. Set another one with {@link setActiveColorPalette}.
+       */
+      __privateAdd(SvgChart, _activeColorPalette, colors.dutchFieldColorPalette);
     }
   });
 
@@ -2013,7 +2030,7 @@
             title: "Basic line chart",
             minValue: 0,
             maxValue: 100,
-            legendPosition: "end",
+            legendPosition: 1 /* End */,
             xAxisTitle: "Days",
             yAxisTitle: "Count",
             padding: {
@@ -2056,7 +2073,7 @@
             title: "Basic line chart dark",
             minValue: 0,
             maxValue: 100,
-            legendPosition: "end",
+            legendPosition: 1 /* End */,
             xAxisTitle: "Days",
             yAxisTitle: "Count",
             padding: {
@@ -2127,7 +2144,7 @@
             xAxisLabelTop: 30,
             xAxisGridPadding: 20,
             yAxisGridPadding: 20,
-            legendPosition: "top",
+            legendPosition: 0 /* Top */,
             legendTop: 60
           },
           dataFunc: function(id) {
@@ -2164,7 +2181,7 @@
             title: "Basic bar chart",
             minValue: 0,
             maxValue: 100,
-            legendPosition: "top",
+            legendPosition: 0 /* Top */,
             xAxisTitle: "Days",
             yAxisTitle: "Count",
             legendTop: 60,
@@ -2192,7 +2209,7 @@
             chartType: 1 /* Bar */,
             ltr: htmlDirIsLtr,
             title: "Stacked bar chart",
-            legendPosition: "top",
+            legendPosition: 0 /* Top */,
             minValue: 0,
             maxValue: 100,
             legendTop: 60,
@@ -2247,7 +2264,7 @@
             chartType: 3 /* Pie */,
             ltr: htmlDirIsLtr,
             title: "Basic pie chart",
-            legendPosition: "top",
+            legendPosition: 0 /* Top */,
             legendTop: 60,
             series: [
               {
@@ -2276,7 +2293,7 @@
             chartType: 4 /* Donut */,
             ltr: htmlDirIsLtr,
             title: "Basic donut chart",
-            legendPosition: "top",
+            legendPosition: 0 /* Top */,
             legendTop: 60,
             series: [
               {
@@ -2305,7 +2322,7 @@
             chartType: 2 /* LineAndBar */,
             ltr: htmlDirIsLtr,
             title: "Bar and line chart",
-            legendPosition: "top",
+            legendPosition: 0 /* Top */,
             legendTop: 60,
             minValue: 0,
             maxValue: 100,
@@ -2345,7 +2362,7 @@
             chartType: 0 /* Line */,
             ltr: htmlDirIsLtr,
             title: "Custom line chart",
-            legendPosition: "top",
+            legendPosition: 0 /* Top */,
             legendTop: 60,
             xAxisTitle: "Days",
             yAxisTitle: "Count",
@@ -2432,7 +2449,7 @@
             chartType: 0 /* Line */,
             ltr: htmlDirIsLtr,
             title: "Dynamic chart",
-            legendPosition: "top",
+            legendPosition: 0 /* Top */,
             legendTop: 60,
             xAxisTitle: "Days",
             yAxisTitle: "Count",

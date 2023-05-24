@@ -1,4 +1,4 @@
-import { ChartConfigSerie, ChartType, XAxisColumnSelectedCallback, DrawCallback } from "./types";
+import { ChartConfigSerie, ChartType, XAxisColumnSelectedCallback, DrawCallback, ChartPosition } from "./types";
 
 /**
  * SvgChart config class.
@@ -140,12 +140,12 @@ class SvgChartConfig {
     /**
      * Horizontal position of title. Can be one of: center, start, end.
      */
-    titleHorizontalPosition: string = 'center'; // center (default); start; end
+    titleHorizontalPosition: ChartPosition = ChartPosition.Center; // center (default); start; end
 
     /**
      * Vertical position of title. Can be one of: top, bottom, center.
      */
-    titleVerticalPosition: string = 'top'; // top (default); bottom; center
+    titleVerticalPosition: ChartPosition = ChartPosition.Top; // top (default); bottom; center
 
     /**
      * Maximum value. Required for charts with Y-axes.
@@ -374,7 +374,7 @@ class SvgChartConfig {
     /**
      * Position of legend. Possible values: bottom, top, end.
      */
-    legendPosition: string = 'top';
+    legendPosition: ChartPosition = ChartPosition.Top;
 
     /**
      * If not null, number of pixels the legend should be positioned from the bottom. Otherwise a default number of pixels will be used.
