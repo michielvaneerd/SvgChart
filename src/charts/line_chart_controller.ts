@@ -32,10 +32,11 @@ class LineController extends Controller {
     onDrawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
         var nonNullPoints = [[]]; // Array of arrays, each array consists only of NON NULL points, used for smoot lines when not connecting NULL values and for filled lines charts when not connecting null points
         var flatNonNullPoints = [];
+        const absMinValue = Math.abs(this.config.minValue);
 
         directionForEach(this, this.svgChart.data.series[serie.id], this.config.ltr, (value: number, valueIndex: number, values: Array<number>) => {
             var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + (this.config.xAxisGridColumns ? (this.svgChart.columnWidth / 2) : 0);
-            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.svgChart.lineAndBarValueHeight);
+            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((value + absMinValue) * this.svgChart.lineAndBarValueHeight);
 
             if (value === null) {
                 if (nonNullPoints[nonNullPoints.length - 1].length > 0 && valueIndex + 1 < values.length) {

@@ -534,12 +534,11 @@ function csvToData(csv, id) {
         const firstColumn = columns.shift();
 
         if (lineIndex === 0) {
-
             data.xAxis.columns = columns;
             return;
         }
 
-        data.series[firstColumn] = columns;
+        data.series[firstColumn] = columns.map((value) => parseInt(value, 10));
 
     });
 
@@ -626,16 +625,16 @@ function dynamicChart() {
 }
 
 doChart('chartBasicLine');
-doChart('chartBasicLineDark');
-doChart('chartBasicLineBig');
-doChart('chartBasicBar');
-doChart('chartStackedBar');
-doChart('chartBasicPie');
-doChart('chartBasicDonut');
-doChart('chartBarAndLine');
-doChart('chartCustom');
-dynamicChart();
-createToc();
+//doChart('chartBasicLineDark');
+//doChart('chartBasicLineBig');
+//doChart('chartBasicBar');
+//doChart('chartStackedBar');
+//doChart('chartBasicPie');
+//doChart('chartBasicDonut');
+//doChart('chartBarAndLine');
+//doChart('chartCustom');
+//dynamicChart();
+//createToc();
 
 function createToc() {
     const toc = [];

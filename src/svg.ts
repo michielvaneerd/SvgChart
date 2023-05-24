@@ -18,7 +18,7 @@ class SvgChart {
     static colorPalettes = colors;
 
     static #cssAdded = false;
-    static #activeColorPalette: Array<string> = colors.dutchFieldColorPalette;
+    static #activeColorPalette = colors.dutchFieldColorPalette;
 
     static {
         SvgChart.#chartTypeControllers[ChartType.Line] = LineController;

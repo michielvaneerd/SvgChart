@@ -665,11 +665,12 @@
           var gYAxis = el("g", {
             className: prefixed("y-axis-group")
           });
+          const absMinValue = Math.abs(this.config.minValue);
           var currentYAxisValue = this.config.minValue;
           var currentYAxisLabelValue = this.config.minValue;
           while (currentYAxisValue <= this.config.maxValue || currentYAxisLabelValue <= this.config.maxValue) {
             if (this.config.yAxisGrid && currentYAxisValue <= this.config.maxValue) {
-              let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - currentYAxisValue * this.svgChart.lineAndBarValueHeight;
+              let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (currentYAxisValue + absMinValue) * this.svgChart.lineAndBarValueHeight;
               gYAxis.appendChild(el("line", {
                 x1: this.config.padding.left,
                 y1: y,
@@ -683,7 +684,7 @@
             }
             currentYAxisValue += this.config.yAxisStep;
             if (this.config.yAxisLabels && currentYAxisLabelValue <= this.config.maxValue) {
-              let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - currentYAxisLabelValue * this.svgChart.lineAndBarValueHeight;
+              let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (currentYAxisLabelValue + absMinValue) * this.svgChart.lineAndBarValueHeight;
               gYAxis.appendChild(el("text", {
                 direction: SvgChartConfig.getDirection(this.config),
                 x: this.config.ltr ? this.config.padding.left - 10 : this.config.padding.left + this.svgChart.chartWidth + 10,
@@ -887,7 +888,7 @@
   }
   function onConfigBeforeBarAndLine(svgChart, axisController) {
     svgChart.lineAndBarSelectedColumnIndex = null;
-    svgChart.lineAndBarValueHeight = svgChart.chartHeight / svgChart.config.maxValue;
+    svgChart.lineAndBarValueHeight = svgChart.chartHeight / (Math.abs(svgChart.config.minValue) + svgChart.config.maxValue);
     svgChart.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
     if (svgChart.config.yAxisGrid) {
       axisController.addYAxisGridAndLabels();
@@ -961,9 +962,10 @@
         onDrawSerie(serie, serieIndex, serieGroup) {
           var nonNullPoints = [[]];
           var flatNonNullPoints = [];
+          const absMinValue = Math.abs(this.config.minValue);
           directionForEach(this, this.svgChart.data.series[serie.id], this.config.ltr, (value, valueIndex, values) => {
             var x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.svgChart.columnWidth + (this.config.xAxisGridColumns ? this.svgChart.columnWidth / 2 : 0);
-            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.svgChart.lineAndBarValueHeight;
+            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value + absMinValue) * this.svgChart.lineAndBarValueHeight;
             if (value === null) {
               if (nonNullPoints[nonNullPoints.length - 1].length > 0 && valueIndex + 1 < values.length) {
                 nonNullPoints.push([]);
@@ -2509,7 +2511,7 @@
             data2.xAxis.columns = columns;
             return;
           }
-          data2.series[firstColumn] = columns;
+          data2.series[firstColumn] = columns.map((value) => parseInt(value, 10));
         });
         chartInfo[id].data = data2;
       }
@@ -2585,16 +2587,6 @@
         chartInfo["chartDynamic"].chart.chart(data);
       }
       doChart("chartBasicLine");
-      doChart("chartBasicLineDark");
-      doChart("chartBasicLineBig");
-      doChart("chartBasicBar");
-      doChart("chartStackedBar");
-      doChart("chartBasicPie");
-      doChart("chartBasicDonut");
-      doChart("chartBarAndLine");
-      doChart("chartCustom");
-      dynamicChart();
-      createToc();
       function createToc() {
         const toc = [];
         document.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(function(h, index) {
