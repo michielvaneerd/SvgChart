@@ -1,3 +1,5 @@
+import { SvgChart } from "./svg";
+
 /**
  * Function that are scoped to a specific `this` object and that is called when an event happens.
  */
@@ -57,4 +59,8 @@ type StringBooleanHash = {
     [index: string]: boolean;
 }
 
-export { ScopedEventCallback, ChartConfigSerie, ChartType, ChartData, ChartPoint, ChartEventInfo, StringBooleanHash };
+type XAxisColumnSelectedCallback = (svgChart: SvgChart, selectedIndex: number) => void;
+
+type DrawCallback = (svgChart: SvgChart, groupNode: SVGElement) => void;
+
+export { ScopedEventCallback, ChartConfigSerie, ChartType, ChartData, ChartPoint, ChartEventInfo, StringBooleanHash, XAxisColumnSelectedCallback, DrawCallback };

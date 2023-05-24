@@ -1,11 +1,17 @@
-import { ChartConfigSerie, ChartType } from "./types";
+import { ChartConfigSerie, ChartType, XAxisColumnSelectedCallback, DrawCallback } from "./types";
 
 /**
  * SvgChart config class.
  */
 class SvgChartConfig {
 
-    static getDirection(config: SvgChartConfig) {
+    /**
+     * Get direction string to use for dom direction attribute.
+     * 
+     * @param config Config object.
+     * @returns Attribute value.
+     */
+    static getDirection(config: SvgChartConfig) : string {
         return config.ltr ? 'ltr' : 'rtl';
     }
 
@@ -15,12 +21,12 @@ class SvgChartConfig {
     ltr: boolean = true;
 
     /**
-     * @prop {Array<ChartConfigSerie>} series - Series array.
+     * Series array.
      */
     series: Array<ChartConfigSerie> = null;
 
     /**
-     * @prop {String} title - Title of chart.
+     * Title of chart.
      */
     title: string = null;
 
@@ -30,13 +36,12 @@ class SvgChartConfig {
     chartType: ChartType = null;
 
     /**
-     * @prop {Function} onXAxisLabelGroupSelect - Callback when x axis label is selected. Parameters are SvgChart and x axis column index.
+     * Callback when x axis label is selected. Parameters are SvgChart and x axis column index.
      */
-    onXAxisLabelGroupSelect: Function = null;
+    onXAxisLabelGroupSelect: XAxisColumnSelectedCallback = null;
 
     /**
-     * @prop {Object} padding - Padding object.
-     * @example {start: 40, end: 20, top: 100, bottom: 40}
+     * Padding object.
      */
     padding = {
         start: 40,
@@ -54,43 +59,38 @@ class SvgChartConfig {
     };
 
     /**
-     * @prop {number} paddingDefault - Default padding for space between elements.
-     * @default 20
+     * Default padding for space between elements.
      */
     paddingDefault: number = 20;
 
     /**
-     * @prop {number} legendWidth - Width of legend squares or circles.
-     * @default 10
+     * Width of legend squares or circles.
      */
     legendWidth: number = 10;
 
     /**
-     * @prop {boolean} focusedValueShow - Whether the value box should be displayed when an element has focus.
-     * @default true
+     * Whether the value box should be displayed when an element has focus.
      */
     focusedValueShow: boolean = true;
 
     /**
-     * @prop {string} focusedValueFill - Fill color of focused value box.
-     * @default black
+     * Fill color of focused value box.
      */
     focusedValueFill: string = 'black';
 
     /**
-     * @prop {string} focusedValueColor - Font color of focused value box.
-     * @default white
+     * Font color of focused value box.
      */
     focusedValueColor: string = 'white';
 
     /**
-     * @prop {number} focusedValuePadding - Padding of focused value box.
-     * @default 6
+     * Padding of focused value box.
      */
     focusedValuePadding: number = 6;
 
     /**
-     * @prop {Function} drawOnConfig - Draw function to execute in the config phase. It receives a SvgChart and HTMLElement parameter.
+     * Draw function to execute in the config phase. It receives a SvgChart and HTMLElement parameter.
+     * 
      * @example function(svgChart, groupNode) {
      *     groupNode.appendChild(svgChart.el('rect', {
      *         x: 10,
@@ -98,10 +98,11 @@ class SvgChartConfig {
      *     }));
      * }
      */
-    drawOnConfig: Function = null;
+    drawOnConfig: DrawCallback = null;
 
     /**
-     * @prop {Function} drawOnData - Draw function to execute in the chart phase. It receives a SvgChart and HTMLElement parameter.
+     * Draw function to execute in the chart phase. It receives a SvgChart and HTMLElement parameter.
+     * 
      * @example function(svgChart, groupNode) {
      *     groupNode.appendChild(svgChart.el('rect', {
      *         x: 10,
@@ -109,58 +110,50 @@ class SvgChartConfig {
      *     }));
      * }
      */
-    drawOnData: Function = null;
+    drawOnData: DrawCallback = null;
 
     /**
-     * @prop {boolean} transition - Whether the chart elements should be faded in or nor.
-     * @default true
+     * transition - Whether the chart elements should be faded in or nor.
      */
     transition: boolean = true;
 
     /**
-     * @prop {string} backgroundColor - Background color of the SVG element.
-     * @default white
+     * Background color of the SVG element.
      */
     backgroundColor: string = 'white';
 
     /**
-     * @prop {string} fontFamily - Font fanily for all text elements.
-     * @default sans-serif
+     * Font fanily for all text elements.
      */
     fontFamily: string = 'sans-serif';
 
     /**
-     * @prop {string|number} titleFontSize - Fontsize for the title.
-     * @default normal
-     * 
+     * Fontsize for the title.
      */
     titleFontSize: string|number = 'normal';
 
     /**
-     * @prop {string} titleColor - Font color of title.
-     * @default black
+     * Font color of title.
      */
     titleColor: string = 'black';
 
     /**
-     * @prop {string} titleHorizontalPosition - Horizontal position of title. Can be one of: center, start, end.
-     * @default center
+     * Horizontal position of title. Can be one of: center, start, end.
      */
     titleHorizontalPosition: string = 'center'; // center (default); start; end
 
     /**
-     * @prop {string} titleVerticalPosition - Vertical position of title. Can be one of: top, bottom, center.
-     * @default top
+     * Vertical position of title. Can be one of: top, bottom, center.
      */
     titleVerticalPosition: string = 'top'; // top (default); bottom; center
 
     /**
-     * @prop {number} maxValue - Maximum value. Required for charts with Y-axes.
+     * Maximum value. Required for charts with Y-axes.
      */
     maxValue: number = null;
 
     /**
-     * @prop {number} minValue - Minumum value of Y axis. Required for charts with Y-axes.
+     * Minumum value of Y axis. Required for charts with Y-axes.
      */
     minValue: number = null;
 
