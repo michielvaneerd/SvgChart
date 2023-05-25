@@ -24,7 +24,8 @@ enum ChartType {
     Bar,
     LineAndBar,
     Pie,
-    Donut
+    Donut,
+    Radar
 }
 
 /**
@@ -32,7 +33,7 @@ enum ChartType {
  */
 interface ChartData {
     series: { string: number[] };
-    xAxis: { columns: string[] };
+    xAxis?: { columns: string[] };
 };
 
 /**

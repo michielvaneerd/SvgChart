@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-esbuild-dev": "esbuild ./docs/app_svg.js --bundle --sourcemap --outfile=./docs/bundle-dev.js",
     "build-esbuild-watch": "esbuild ./docs/app_svg.js --bundle --sourcemap --outfile=./docs/bundle-dev.js --watch",
+    "build-esbuild-radar-watch": "esbuild ./playground/radar.js --bundle --sourcemap --outfile=./playground/radar-bundle.js --watch",
     "build-esbuild-prod": "esbuild ./docs/app_svg.js --bundle --minify --outfile=./docs/bundle-prod.js",
     "build-webpack-prod": "webpack"
   },

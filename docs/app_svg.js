@@ -501,12 +501,18 @@ function setChartData(id) {
     chartInfo[id].config.series.forEach(function (serie) {
         serieData[serie.id] = !isPieOrDonut ? Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)) : getRandomIntInclusive(0, 100);
     });
-    chartInfo[id].data = {
-        series: serieData,
-        xAxis: {
-            columns: isPieOrDonut ? ['mon'] : ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
-        }
-    };
+    if (isPieOrDonut) {
+        chartInfo[id].data = {
+            series: serieData
+        };
+    } else {
+        chartInfo[id].data = {
+            series: serieData,
+            xAxis: {
+                columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+            }
+        };
+    }
 }
 
 /**

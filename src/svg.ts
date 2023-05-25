@@ -9,6 +9,9 @@ import { SvgChartConfig } from "./config";
 import { Controller } from "./charts/controller";
 import { ChartConfigSerie, ChartData, ChartEventInfo, ChartPosition, ChartType, ScopedEventCallback, StringBooleanHash } from "./types";
 
+// Radar chart:
+// https://medium.com/@brianfoody/jogging-your-geometry-memory-by-building-an-svg-radar-chart-in-react-native-4aeee555809f
+
 /**
  * SvgChart class.
  */
@@ -337,6 +340,7 @@ class SvgChart {
 
     /**
      * Writing the charts.
+     * 
      * @param data - Data object.
      */
     chart(data: ChartData = null) {
