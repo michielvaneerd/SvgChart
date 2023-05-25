@@ -203,6 +203,29 @@ car,55,4,7,6,8,9,0</textarea>
 
         </div>
 
+        <h3>Basic radar chart</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartBasicRadarRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartBasicRadarPngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartBasicRadar" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartBasicRadar" data-toggle="config">Config</button>
+                    <button data-target-id="chartBasicRadar" data-toggle="data">Data</button>
+                </div>
+            </div>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartBasicRadar"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartBasicRadarCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartBasicRadarCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+            </div>
+
+        </div>
+
         <h3>Custom chart</h3>
         <p id="chartCustomCodeInfo">...</p>
         <div class="chartRow">

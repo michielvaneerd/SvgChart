@@ -135,9 +135,9 @@ class AxisController {
             x2: x,
             y2: this.svgChart.chartHeight + this.config.padding.top + (this.config.yAxisGridPadding * 2),
             className: prefixed('x-axis-grid-line'),
-            stroke: this.config.xAxisGridLineColor || '',
-            strokeWidth: this.config.xAxisGridLineWidth || '',
-            strokeDasharray: this.config.xAxisGridLineDashArray || '',
+            stroke: this.config.xAxisGridLineColor,
+            strokeWidth: this.config.xAxisGridLineWidth,
+            strokeDasharray: this.config.xAxisGridLineDashArray,
         }));
     }
 

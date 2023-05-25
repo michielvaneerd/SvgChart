@@ -15,6 +15,10 @@ import { RadarController } from "./charts/radar_chart_controller";
 
 /**
  * SvgChart class.
+ * 
+ * ```ts
+ * var chart = new SvgChart();
+ * ```
  */
 class SvgChart {
 
@@ -188,6 +192,12 @@ class SvgChart {
 
     /**
      * Constructor - create a new chart instance.
+     * 
+     * Actions during the constructor:
+     * - Adding CSS rules (for dynamic styling)
+     * - Create and add SVG element.
+     * - Call {@link setConfig}.
+     * 
      * @param parent - Parent DOM node the SVG element will be attached to.
      * @param config - Configuration object.
      */
@@ -225,7 +235,16 @@ class SvgChart {
     }
 
     /**
-     * Set the configuration for this chart instance.
+     * Set the configuration for this chart instance. The idea is that this method does things that need to be done
+     * only once for a chart and that {@link chart} does things for drawing the charts and can happen multiple times,
+     * for example if you need to display a new set of data.
+     * 
+     * Actions during this method:
+     * - Merge config from parameter with default config.
+     * - Create chart controller for this charttype.
+     * - Remove all child element for this chart (only does something when this method is called multiple times).
+     * - Adding elements like title, legend, etc.
+     * - Add the {@link serieGroupElement}.
      * 
      * @param config - Configuration object.
      */
@@ -341,7 +360,7 @@ class SvgChart {
     }
 
     /**
-     * Writing the charts.
+     * Writing the chart data.
      * 
      * @param data - Data object.
      */
@@ -351,11 +370,23 @@ class SvgChart {
             this.data = data;
         }
 
-        const currentSerieGroupElement = this.#dataBefore();
+        if (this.serieGroupElement.firstChild) {
+            this.serieGroupElement.firstChild.remove();
+        }
+        const currentSerieGroupElement = el('g', {
+            id: prefixed('serie-group-current'),
+            className: this.config.transition ? prefixed('unattached') : ''
+        });
 
         this.controller.onDraw(currentSerieGroupElement);
 
-        this.#dataAfter(currentSerieGroupElement);
+        this.serieGroupElement.appendChild(currentSerieGroupElement);
+
+        if (this.config.transition) {
+            // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
+            currentSerieGroupElement.getBoundingClientRect();
+            currentSerieGroupElement.classList.remove(prefixed('unattached'));
+        }
 
         if (this.config.drawOnData) {
             this.config.drawOnData(this, this.#drawOnDataGroup);
@@ -595,34 +626,6 @@ class SvgChart {
             fill: this.config.titleColor,
             className: prefixed('text-title'),
         }, document.createTextNode(this.config.title)));
-    }
-
-    /**
-     * Things we need to do for all chart types before we start visualise the data.
-     * 
-     * @returns The current serie group element.
-     */
-    #dataBefore(): SVGElement {
-        if (this.serieGroupElement.firstChild) {
-            this.serieGroupElement.firstChild.remove();
-        }
-        var currentSerieGroupElement = el('g', {
-            id: prefixed('serie-group-current'),
-            className: this.config.transition ? prefixed('unattached') : ''
-        });
-        return currentSerieGroupElement;
-    }
-
-    /**
-     * Things we need to do for all chart types after we visualised the data.
-     * 
-     * @param currentSerieGroupElement - The current serie group element we got from #dataBefore().
-     */
-    #dataAfter(currentSerieGroupElement: SVGElement) {
-        this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect(); // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
-        if (this.config.transition) {
-            currentSerieGroupElement.classList.remove(prefixed('unattached'));
-        }
     }
 
     getSeriePropertyColor(props: Array<any>, serie: ChartConfigSerie, serieIndex: number) {

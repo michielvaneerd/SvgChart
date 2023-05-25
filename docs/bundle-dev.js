@@ -125,6 +125,11 @@
         /**
          * Draws chart.
          * 
+         * Calls:
+         * - {@link onDrawStart} - Called once at the beginning of the drawing.
+         * - {@link onDrawSerie} - Called for each serie.
+         * - {@link onDrawEnd} - Called once at the end of the drawing.
+         * 
          * @param currentSerieGroupElement - Group element where the chart can be appended to.
          */
         onDraw(currentSerieGroupElement) {
@@ -594,6 +599,8 @@
            * Width of stroke for donut charts. If this is 0, no stroke is painted.
            */
           this.donutStrokeWidth = 2;
+          this.radarStrokeWidth = 2;
+          this.radarFillOpacity = 0.3;
         }
         /**
          * Get direction string to use for dom direction attribute.
@@ -820,9 +827,9 @@
           x2: x,
           y2: this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding * 2,
           className: prefixed("x-axis-grid-line"),
-          stroke: this.config.xAxisGridLineColor || "",
-          strokeWidth: this.config.xAxisGridLineWidth || "",
-          strokeDasharray: this.config.xAxisGridLineDashArray || ""
+          stroke: this.config.xAxisGridLineColor,
+          strokeWidth: this.config.xAxisGridLineWidth,
+          strokeDasharray: this.config.xAxisGridLineDashArray
         }));
       };
       _onXAxisLabelGroupClick = new WeakSet();
@@ -1407,6 +1414,7 @@
          * @param serieGroup - DOM group element for this serie.
          */
         onDrawSerie(serie, serieIndex, serieGroup) {
+          super.onDrawSerie(serie, serieIndex, serieGroup);
           let points = [];
           this.svgChart.data.series[serie.id].forEach((value, index) => {
             const curRadius = __privateGet(this, _radiusByXStep) * value;
@@ -1428,11 +1436,12 @@
             points: points.join(" "),
             stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
             fill: this.svgChart.getSerieFill(serie, serieIndex),
-            fillOpacity: this.config.barFillOpacity || "",
-            strokeWidth: this.config.barStrokeWidth || 0
+            fillOpacity: this.config.radarFillOpacity,
+            strokeWidth: this.config.radarStrokeWidth
           }));
         }
         onConfigBefore() {
+          super.onConfigBefore();
           this.svgChart.xAxisGroupElement = this.svgChart.svg.appendChild(el("g", {
             className: prefixed("x-axis-group")
           }));
@@ -1445,6 +1454,7 @@
          * @param currentSerieGroupElement - DOM group element.
          */
         onDrawStart(currentSerieGroupElement) {
+          super.onDrawStart(currentSerieGroupElement);
           __privateMethod(this, _drawAxis, drawAxis_fn).call(this);
         }
       };
@@ -1477,25 +1487,19 @@
             }
             polylinePoints.push(`${point.x}, ${point.y}`);
             if (curYStep === this.config.maxValue) {
-              gAxis.appendChild(el("circle", {
-                cx: point.x,
-                cy: point.y,
-                r: 2,
-                fill: this.config.xAxisGridLineColor
-              }));
-              let dominantBaseline = "auto";
+              let dominantBaseline = null;
               if (angle === 0) {
                 dominantBaseline = "auto";
               } else if (angle <= 90) {
                 dominantBaseline = "middle";
-              } else if (angle <= 270) {
+              } else if (angle < 270) {
                 dominantBaseline = "hanging";
               } else {
                 dominantBaseline = "middle";
               }
               gAxis.appendChild(el("text", {
-                x: angle === 0 || angle === 180 ? point.x : angle < 180 ? point.x + 10 : point.x - 10,
-                y: angle === 0 ? point.y - 10 : angle === 180 ? point.y + 10 : point.y,
+                x: angle === 0 || angle === 180 ? point.x : angle < 180 ? point.x + 10 : point.x - this.config.paddingDefault,
+                y: angle === 0 ? point.y - this.config.paddingDefault : angle === 180 ? point.y + this.config.paddingDefault : point.y,
                 direction: SvgChartConfig.getDirection(this.config),
                 textAnchor: angle === 0 || angle === 180 ? "middle" : angle < 180 ? "start" : "end",
                 dominantBaseline,
@@ -1509,14 +1513,20 @@
                 y1: __privateGet(this, _centerY),
                 x2: point.x,
                 y2: point.y,
-                stroke: this.config.xAxisGridLineColor
+                className: prefixed("axis-grid-line"),
+                stroke: this.config.xAxisGridLineColor,
+                strokeWidth: this.config.xAxisGridLineWidth,
+                strokeDasharray: this.config.xAxisGridLineDashArray
               }));
             }
           });
           gAxis.appendChild(el("polygon", {
             points: polylinePoints.join(" "),
             fill: "transparent",
-            stroke: this.config.xAxisGridLineColor
+            className: prefixed("axis-grid-line"),
+            stroke: this.config.xAxisGridLineColor,
+            strokeWidth: this.config.xAxisGridLineWidth,
+            strokeDasharray: this.config.xAxisGridLineDashArray
           }));
           if (curYStep % this.config.yAxisLabelStep === 0) {
             gAxis.appendChild(el("text", {
@@ -1538,7 +1548,7 @@
   });
 
   // src/svg.ts
-  var _chartTypeControllers, _cssAdded, _activeColorPalette, _defsElement, _drawOnConfigGroup, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
+  var _chartTypeControllers, _cssAdded, _activeColorPalette, _defsElement, _drawOnConfigGroup, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
   var init_svg = __esm({
     "src/svg.ts"() {
       init_utils();
@@ -1555,6 +1565,12 @@
       _SvgChart = class {
         /**
          * Constructor - create a new chart instance.
+         * 
+         * Actions during the constructor:
+         * - Adding CSS rules (for dynamic styling)
+         * - Create and add SVG element.
+         * - Call {@link setConfig}.
+         * 
          * @param parent - Parent DOM node the SVG element will be attached to.
          * @param config - Configuration object.
          */
@@ -1571,18 +1587,6 @@
            * Add chart title.
            */
           __privateAdd(this, _addTitle);
-          /**
-           * Things we need to do for all chart types before we start visualise the data.
-           * 
-           * @returns The current serie group element.
-           */
-          __privateAdd(this, _dataBefore);
-          /**
-           * Things we need to do for all chart types after we visualised the data.
-           * 
-           * @param currentSerieGroupElement - The current serie group element we got from #dataBefore().
-           */
-          __privateAdd(this, _dataAfter);
           /**
            * When legend gets toggled (selected / deselected).
            * @param {SVGElement} target Legend node that gets toggled.
@@ -1675,7 +1679,16 @@
           __privateSet(_SvgChart, _activeColorPalette, colors2);
         }
         /**
-         * Set the configuration for this chart instance.
+         * Set the configuration for this chart instance. The idea is that this method does things that need to be done
+         * only once for a chart and that {@link chart} does things for drawing the charts and can happen multiple times,
+         * for example if you need to display a new set of data.
+         * 
+         * Actions during this method:
+         * - Merge config from parameter with default config.
+         * - Create chart controller for this charttype.
+         * - Remove all child element for this chart (only does something when this method is called multiple times).
+         * - Adding elements like title, legend, etc.
+         * - Add the {@link serieGroupElement}.
          * 
          * @param config - Configuration object.
          */
@@ -1762,7 +1775,7 @@
           this.controller.onConfigAfter();
         }
         /**
-         * Writing the charts.
+         * Writing the chart data.
          * 
          * @param data - Data object.
          */
@@ -1770,9 +1783,19 @@
           if (data2 !== null) {
             this.data = data2;
           }
-          const currentSerieGroupElement = __privateMethod(this, _dataBefore, dataBefore_fn).call(this);
+          if (this.serieGroupElement.firstChild) {
+            this.serieGroupElement.firstChild.remove();
+          }
+          const currentSerieGroupElement = el("g", {
+            id: prefixed("serie-group-current"),
+            className: this.config.transition ? prefixed("unattached") : ""
+          });
           this.controller.onDraw(currentSerieGroupElement);
-          __privateMethod(this, _dataAfter, dataAfter_fn).call(this, currentSerieGroupElement);
+          this.serieGroupElement.appendChild(currentSerieGroupElement);
+          if (this.config.transition) {
+            currentSerieGroupElement.getBoundingClientRect();
+            currentSerieGroupElement.classList.remove(prefixed("unattached"));
+          }
           if (this.config.drawOnData) {
             this.config.drawOnData(this, __privateGet(this, _drawOnDataGroup));
           }
@@ -2031,24 +2054,6 @@
           fill: this.config.titleColor,
           className: prefixed("text-title")
         }, document.createTextNode(this.config.title)));
-      };
-      _dataBefore = new WeakSet();
-      dataBefore_fn = function() {
-        if (this.serieGroupElement.firstChild) {
-          this.serieGroupElement.firstChild.remove();
-        }
-        var currentSerieGroupElement = el("g", {
-          id: prefixed("serie-group-current"),
-          className: this.config.transition ? prefixed("unattached") : ""
-        });
-        return currentSerieGroupElement;
-      };
-      _dataAfter = new WeakSet();
-      dataAfter_fn = function(currentSerieGroupElement) {
-        this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect();
-        if (this.config.transition) {
-          currentSerieGroupElement.classList.remove(prefixed("unattached"));
-        }
       };
       _onLegendToggle = new WeakSet();
       onLegendToggle_fn = function(target) {
@@ -2480,6 +2485,41 @@
           data: null,
           chart: null
         },
+        chartBasicRadar: {
+          config: {
+            chartType: 5 /* Radar */,
+            ltr: htmlDirIsLtr,
+            legendPosition: 1 /* End */,
+            minValue: 0,
+            maxValue: 100,
+            yAxisStep: 20,
+            yAxisLabelStep: 20,
+            ltr: htmlDirIsLtr,
+            title: "Basic radar chart",
+            padding: {
+              end: 100,
+              start: 80,
+              top: 80,
+              bottom: 20
+            },
+            series: [
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              },
+              {
+                id: "bike",
+                title: "Bike"
+              }
+            ]
+          },
+          data: null,
+          chart: null
+        },
         chartBarAndLine: {
           config: {
             chartType: 2 /* LineAndBar */,
@@ -2657,6 +2697,19 @@
         return this.toString().replace(/\n/g, "<br>").replace("function(", "FUNC[");
       };
       function setChartData(id) {
+        if (chartInfo[id].config.chartType === 5 /* Radar */) {
+          var serieData = {};
+          chartInfo[id].config.series.forEach(function(serie) {
+            serieData[serie.id] = Array(5).fill(1).map((item) => getRandomIntInclusive(0, 100));
+          });
+          chartInfo[id].data = {
+            series: serieData,
+            xAxis: {
+              columns: ["Walk", "Swim", "Fly", "Sleep", "Eat"]
+            }
+          };
+          return;
+        }
         var isPieOrDonut = [3 /* Pie */, 4 /* Donut */].indexOf(chartInfo[id].config.chartType) !== -1;
         var serieData = {};
         chartInfo[id].config.series.forEach(function(serie) {
@@ -2772,6 +2825,7 @@
       doChart("chartStackedBar");
       doChart("chartBasicPie");
       doChart("chartBasicDonut");
+      doChart("chartBasicRadar");
       doChart("chartBarAndLine");
       doChart("chartCustom");
       dynamicChart();

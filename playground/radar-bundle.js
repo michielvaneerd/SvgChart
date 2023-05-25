@@ -511,6 +511,11 @@
     /**
      * Draws chart.
      * 
+     * Calls:
+     * - {@link onDrawStart} - Called once at the beginning of the drawing.
+     * - {@link onDrawSerie} - Called for each serie.
+     * - {@link onDrawEnd} - Called once at the end of the drawing.
+     * 
      * @param currentSerieGroupElement - Group element where the chart can be appended to.
      */
     onDraw(currentSerieGroupElement) {
@@ -784,9 +789,9 @@
       x2: x,
       y2: this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding * 2,
       className: prefixed("x-axis-grid-line"),
-      stroke: this.config.xAxisGridLineColor || "",
-      strokeWidth: this.config.xAxisGridLineWidth || "",
-      strokeDasharray: this.config.xAxisGridLineDashArray || ""
+      stroke: this.config.xAxisGridLineColor,
+      strokeWidth: this.config.xAxisGridLineWidth,
+      strokeDasharray: this.config.xAxisGridLineDashArray
     }));
   };
   _onXAxisLabelGroupClick = new WeakSet();
@@ -1312,6 +1317,7 @@
      * @param serieGroup - DOM group element for this serie.
      */
     onDrawSerie(serie, serieIndex, serieGroup) {
+      super.onDrawSerie(serie, serieIndex, serieGroup);
       let points = [];
       this.svgChart.data.series[serie.id].forEach((value, index) => {
         const curRadius = __privateGet(this, _radiusByXStep) * value;
@@ -1338,6 +1344,7 @@
       }));
     }
     onConfigBefore() {
+      super.onConfigBefore();
       this.svgChart.xAxisGroupElement = this.svgChart.svg.appendChild(el("g", {
         className: prefixed("x-axis-group")
       }));
@@ -1350,6 +1357,7 @@
      * @param currentSerieGroupElement - DOM group element.
      */
     onDrawStart(currentSerieGroupElement) {
+      super.onDrawStart(currentSerieGroupElement);
       __privateMethod(this, _drawAxis, drawAxis_fn).call(this);
     }
   };
@@ -1382,19 +1390,19 @@
         }
         polylinePoints.push(`${point.x}, ${point.y}`);
         if (curYStep === this.config.maxValue) {
-          let dominantBaseline = "auto";
+          let dominantBaseline = null;
           if (angle === 0) {
             dominantBaseline = "auto";
           } else if (angle <= 90) {
             dominantBaseline = "middle";
-          } else if (angle <= 270) {
+          } else if (angle < 270) {
             dominantBaseline = "hanging";
           } else {
             dominantBaseline = "middle";
           }
           gAxis.appendChild(el("text", {
-            x: angle === 0 || angle === 180 ? point.x : angle < 180 ? point.x + 10 : point.x - 10,
-            y: angle === 0 ? point.y - 10 : angle === 180 ? point.y + 10 : point.y,
+            x: angle === 0 || angle === 180 ? point.x : angle < 180 ? point.x + 10 : point.x - this.config.paddingDefault,
+            y: angle === 0 ? point.y - this.config.paddingDefault : angle === 180 ? point.y + this.config.paddingDefault : point.y,
             direction: SvgChartConfig.getDirection(this.config),
             textAnchor: angle === 0 || angle === 180 ? "middle" : angle < 180 ? "start" : "end",
             dominantBaseline,
@@ -1408,15 +1416,20 @@
             y1: __privateGet(this, _centerY),
             x2: point.x,
             y2: point.y,
-            stroke: this.config.xAxisGridLineColor
+            className: prefixed("axis-grid-line"),
+            stroke: this.config.xAxisGridLineColor,
+            strokeWidth: this.config.xAxisGridLineWidth,
+            strokeDasharray: this.config.xAxisGridLineDashArray
           }));
         }
       });
       gAxis.appendChild(el("polygon", {
         points: polylinePoints.join(" "),
         fill: "transparent",
+        className: prefixed("axis-grid-line"),
         stroke: this.config.xAxisGridLineColor,
-        strokeWidth: 1
+        strokeWidth: this.config.xAxisGridLineWidth,
+        strokeDasharray: this.config.xAxisGridLineDashArray
       }));
       if (curYStep % this.config.yAxisLabelStep === 0) {
         gAxis.appendChild(el("text", {
@@ -1436,10 +1449,16 @@
   };
 
   // src/svg.ts
-  var _chartTypeControllers, _cssAdded, _activeColorPalette, _defsElement, _drawOnConfigGroup, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn;
+  var _chartTypeControllers, _cssAdded, _activeColorPalette, _defsElement, _drawOnConfigGroup, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn;
   var _SvgChart = class {
     /**
      * Constructor - create a new chart instance.
+     * 
+     * Actions during the constructor:
+     * - Adding CSS rules (for dynamic styling)
+     * - Create and add SVG element.
+     * - Call {@link setConfig}.
+     * 
      * @param parent - Parent DOM node the SVG element will be attached to.
      * @param config - Configuration object.
      */
@@ -1456,18 +1475,6 @@
        * Add chart title.
        */
       __privateAdd(this, _addTitle);
-      /**
-       * Things we need to do for all chart types before we start visualise the data.
-       * 
-       * @returns The current serie group element.
-       */
-      __privateAdd(this, _dataBefore);
-      /**
-       * Things we need to do for all chart types after we visualised the data.
-       * 
-       * @param currentSerieGroupElement - The current serie group element we got from #dataBefore().
-       */
-      __privateAdd(this, _dataAfter);
       /**
        * When legend gets toggled (selected / deselected).
        * @param {SVGElement} target Legend node that gets toggled.
@@ -1560,7 +1567,16 @@
       __privateSet(_SvgChart, _activeColorPalette, colors2);
     }
     /**
-     * Set the configuration for this chart instance.
+     * Set the configuration for this chart instance. The idea is that this method does things that need to be done
+     * only once for a chart and that {@link chart} does things for drawing the charts and can happen multiple times,
+     * for example if you need to display a new set of data.
+     * 
+     * Actions during this method:
+     * - Merge config from parameter with default config.
+     * - Create chart controller for this charttype.
+     * - Remove all child element for this chart (only does something when this method is called multiple times).
+     * - Adding elements like title, legend, etc.
+     * - Add the {@link serieGroupElement}.
      * 
      * @param config - Configuration object.
      */
@@ -1647,7 +1663,7 @@
       this.controller.onConfigAfter();
     }
     /**
-     * Writing the charts.
+     * Writing the chart data.
      * 
      * @param data - Data object.
      */
@@ -1655,9 +1671,19 @@
       if (data !== null) {
         this.data = data;
       }
-      const currentSerieGroupElement = __privateMethod(this, _dataBefore, dataBefore_fn).call(this);
+      if (this.serieGroupElement.firstChild) {
+        this.serieGroupElement.firstChild.remove();
+      }
+      const currentSerieGroupElement = el("g", {
+        id: prefixed("serie-group-current"),
+        className: this.config.transition ? prefixed("unattached") : ""
+      });
       this.controller.onDraw(currentSerieGroupElement);
-      __privateMethod(this, _dataAfter, dataAfter_fn).call(this, currentSerieGroupElement);
+      this.serieGroupElement.appendChild(currentSerieGroupElement);
+      if (this.config.transition) {
+        currentSerieGroupElement.getBoundingClientRect();
+        currentSerieGroupElement.classList.remove(prefixed("unattached"));
+      }
       if (this.config.drawOnData) {
         this.config.drawOnData(this, __privateGet(this, _drawOnDataGroup));
       }
@@ -1917,24 +1943,6 @@
       className: prefixed("text-title")
     }, document.createTextNode(this.config.title)));
   };
-  _dataBefore = new WeakSet();
-  dataBefore_fn = function() {
-    if (this.serieGroupElement.firstChild) {
-      this.serieGroupElement.firstChild.remove();
-    }
-    var currentSerieGroupElement = el("g", {
-      id: prefixed("serie-group-current"),
-      className: this.config.transition ? prefixed("unattached") : ""
-    });
-    return currentSerieGroupElement;
-  };
-  _dataAfter = new WeakSet();
-  dataAfter_fn = function(currentSerieGroupElement) {
-    this.serieGroupElement.appendChild(currentSerieGroupElement).getBoundingClientRect();
-    if (this.config.transition) {
-      currentSerieGroupElement.classList.remove(prefixed("unattached"));
-    }
-  };
   _onLegendToggle = new WeakSet();
   onLegendToggle_fn = function(target) {
     var g = parent(target, "g");
@@ -2069,9 +2077,9 @@
   var chart = new SvgChart(document.getElementById("chart"), config);
   var chartSeries = {
     series: {
-      humans: [12, 23, 45, 100, 45],
-      animals: [2, 34, 0, 67, 78],
-      flowers: [4, 4, 4, 37, 88]
+      humans: [12, 23, 45, 100, 45, 56],
+      animals: [2, 34, 0, 67, 78, 100],
+      flowers: [4, 4, 4, 37, 88, 99]
     },
     xAxis: {
       columns: [
@@ -2079,7 +2087,8 @@
         "eat",
         "move",
         "fight",
-        "other"
+        "other",
+        "varia"
       ]
     }
   };

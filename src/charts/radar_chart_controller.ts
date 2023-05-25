@@ -5,7 +5,6 @@ import { Controller } from "./controller";
 
 /**
  * Class for displaying radar charts.
- * @extends Controller
  */
 class RadarController extends Controller {
 
@@ -26,6 +25,9 @@ class RadarController extends Controller {
      * @param serieGroup - DOM group element for this serie.
      */
     onDrawSerie(serie: ChartConfigSerie, serieIndex: number, serieGroup: SVGElement) {
+
+        super.onDrawSerie(serie, serieIndex, serieGroup);
+
         let points = [];
         this.svgChart.data.series[serie.id].forEach((value, index) => {
             const curRadius = this.#radiusByXStep * value;
@@ -53,6 +55,9 @@ class RadarController extends Controller {
     }
 
     onConfigBefore(): void {
+
+        super.onConfigBefore();
+
         this.svgChart.xAxisGroupElement = this.svgChart.svg.appendChild(el('g', {
             className: prefixed('x-axis-group')
         }));
@@ -66,6 +71,9 @@ class RadarController extends Controller {
      * @param currentSerieGroupElement - DOM group element.
      */
     onDrawStart(currentSerieGroupElement: SVGElement) {
+
+        super.onDrawStart(currentSerieGroupElement);
+
         this.#drawAxis();
     }
 
@@ -102,20 +110,20 @@ class RadarController extends Controller {
 
                 if (curYStep === this.config.maxValue) {
 
-                    let dominantBaseline = 'auto';
+                    let dominantBaseline: string = null;
                     if (angle === 0) {
                         dominantBaseline = 'auto';
                     } else if (angle <= 90) {
                         dominantBaseline = 'middle';
-                    } else if (angle <= 270) {
+                    } else if (angle < 270) {
                         dominantBaseline = 'hanging';
                     } else {
                         dominantBaseline = 'middle';
                     }
 
                     gAxis.appendChild(el('text', {
-                        x: angle === 0 || angle === 180 ? point.x : (angle < 180 ? (point.x + 10) : point.x - 10),
-                        y: angle === 0 ? point.y - 10 : (angle === 180 ? (point.y + 10) : point.y),
+                        x: angle === 0 || angle === 180 ? point.x : (angle < 180 ? (point.x + 10) : point.x - this.config.paddingDefault),
+                        y: angle === 0 ? point.y - this.config.paddingDefault : (angle === 180 ? (point.y + this.config.paddingDefault) : point.y),
                         direction: SvgChartConfig.getDirection(this.config),
                         textAnchor: angle === 0 || angle === 180 ? 'middle' : (angle < 180 ? 'start' : 'end'),
                         dominantBaseline: dominantBaseline,
@@ -129,7 +137,10 @@ class RadarController extends Controller {
                         y1: this.#centerY,
                         x2: point.x,
                         y2: point.y,
-                        stroke: this.config.xAxisGridLineColor
+                        className: prefixed('axis-grid-line'),
+                        stroke: this.config.xAxisGridLineColor,
+                        strokeWidth: this.config.xAxisGridLineWidth,
+                        strokeDasharray: this.config.xAxisGridLineDashArray,
                     }));
                 }
             });
@@ -137,8 +148,10 @@ class RadarController extends Controller {
             gAxis.appendChild(el('polygon', {
                 points: polylinePoints.join(' '),
                 fill: 'transparent',
+                className: prefixed('axis-grid-line'),
                 stroke: this.config.xAxisGridLineColor,
-                strokeWidth: 1
+                strokeWidth: this.config.xAxisGridLineWidth,
+                strokeDasharray: this.config.xAxisGridLineDashArray,
             }));
 
             if (curYStep % this.config.yAxisLabelStep === 0) {

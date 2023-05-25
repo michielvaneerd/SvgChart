@@ -317,6 +317,41 @@ var chartInfo = {
         data: null,
         chart: null
     },
+    chartBasicRadar: {
+        config: {
+            chartType: ChartType.Radar,
+            ltr: htmlDirIsLtr,
+            legendPosition: ChartPosition.End,
+            minValue: 0,
+            maxValue: 100,
+            yAxisStep: 20,
+            yAxisLabelStep: 20,
+            ltr: htmlDirIsLtr,
+            title: 'Basic radar chart',
+            padding: {
+                end: 100,
+                start: 80,
+                top: 80,
+                bottom: 20
+            },
+            series: [
+                {
+                    id: 'train',
+                    title: 'Train'
+                },
+                {
+                    id: 'car',
+                    title: 'Car'
+                },
+                {
+                    id: 'bike',
+                    title: 'Bike'
+                }
+            ]
+        },
+        data: null,
+        chart: null
+    },
     chartBarAndLine: {
         config: {
             chartType: ChartType.LineAndBar,
@@ -496,6 +531,21 @@ Function.prototype.toJSON = function () {
 }
 
 function setChartData(id) {
+
+    if (chartInfo[id].config.chartType === ChartType.Radar) {
+        var serieData = {};
+        chartInfo[id].config.series.forEach(function (serie) {
+            serieData[serie.id] = Array(5).fill(1).map(item => getRandomIntInclusive(0, 100));
+        });
+        chartInfo[id].data = {
+            series: serieData,
+            xAxis: {
+                columns: ['Walk', 'Swim', 'Fly', 'Sleep', 'Eat']
+            }
+        };
+        return;
+    }
+
     var isPieOrDonut = [ChartType.Pie, ChartType.Donut].indexOf(chartInfo[id].config.chartType) !== -1;
     var serieData = {};
     chartInfo[id].config.series.forEach(function (serie) {
@@ -638,6 +688,7 @@ doChart('chartBasicBar');
 doChart('chartStackedBar');
 doChart('chartBasicPie');
 doChart('chartBasicDonut');
+doChart('chartBasicRadar');
 doChart('chartBarAndLine');
 doChart('chartCustom');
 dynamicChart();

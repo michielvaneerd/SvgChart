@@ -29,6 +29,11 @@ class Controller {
     /**
      * Draws chart.
      * 
+     * Calls:
+     * - {@link onDrawStart} - Called once at the beginning of the drawing.
+     * - {@link onDrawSerie} - Called for each serie.
+     * - {@link onDrawEnd} - Called once at the end of the drawing.
+     * 
      * @param currentSerieGroupElement - Group element where the chart can be appended to.
      */
     onDraw(currentSerieGroupElement: SVGElement) {

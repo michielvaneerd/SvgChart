@@ -29,9 +29,9 @@ const chart = new SvgChart(document.getElementById('chart'), config);
 
 const chartSeries = {
     series: {
-        humans: [12, 23, 45, 100, 45],
-        animals: [2, 34, 0, 67, 78],
-        flowers: [4, 4, 4, 37, 88],
+        humans: [12, 23, 45, 100, 45, 56],
+        animals: [2, 34, 0, 67, 78, 100],
+        flowers: [4, 4, 4, 37, 88, 99],
     },
     xAxis: {
         columns: [
@@ -39,7 +39,8 @@ const chartSeries = {
             'eat',
             'move',
             'fight',
-            'other'
+            'other',
+            'varia'
         ]
     }
 };
