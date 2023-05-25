@@ -8,6 +8,7 @@ import { PieController } from "./charts/pie_chart_controller";
 import { SvgChartConfig } from "./config";
 import { Controller } from "./charts/controller";
 import { ChartConfigSerie, ChartData, ChartEventInfo, ChartPosition, ChartType, ScopedEventCallback, StringBooleanHash } from "./types";
+import { RadarController } from "./charts/radar_chart_controller";
 
 // Radar chart:
 // https://medium.com/@brianfoody/jogging-your-geometry-memory-by-building-an-svg-radar-chart-in-react-native-4aeee555809f
@@ -28,6 +29,7 @@ class SvgChart {
         SvgChart.#chartTypeControllers[ChartType.LineAndBar] = BarAndLineController;
         SvgChart.#chartTypeControllers[ChartType.Pie] = PieController;
         SvgChart.#chartTypeControllers[ChartType.Donut] = DonutController;
+        SvgChart.#chartTypeControllers[ChartType.Radar] = RadarController;
     }
 
     /**
@@ -194,8 +196,8 @@ class SvgChart {
         if (!SvgChart.#cssAdded) {
             SvgChart.#cssAdded = true;
             const cssRules = [
-                '.' + prefixed('line-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
-                '.' + prefixed('line-point') + ':hover, circle.' + prefixed('line-point') + ':focus { stroke-width: 6; outline: none; }',
+                '.' + prefixed('value-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
+                '.' + prefixed('value-point') + ':hover, circle.' + prefixed('value-point') + ':focus { stroke-width: 6; outline: none; }',
                 '#' + prefixed('serie-group') + ' g { transition: opacity 0.6s; }',
                 '#' + prefixed('serie-group') + ' g.' + prefixed('unselected') + ' { opacity: 0; }',
                 '#' + prefixed('serie-group-current') + ' { transition: opacity 1s; opacity: 1; }',
@@ -766,6 +768,7 @@ class SvgChart {
                 case ChartType.Line:
                 case ChartType.Bar:
                 case ChartType.LineAndBar:
+                case ChartType.Radar:
                     x = (parseFloat(circle.getAttribute('cx')) || (parseFloat(circle.getAttribute('x')) + (parseFloat(circle.getAttribute('width')) / 2))) - (width / 2);
                     y = (parseFloat(circle.getAttribute('cy')) || parseFloat(circle.getAttribute('y'))) - 10 - height;
                     break;

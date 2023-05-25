@@ -95,7 +95,7 @@ class LineController extends Controller {
                     fill: this.svgChart.getSeriePointColor(serie, serieIndex),
                     stroke: this.svgChart.getSeriePointColor(serie, serieIndex),
                     dataValue: point.value,
-                    className: prefixed('line-point'),
+                    className: prefixed('value-point'),
                     tabindex: this.config.focusedValueShow ? 0 : null
                 }));
             });

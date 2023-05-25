@@ -499,7 +499,7 @@ function setChartData(id) {
     var isPieOrDonut = [ChartType.Pie, ChartType.Donut].indexOf(chartInfo[id].config.chartType) !== -1;
     var serieData = {};
     chartInfo[id].config.series.forEach(function (serie) {
-        serieData[serie.id] = !isPieOrDonut ? Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)) : getRandomIntInclusive(0, 100);
+        serieData[serie.id] = !isPieOrDonut ? Array(7).fill(1).map(item => getRandomIntInclusive(0, 100)) : [getRandomIntInclusive(0, 100)];
     });
     if (isPieOrDonut) {
         chartInfo[id].data = {

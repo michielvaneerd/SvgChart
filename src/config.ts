@@ -476,6 +476,9 @@ class SvgChartConfig {
      * Width of stroke for donut charts. If this is 0, no stroke is painted.
      */
     donutStrokeWidth: number = 2;
+
+    radarStrokeWidth: number = 2;
+    radarFillOpacity: number = 0.3;
 };
 
 export { SvgChartConfig };

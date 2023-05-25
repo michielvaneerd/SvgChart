@@ -32,7 +32,7 @@ enum ChartType {
  * Data object with series data and columns.
  */
 interface ChartData {
-    series: { string: number[] };
+    series: { [key: string]: number[] },
     xAxis?: { columns: string[] };
 };
 
@@ -58,7 +58,7 @@ interface ChartEventInfo {
  * Hash with string as key and boolean as value.
  */
 type StringBooleanHash = {
-    [index: string]: boolean;
+    [key: string]: boolean;
 }
 
 /**

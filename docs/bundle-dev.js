@@ -202,6 +202,7 @@
         ChartType3[ChartType3["LineAndBar"] = 2] = "LineAndBar";
         ChartType3[ChartType3["Pie"] = 3] = "Pie";
         ChartType3[ChartType3["Donut"] = 4] = "Donut";
+        ChartType3[ChartType3["Radar"] = 5] = "Radar";
         return ChartType3;
       })(ChartType || {});
     }
@@ -999,7 +1000,7 @@
                 fill: this.svgChart.getSeriePointColor(serie, serieIndex),
                 stroke: this.svgChart.getSeriePointColor(serie, serieIndex),
                 dataValue: point.value,
-                className: prefixed("line-point"),
+                className: prefixed("value-point"),
                 tabindex: this.config.focusedValueShow ? 0 : null
               }));
             });
@@ -1234,7 +1235,7 @@
     var centerY = svgChart.chartHeight / 2 + svgChart.config.padding.top;
     var total = 0;
     for (let key in svgChart.data.series) {
-      total += svgChart.data.series[key];
+      total += svgChart.data.series[key][0];
     }
     var totalToDegree = 360 / total;
     var currentTotal = 0;
@@ -1243,7 +1244,7 @@
         dataSerie: serie.id,
         className: svgChart.unselectedSeries[serie.id] ? prefixed("unselected") : ""
       });
-      const value = svgChart.data.series[serie.id];
+      const value = svgChart.data.series[serie.id][0];
       var startAngle = currentTotal * totalToDegree;
       currentTotal += value;
       var endAngle = currentTotal * totalToDegree;
@@ -1378,6 +1379,164 @@
     }
   });
 
+  // src/charts/radar_chart_controller.ts
+  var _radius, _centerX, _centerY, _seriesCount, _degreeSteps, _radiusByXStep, _drawAxis, drawAxis_fn, RadarController;
+  var init_radar_chart_controller = __esm({
+    "src/charts/radar_chart_controller.ts"() {
+      init_config();
+      init_utils();
+      init_controller();
+      RadarController = class extends Controller {
+        constructor() {
+          super(...arguments);
+          __privateAdd(this, _drawAxis);
+          __privateAdd(this, _radius, void 0);
+          __privateAdd(this, _centerX, void 0);
+          __privateAdd(this, _centerY, void 0);
+          __privateAdd(this, _seriesCount, void 0);
+          __privateAdd(this, _degreeSteps, void 0);
+          __privateAdd(this, _radiusByXStep, void 0);
+        }
+        /**
+         * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
+         * 
+         * @override
+         * 
+         * @param serie - Serie object.
+         * @param serieIndex - Serie index.
+         * @param serieGroup - DOM group element for this serie.
+         */
+        onDrawSerie(serie, serieIndex, serieGroup) {
+          let points = [];
+          this.svgChart.data.series[serie.id].forEach((value, index) => {
+            const curRadius = __privateGet(this, _radiusByXStep) * value;
+            const point = polarToCartesian(__privateGet(this, _centerX), __privateGet(this, _centerY), curRadius, __privateGet(this, _degreeSteps) * index);
+            points.push(`${point.x}, ${point.y}`);
+            serieGroup.appendChild(el("circle", {
+              cx: point.x,
+              cy: point.y,
+              r: this.config.pointRadius,
+              fill: this.svgChart.getSerieFill(serie, serieIndex),
+              tabindex: this.config.focusedValueShow ? 0 : null,
+              zIndex: 1,
+              dataValue: value,
+              className: prefixed("value-point"),
+              stroke: this.svgChart.getSeriePointColor(serie, serieIndex)
+            }));
+          });
+          serieGroup.appendChild(el("polygon", {
+            points: points.join(" "),
+            stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
+            fill: this.svgChart.getSerieFill(serie, serieIndex),
+            fillOpacity: this.config.barFillOpacity || "",
+            strokeWidth: this.config.barStrokeWidth || 0
+          }));
+        }
+        onConfigBefore() {
+          this.svgChart.xAxisGroupElement = this.svgChart.svg.appendChild(el("g", {
+            className: prefixed("x-axis-group")
+          }));
+        }
+        /**
+         * Do things at the start of the draw for this chart.
+         * 
+         * @override
+         * 
+         * @param currentSerieGroupElement - DOM group element.
+         */
+        onDrawStart(currentSerieGroupElement) {
+          __privateMethod(this, _drawAxis, drawAxis_fn).call(this);
+        }
+      };
+      _radius = new WeakMap();
+      _centerX = new WeakMap();
+      _centerY = new WeakMap();
+      _seriesCount = new WeakMap();
+      _degreeSteps = new WeakMap();
+      _radiusByXStep = new WeakMap();
+      _drawAxis = new WeakSet();
+      drawAxis_fn = function() {
+        __privateSet(this, _radius, this.svgChart.chartHeight / 2);
+        __privateSet(this, _centerX, this.svgChart.width / 2);
+        __privateSet(this, _centerY, this.svgChart.chartHeight / 2 + this.svgChart.config.padding.top);
+        var gAxis = el("g", {
+          className: prefixed("axis-group")
+        });
+        __privateSet(this, _seriesCount, this.svgChart.data.xAxis.columns.length);
+        __privateSet(this, _degreeSteps, 360 / __privateGet(this, _seriesCount));
+        __privateSet(this, _radiusByXStep, __privateGet(this, _radius) / (Math.abs(this.config.minValue) + this.config.maxValue));
+        for (let curYStep = this.config.minValue; curYStep <= this.config.maxValue; curYStep += this.config.yAxisStep) {
+          const curRadius = __privateGet(this, _radiusByXStep) * curYStep;
+          let polylinePoints = [];
+          let firstPoint = null;
+          this.svgChart.data.xAxis.columns.forEach((column, index) => {
+            const angle = __privateGet(this, _degreeSteps) * index;
+            const point = polarToCartesian(__privateGet(this, _centerX), __privateGet(this, _centerY), curRadius, angle);
+            if (index === 0) {
+              firstPoint = point;
+            }
+            polylinePoints.push(`${point.x}, ${point.y}`);
+            if (curYStep === this.config.maxValue) {
+              gAxis.appendChild(el("circle", {
+                cx: point.x,
+                cy: point.y,
+                r: 2,
+                fill: this.config.xAxisGridLineColor
+              }));
+              let dominantBaseline = "auto";
+              if (angle === 0) {
+                dominantBaseline = "auto";
+              } else if (angle <= 90) {
+                dominantBaseline = "middle";
+              } else if (angle <= 270) {
+                dominantBaseline = "hanging";
+              } else {
+                dominantBaseline = "middle";
+              }
+              gAxis.appendChild(el("text", {
+                x: angle === 0 || angle === 180 ? point.x : angle < 180 ? point.x + 10 : point.x - 10,
+                y: angle === 0 ? point.y - 10 : angle === 180 ? point.y + 10 : point.y,
+                direction: SvgChartConfig.getDirection(this.config),
+                textAnchor: angle === 0 || angle === 180 ? "middle" : angle < 180 ? "start" : "end",
+                dominantBaseline,
+                fontFamily: this.config.fontFamily || "",
+                fontSize: this.config.axisLabelFontSize || "",
+                fontWeight: "normal",
+                fill: this.config.xAxisLabelColor || ""
+              }, document.createTextNode(column)));
+              gAxis.appendChild(el("line", {
+                x1: __privateGet(this, _centerX),
+                y1: __privateGet(this, _centerY),
+                x2: point.x,
+                y2: point.y,
+                stroke: this.config.xAxisGridLineColor
+              }));
+            }
+          });
+          gAxis.appendChild(el("polygon", {
+            points: polylinePoints.join(" "),
+            fill: "transparent",
+            stroke: this.config.xAxisGridLineColor
+          }));
+          if (curYStep % this.config.yAxisLabelStep === 0) {
+            gAxis.appendChild(el("text", {
+              x: firstPoint.x,
+              y: firstPoint.y,
+              direction: SvgChartConfig.getDirection(this.config),
+              textAnchor: "middle",
+              dominantBaseline: "middle",
+              fontFamily: this.config.fontFamily || "",
+              fontSize: this.config.axisLabelFontSize || "",
+              fontWeight: "normal",
+              fill: this.config.xAxisLabelColor || ""
+            }, document.createTextNode(curYStep.toString())));
+          }
+        }
+        this.svgChart.xAxisGroupElement.appendChild(gAxis);
+      };
+    }
+  });
+
   // src/svg.ts
   var _chartTypeControllers, _cssAdded, _activeColorPalette, _defsElement, _drawOnConfigGroup, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
   var init_svg = __esm({
@@ -1392,6 +1551,7 @@
       init_config();
       init_controller();
       init_types();
+      init_radar_chart_controller();
       _SvgChart = class {
         /**
          * Constructor - create a new chart instance.
@@ -1483,8 +1643,8 @@
           if (!__privateGet(_SvgChart, _cssAdded)) {
             __privateSet(_SvgChart, _cssAdded, true);
             const cssRules = [
-              "." + prefixed("line-point") + ", g." + prefixed("legend-group") + " g, ." + prefixed("x-axis-grid-column-selectable-label") + " { cursor: pointer; }",
-              "." + prefixed("line-point") + ":hover, circle." + prefixed("line-point") + ":focus { stroke-width: 6; outline: none; }",
+              "." + prefixed("value-point") + ", g." + prefixed("legend-group") + " g, ." + prefixed("x-axis-grid-column-selectable-label") + " { cursor: pointer; }",
+              "." + prefixed("value-point") + ":hover, circle." + prefixed("value-point") + ":focus { stroke-width: 6; outline: none; }",
               "#" + prefixed("serie-group") + " g { transition: opacity 0.6s; }",
               "#" + prefixed("serie-group") + " g." + prefixed("unselected") + " { opacity: 0; }",
               "#" + prefixed("serie-group-current") + " { transition: opacity 1s; opacity: 1; }",
@@ -1959,6 +2119,7 @@
             case 0 /* Line */:
             case 1 /* Bar */:
             case 2 /* LineAndBar */:
+            case 5 /* Radar */:
               x = (parseFloat(circle.getAttribute("cx")) || parseFloat(circle.getAttribute("x")) + parseFloat(circle.getAttribute("width")) / 2) - width / 2;
               y = (parseFloat(circle.getAttribute("cy")) || parseFloat(circle.getAttribute("y"))) - 10 - height;
               break;
@@ -1982,6 +2143,7 @@
         __privateGet(_SvgChart, _chartTypeControllers)[2 /* LineAndBar */] = BarAndLineController;
         __privateGet(_SvgChart, _chartTypeControllers)[3 /* Pie */] = PieController;
         __privateGet(_SvgChart, _chartTypeControllers)[4 /* Donut */] = DonutController;
+        __privateGet(_SvgChart, _chartTypeControllers)[5 /* Radar */] = RadarController;
       })();
       /**
        * All embedded color palettes. Set another with {@link setActiveColorPalette}.
@@ -2498,7 +2660,7 @@
         var isPieOrDonut = [3 /* Pie */, 4 /* Donut */].indexOf(chartInfo[id].config.chartType) !== -1;
         var serieData = {};
         chartInfo[id].config.series.forEach(function(serie) {
-          serieData[serie.id] = !isPieOrDonut ? Array(7).fill(1).map((item) => getRandomIntInclusive(0, 100)) : getRandomIntInclusive(0, 100);
+          serieData[serie.id] = !isPieOrDonut ? Array(7).fill(1).map((item) => getRandomIntInclusive(0, 100)) : [getRandomIntInclusive(0, 100)];
         });
         if (isPieOrDonut) {
           chartInfo[id].data = {

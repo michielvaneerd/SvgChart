@@ -22,153 +22,6 @@
     return method;
   };
 
-  // src/utils.ts
-  var ns = "http://www.w3.org/2000/svg";
-  var attributesCamelCaseToDashRegex = /[A-Z]/g;
-  var classNamePrefix = "svg-chart-";
-  function el(name, attributes = {}, child = null) {
-    var el2 = document.createElementNS(ns, name);
-    Object.keys(attributes).forEach((key) => {
-      if (attributes[key] === null) {
-        return;
-      }
-      switch (key) {
-        case "className":
-          if (attributes[key]) {
-            el2.classList.add(...attributes[key].trim().split(" "));
-          }
-          break;
-        default:
-          el2.setAttribute(key.replace(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
-          break;
-      }
-    });
-    if (child) {
-      el2.appendChild(child);
-    }
-    return el2;
-  }
-  function parent(currentElement, parentName) {
-    var el2 = currentElement;
-    while (el2 && el2.nodeName.toLowerCase() !== parentName.toLowerCase()) {
-      el2 = el2.parentNode;
-    }
-    return el2;
-  }
-  function prefixed(className) {
-    return classNamePrefix + className;
-  }
-  function directionForEach(instance, items, isRTL, callback) {
-    if (isRTL) {
-      const length = items.length;
-      for (let i = 0; i < length; i++) {
-        callback.call(instance, items[i], i, items);
-      }
-    } else {
-      const maxIndex = items.length - 1;
-      for (let i = maxIndex; i >= 0; i--) {
-        callback.call(instance, items[i], maxIndex - i, items);
-      }
-    }
-  }
-  function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180;
-    return {
-      x: centerX + radius * Math.cos(angleInRadians),
-      y: centerY + radius * Math.sin(angleInRadians)
-    };
-  }
-
-  // src/colors.ts
-  var colors = {
-    dutchFieldColorPalette: ["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"],
-    retroMetroColorPalette: ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"],
-    riverNightsColorPalette: ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e", "#ebdc78"],
-    springPastelsColorPalette: ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"]
-  };
-
-  // src/charts/controller.ts
-  var _Controller = class {
-    /**
-     * Create new Controller class.
-     * 
-     * @param svgChart - SvgChart instance.
-     */
-    constructor(svgChart) {
-      if (new.target === _Controller) {
-        throw new Error("Controller class cannot be directly instanstiated.");
-      }
-      this.svgChart = svgChart;
-      this.config = this.svgChart.config;
-    }
-    /**
-     * Draws chart.
-     * 
-     * @param currentSerieGroupElement - Group element where the chart can be appended to.
-     */
-    onDraw(currentSerieGroupElement) {
-      this.onDrawStart(currentSerieGroupElement);
-      this.config.series.forEach((serie, serieIndex) => {
-        const serieGroup = el("g", {
-          dataSerie: serie.id,
-          className: this.svgChart.unselectedSeries[serie.id] ? prefixed("unselected") : ""
-        });
-        this.onDrawSerie(serie, serieIndex, serieGroup);
-        currentSerieGroupElement.appendChild(serieGroup);
-      });
-      this.onDrawEnd(currentSerieGroupElement);
-    }
-    /**
-     * Do things at the start of the draw for this chart.
-     * 
-     * @param currentSerieGroupElement - DOM group element.
-     */
-    onDrawStart(currentSerieGroupElement) {
-    }
-    /**
-     * Do things at the end of the draw for this chart.
-     * 
-     * @param currentSerieGroupElement - DOM group element.
-     */
-    onDrawEnd(currentSerieGroupElement) {
-    }
-    /**
-     * Draws chart element for this serie and attached it to the serieGroup.
-     * 
-     * @param serie - Serie object.
-     * @param serieIndex - Serie index.
-     * @param serieGroup - DOM group element for this serie.
-     */
-    onDrawSerie(serie, serieIndex, serieGroup) {
-    }
-    /**
-     * Execute config things before global config things are done.
-     */
-    onConfigBefore() {
-    }
-    /**
-     * Execute config things after global config things are done.
-     */
-    onConfigAfter() {
-    }
-    /**
-     * Execute serie config things before global config serie things are done.
-     * 
-     * @param serie - Serie object
-     */
-    onConfigSerieBefore(serie) {
-    }
-    /**
-     * Execute config things after global config things are done.
-     * 
-     * @param serie - Serie object
-     */
-    onConfigSerieAfter(serie) {
-    }
-  };
-  var Controller = _Controller;
-  Controller.requiredConfigWithValue = {};
-
   // src/types.ts
   var ChartType = /* @__PURE__ */ ((ChartType3) => {
     ChartType3[ChartType3["Line"] = 0] = "Line";
@@ -562,6 +415,8 @@
        * Width of stroke for donut charts. If this is 0, no stroke is painted.
        */
       this.donutStrokeWidth = 2;
+      this.radarStrokeWidth = 2;
+      this.radarFillOpacity = 0.3;
     }
     /**
      * Get direction string to use for dom direction attribute.
@@ -569,10 +424,157 @@
      * @param config Config object.
      * @returns Attribute value.
      */
-    static getDirection(config) {
-      return config.ltr ? "ltr" : "rtl";
+    static getDirection(config2) {
+      return config2.ltr ? "ltr" : "rtl";
     }
   };
+
+  // src/utils.ts
+  var ns = "http://www.w3.org/2000/svg";
+  var attributesCamelCaseToDashRegex = /[A-Z]/g;
+  var classNamePrefix = "svg-chart-";
+  function el(name, attributes = {}, child = null) {
+    var el2 = document.createElementNS(ns, name);
+    Object.keys(attributes).forEach((key) => {
+      if (attributes[key] === null) {
+        return;
+      }
+      switch (key) {
+        case "className":
+          if (attributes[key]) {
+            el2.classList.add(...attributes[key].trim().split(" "));
+          }
+          break;
+        default:
+          el2.setAttribute(key.replace(attributesCamelCaseToDashRegex, "-$&").toLowerCase(), attributes[key]);
+          break;
+      }
+    });
+    if (child) {
+      el2.appendChild(child);
+    }
+    return el2;
+  }
+  function parent(currentElement, parentName) {
+    var el2 = currentElement;
+    while (el2 && el2.nodeName.toLowerCase() !== parentName.toLowerCase()) {
+      el2 = el2.parentNode;
+    }
+    return el2;
+  }
+  function prefixed(className) {
+    return classNamePrefix + className;
+  }
+  function directionForEach(instance, items, isRTL, callback) {
+    if (isRTL) {
+      const length = items.length;
+      for (let i = 0; i < length; i++) {
+        callback.call(instance, items[i], i, items);
+      }
+    } else {
+      const maxIndex = items.length - 1;
+      for (let i = maxIndex; i >= 0; i--) {
+        callback.call(instance, items[i], maxIndex - i, items);
+      }
+    }
+  }
+  function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180;
+    return {
+      x: centerX + radius * Math.cos(angleInRadians),
+      y: centerY + radius * Math.sin(angleInRadians)
+    };
+  }
+
+  // src/colors.ts
+  var colors = {
+    dutchFieldColorPalette: ["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"],
+    retroMetroColorPalette: ["#ea5545", "#f46a9b", "#ef9b20", "#edbf33", "#ede15b", "#bdcf32", "#87bc45", "#27aeef", "#b33dc6"],
+    riverNightsColorPalette: ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e", "#ebdc78"],
+    springPastelsColorPalette: ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"]
+  };
+
+  // src/charts/controller.ts
+  var _Controller = class {
+    /**
+     * Create new Controller class.
+     * 
+     * @param svgChart - SvgChart instance.
+     */
+    constructor(svgChart) {
+      if (new.target === _Controller) {
+        throw new Error("Controller class cannot be directly instanstiated.");
+      }
+      this.svgChart = svgChart;
+      this.config = this.svgChart.config;
+    }
+    /**
+     * Draws chart.
+     * 
+     * @param currentSerieGroupElement - Group element where the chart can be appended to.
+     */
+    onDraw(currentSerieGroupElement) {
+      this.onDrawStart(currentSerieGroupElement);
+      this.config.series.forEach((serie, serieIndex) => {
+        const serieGroup = el("g", {
+          dataSerie: serie.id,
+          className: this.svgChart.unselectedSeries[serie.id] ? prefixed("unselected") : ""
+        });
+        this.onDrawSerie(serie, serieIndex, serieGroup);
+        currentSerieGroupElement.appendChild(serieGroup);
+      });
+      this.onDrawEnd(currentSerieGroupElement);
+    }
+    /**
+     * Do things at the start of the draw for this chart.
+     * 
+     * @param currentSerieGroupElement - DOM group element.
+     */
+    onDrawStart(currentSerieGroupElement) {
+    }
+    /**
+     * Do things at the end of the draw for this chart.
+     * 
+     * @param currentSerieGroupElement - DOM group element.
+     */
+    onDrawEnd(currentSerieGroupElement) {
+    }
+    /**
+     * Draws chart element for this serie and attached it to the serieGroup.
+     * 
+     * @param serie - Serie object.
+     * @param serieIndex - Serie index.
+     * @param serieGroup - DOM group element for this serie.
+     */
+    onDrawSerie(serie, serieIndex, serieGroup) {
+    }
+    /**
+     * Execute config things before global config things are done.
+     */
+    onConfigBefore() {
+    }
+    /**
+     * Execute config things after global config things are done.
+     */
+    onConfigAfter() {
+    }
+    /**
+     * Execute serie config things before global config serie things are done.
+     * 
+     * @param serie - Serie object
+     */
+    onConfigSerieBefore(serie) {
+    }
+    /**
+     * Execute config things after global config things are done.
+     * 
+     * @param serie - Serie object
+     */
+    onConfigSerieAfter(serie) {
+    }
+  };
+  var Controller = _Controller;
+  Controller.requiredConfigWithValue = {};
 
   // src/axis.ts
   var _onXAxisLabelGroupClickScoped, _onXAxisLabelGroupKeypressScoped, _addXAxisLine, addXAxisLine_fn, _onXAxisLabelGroupClick, onXAxisLabelGroupClick_fn, _onXAxisLabelGroupSelect, onXAxisLabelGroupSelect_fn, _onXAxisLabelGroupKeypress, onXAxisLabelGroupKeypress_fn;
@@ -949,7 +951,7 @@
             fill: this.svgChart.getSeriePointColor(serie, serieIndex),
             stroke: this.svgChart.getSeriePointColor(serie, serieIndex),
             dataValue: point.value,
-            className: prefixed("line-point"),
+            className: prefixed("value-point"),
             tabindex: this.config.focusedValueShow ? 0 : null
           }));
         });
@@ -1165,7 +1167,7 @@
     var centerY = svgChart.chartHeight / 2 + svgChart.config.padding.top;
     var total = 0;
     for (let key in svgChart.data.series) {
-      total += svgChart.data.series[key];
+      total += svgChart.data.series[key][0];
     }
     var totalToDegree = 360 / total;
     var currentTotal = 0;
@@ -1174,7 +1176,7 @@
         dataSerie: serie.id,
         className: svgChart.unselectedSeries[serie.id] ? prefixed("unselected") : ""
       });
-      const value = svgChart.data.series[serie.id];
+      const value = svgChart.data.series[serie.id][0];
       var startAngle = currentTotal * totalToDegree;
       currentTotal += value;
       var endAngle = currentTotal * totalToDegree;
@@ -1287,6 +1289,152 @@
     return d;
   }
 
+  // src/charts/radar_chart_controller.ts
+  var _radius, _centerX, _centerY, _seriesCount, _degreeSteps, _radiusByXStep, _drawAxis, drawAxis_fn;
+  var RadarController = class extends Controller {
+    constructor() {
+      super(...arguments);
+      __privateAdd(this, _drawAxis);
+      __privateAdd(this, _radius, void 0);
+      __privateAdd(this, _centerX, void 0);
+      __privateAdd(this, _centerY, void 0);
+      __privateAdd(this, _seriesCount, void 0);
+      __privateAdd(this, _degreeSteps, void 0);
+      __privateAdd(this, _radiusByXStep, void 0);
+    }
+    /**
+     * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
+     * 
+     * @override
+     * 
+     * @param serie - Serie object.
+     * @param serieIndex - Serie index.
+     * @param serieGroup - DOM group element for this serie.
+     */
+    onDrawSerie(serie, serieIndex, serieGroup) {
+      let points = [];
+      this.svgChart.data.series[serie.id].forEach((value, index) => {
+        const curRadius = __privateGet(this, _radiusByXStep) * value;
+        const point = polarToCartesian(__privateGet(this, _centerX), __privateGet(this, _centerY), curRadius, __privateGet(this, _degreeSteps) * index);
+        points.push(`${point.x}, ${point.y}`);
+        serieGroup.appendChild(el("circle", {
+          cx: point.x,
+          cy: point.y,
+          r: this.config.pointRadius,
+          fill: this.svgChart.getSerieFill(serie, serieIndex),
+          tabindex: this.config.focusedValueShow ? 0 : null,
+          zIndex: 1,
+          dataValue: value,
+          className: prefixed("value-point"),
+          stroke: this.svgChart.getSeriePointColor(serie, serieIndex)
+        }));
+      });
+      serieGroup.appendChild(el("polygon", {
+        points: points.join(" "),
+        stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
+        fill: this.svgChart.getSerieFill(serie, serieIndex),
+        fillOpacity: this.config.radarFillOpacity,
+        strokeWidth: this.config.radarStrokeWidth
+      }));
+    }
+    onConfigBefore() {
+      this.svgChart.xAxisGroupElement = this.svgChart.svg.appendChild(el("g", {
+        className: prefixed("x-axis-group")
+      }));
+    }
+    /**
+     * Do things at the start of the draw for this chart.
+     * 
+     * @override
+     * 
+     * @param currentSerieGroupElement - DOM group element.
+     */
+    onDrawStart(currentSerieGroupElement) {
+      __privateMethod(this, _drawAxis, drawAxis_fn).call(this);
+    }
+  };
+  _radius = new WeakMap();
+  _centerX = new WeakMap();
+  _centerY = new WeakMap();
+  _seriesCount = new WeakMap();
+  _degreeSteps = new WeakMap();
+  _radiusByXStep = new WeakMap();
+  _drawAxis = new WeakSet();
+  drawAxis_fn = function() {
+    __privateSet(this, _radius, this.svgChart.chartHeight / 2);
+    __privateSet(this, _centerX, this.svgChart.width / 2);
+    __privateSet(this, _centerY, this.svgChart.chartHeight / 2 + this.svgChart.config.padding.top);
+    var gAxis = el("g", {
+      className: prefixed("axis-group")
+    });
+    __privateSet(this, _seriesCount, this.svgChart.data.xAxis.columns.length);
+    __privateSet(this, _degreeSteps, 360 / __privateGet(this, _seriesCount));
+    __privateSet(this, _radiusByXStep, __privateGet(this, _radius) / (Math.abs(this.config.minValue) + this.config.maxValue));
+    for (let curYStep = this.config.minValue; curYStep <= this.config.maxValue; curYStep += this.config.yAxisStep) {
+      const curRadius = __privateGet(this, _radiusByXStep) * curYStep;
+      let polylinePoints = [];
+      let firstPoint = null;
+      this.svgChart.data.xAxis.columns.forEach((column, index) => {
+        const angle = __privateGet(this, _degreeSteps) * index;
+        const point = polarToCartesian(__privateGet(this, _centerX), __privateGet(this, _centerY), curRadius, angle);
+        if (index === 0) {
+          firstPoint = point;
+        }
+        polylinePoints.push(`${point.x}, ${point.y}`);
+        if (curYStep === this.config.maxValue) {
+          let dominantBaseline = "auto";
+          if (angle === 0) {
+            dominantBaseline = "auto";
+          } else if (angle <= 90) {
+            dominantBaseline = "middle";
+          } else if (angle <= 270) {
+            dominantBaseline = "hanging";
+          } else {
+            dominantBaseline = "middle";
+          }
+          gAxis.appendChild(el("text", {
+            x: angle === 0 || angle === 180 ? point.x : angle < 180 ? point.x + 10 : point.x - 10,
+            y: angle === 0 ? point.y - 10 : angle === 180 ? point.y + 10 : point.y,
+            direction: SvgChartConfig.getDirection(this.config),
+            textAnchor: angle === 0 || angle === 180 ? "middle" : angle < 180 ? "start" : "end",
+            dominantBaseline,
+            fontFamily: this.config.fontFamily || "",
+            fontSize: this.config.axisLabelFontSize || "",
+            fontWeight: "normal",
+            fill: this.config.xAxisLabelColor || ""
+          }, document.createTextNode(column)));
+          gAxis.appendChild(el("line", {
+            x1: __privateGet(this, _centerX),
+            y1: __privateGet(this, _centerY),
+            x2: point.x,
+            y2: point.y,
+            stroke: this.config.xAxisGridLineColor
+          }));
+        }
+      });
+      gAxis.appendChild(el("polygon", {
+        points: polylinePoints.join(" "),
+        fill: "transparent",
+        stroke: this.config.xAxisGridLineColor,
+        strokeWidth: 1
+      }));
+      if (curYStep % this.config.yAxisLabelStep === 0) {
+        gAxis.appendChild(el("text", {
+          x: firstPoint.x,
+          y: firstPoint.y,
+          direction: SvgChartConfig.getDirection(this.config),
+          textAnchor: "middle",
+          dominantBaseline: "middle",
+          fontFamily: this.config.fontFamily || "",
+          fontSize: this.config.axisLabelFontSize || "",
+          fontWeight: "normal",
+          fill: this.config.xAxisLabelColor || ""
+        }, document.createTextNode(curYStep.toString())));
+      }
+    }
+    this.svgChart.xAxisGroupElement.appendChild(gAxis);
+  };
+
   // src/svg.ts
   var _chartTypeControllers, _cssAdded, _activeColorPalette, _defsElement, _drawOnConfigGroup, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _dataBefore, dataBefore_fn, _dataAfter, dataAfter_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn;
   var _SvgChart = class {
@@ -1295,7 +1443,7 @@
      * @param parent - Parent DOM node the SVG element will be attached to.
      * @param config - Configuration object.
      */
-    constructor(parent2, config) {
+    constructor(parent2, config2) {
       /**
        * Add serie group element. This is a SVG group element where the series data will be attached to.
        */
@@ -1380,8 +1528,8 @@
       if (!__privateGet(_SvgChart, _cssAdded)) {
         __privateSet(_SvgChart, _cssAdded, true);
         const cssRules = [
-          "." + prefixed("line-point") + ", g." + prefixed("legend-group") + " g, ." + prefixed("x-axis-grid-column-selectable-label") + " { cursor: pointer; }",
-          "." + prefixed("line-point") + ":hover, circle." + prefixed("line-point") + ":focus { stroke-width: 6; outline: none; }",
+          "." + prefixed("value-point") + ", g." + prefixed("legend-group") + " g, ." + prefixed("x-axis-grid-column-selectable-label") + " { cursor: pointer; }",
+          "." + prefixed("value-point") + ":hover, circle." + prefixed("value-point") + ":focus { stroke-width: 6; outline: none; }",
           "#" + prefixed("serie-group") + " g { transition: opacity 0.6s; }",
           "#" + prefixed("serie-group") + " g." + prefixed("unselected") + " { opacity: 0; }",
           "#" + prefixed("serie-group-current") + " { transition: opacity 1s; opacity: 1; }",
@@ -1401,7 +1549,7 @@
         height: this.height
       });
       parent2.appendChild(this.svg);
-      this.setConfig(config);
+      this.setConfig(config2);
     }
     /**
      * Set a color palette for all chart instances.
@@ -1416,9 +1564,9 @@
      * 
      * @param config - Configuration object.
      */
-    setConfig(config) {
+    setConfig(config2) {
       const newConfig = new SvgChartConfig();
-      this.config = Object.assign({}, newConfig, config);
+      this.config = Object.assign({}, newConfig, config2);
       this.config.padding = Object.assign({}, newConfig.padding, this.config.padding);
       this.config = Object.assign(this.config, __privateGet(_SvgChart, _chartTypeControllers)[this.config.chartType].requiredConfigWithValue);
       if (this.config.ltr) {
@@ -1428,7 +1576,7 @@
         this.config.padding.left = this.config.padding.end;
         this.config.padding.right = this.config.padding.start;
       }
-      this.controller = new (__privateGet(_SvgChart, _chartTypeControllers))[config.chartType](this);
+      this.controller = new (__privateGet(_SvgChart, _chartTypeControllers))[config2.chartType](this);
       this.svg.setAttribute("direction", SvgChartConfig.getDirection(this.config));
       if (__privateGet(this, _listenersToRemoveAfterConfigChange) && __privateGet(this, _listenersToRemoveAfterConfigChange).length) {
         __privateGet(this, _listenersToRemoveAfterConfigChange).forEach((item) => {
@@ -1856,6 +2004,7 @@
         case 0 /* Line */:
         case 1 /* Bar */:
         case 2 /* LineAndBar */:
+        case 5 /* Radar */:
           x = (parseFloat(circle.getAttribute("cx")) || parseFloat(circle.getAttribute("x")) + parseFloat(circle.getAttribute("width")) / 2) - width / 2;
           y = (parseFloat(circle.getAttribute("cy")) || parseFloat(circle.getAttribute("y"))) - 10 - height;
           break;
@@ -1879,6 +2028,7 @@
     __privateGet(_SvgChart, _chartTypeControllers)[2 /* LineAndBar */] = BarAndLineController;
     __privateGet(_SvgChart, _chartTypeControllers)[3 /* Pie */] = PieController;
     __privateGet(_SvgChart, _chartTypeControllers)[4 /* Donut */] = DonutController;
+    __privateGet(_SvgChart, _chartTypeControllers)[5 /* Radar */] = RadarController;
   })();
   /**
    * All embedded color palettes. Set another with {@link setActiveColorPalette}.
@@ -1894,6 +2044,45 @@
   __privateAdd(SvgChart, _activeColorPalette, colors.dutchFieldColorPalette);
 
   // playground/radar.js
-  alert("Hoi");
+  var config = new SvgChartConfig();
+  config.title = "Radar";
+  config.minValue = 0;
+  config.maxValue = 100;
+  config.yAxisStep = 20;
+  config.yAxisLabelStep = 20;
+  config.chartType = 5 /* Radar */;
+  config.backgroundColor = "#FCFCFC";
+  config.series = [
+    {
+      id: "humans",
+      title: "Humans"
+    },
+    {
+      id: "animals",
+      title: "Animals"
+    },
+    {
+      id: "flowers",
+      title: "Flowers"
+    }
+  ];
+  var chart = new SvgChart(document.getElementById("chart"), config);
+  var chartSeries = {
+    series: {
+      humans: [12, 23, 45, 100, 45],
+      animals: [2, 34, 0, 67, 78],
+      flowers: [4, 4, 4, 37, 88]
+    },
+    xAxis: {
+      columns: [
+        "sleep",
+        "eat",
+        "move",
+        "fight",
+        "other"
+      ]
+    }
+  };
+  chart.chart(chartSeries);
 })();
 //# sourceMappingURL=radar-bundle.js.map

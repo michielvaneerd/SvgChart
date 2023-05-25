@@ -30,7 +30,7 @@ function drawPieOrDonut(svgChart: SvgChart, currentSerieGroupElement: SVGElement
 
     var total = 0;
     for (let key in svgChart.data.series) {
-        total += svgChart.data.series[key];
+        total += svgChart.data.series[key][0];
     }
 
     var totalToDegree = 360 / total;
@@ -42,7 +42,7 @@ function drawPieOrDonut(svgChart: SvgChart, currentSerieGroupElement: SVGElement
             className: svgChart.unselectedSeries[serie.id] ? prefixed('unselected') : ''
         });
 
-        const value = svgChart.data.series[serie.id];
+        const value = svgChart.data.series[serie.id][0];
 
         var startAngle = currentTotal * totalToDegree;
         currentTotal += value;
