@@ -13,13 +13,9 @@ class LineController extends Controller {
     #axisController: AxisController;
     #valueHeight: number;
     #columnWidth: number;
-    #barCountPerColumn: number;
     #selectedColumnIndex: number;
-
-    
     #xAxisGroupElement: SVGElement;
     #xAxisLabelsGroupElement: SVGElement;
-
     
     set xAxisLabelsGroupElement(value : SVGElement) {
         this.#xAxisLabelsGroupElement = value;
@@ -59,14 +55,6 @@ class LineController extends Controller {
 
     set columnWidth(value: number) {
         this.#columnWidth = value;
-    }
-
-    set barCountPerColumn(value: number) {
-        this.#barCountPerColumn = value;
-    }
-
-    get barCountPerColumn() {
-        return this.#barCountPerColumn;
     }
 
     /**

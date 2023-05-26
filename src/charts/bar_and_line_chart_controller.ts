@@ -50,7 +50,6 @@ class BarAndLineController extends Controller {
 
     set barCountPerColumn(value: number) {
         this.#barChartController.barCountPerColumn = value;
-        this.#lineChartController.barCountPerColumn = value;
     }
 
     get barCountPerColumn() {

@@ -11,19 +11,19 @@ import { ChartConfigSerie, ChartType } from "../types";
 class BarController extends Controller {
 
     svgChart: SvgChart;
-    currentBarIndex: number;
-    stackedBarValues: object;
-    barWidth: number;
+
+    // Shared with line and bar
+    #axisController: AxisController;
     #valueHeight: number;
     #columnWidth: number;
-    #barCountPerColumn: number;
     #selectedColumnIndex: number;
-
-    #axisController: AxisController;
-
     #xAxisGroupElement: SVGElement;
     #xAxisLabelsGroupElement: SVGElement;
 
+    #barCountPerColumn: number;
+    currentBarIndex: number;
+    stackedBarValues: object;
+    barWidth: number;
     
     set xAxisLabelsGroupElement(value : SVGElement) {
         this.#xAxisLabelsGroupElement = value;

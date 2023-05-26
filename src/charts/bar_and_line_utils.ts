@@ -49,7 +49,9 @@ function onConfigBeforeBarAndLine(svgChart: SvgChart, axisController: AxisContro
 
     controller.selectedColumnIndex = null;
     controller.valueHeight = svgChart.chartHeight / (Math.abs(svgChart.config.minValue) + svgChart.config.maxValue);
-    controller.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
+    if (controller instanceof BarController || controller instanceof BarAndLineController) {
+        controller.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
+    }
 
     if (svgChart.config.yAxisGrid) {
         axisController.addYAxisGridAndLabels();
