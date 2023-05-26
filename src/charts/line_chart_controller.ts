@@ -10,28 +10,10 @@ import { ChartConfigSerie, ChartPoint } from "../types";
  */
 class LineController extends Controller {
 
-    #axisController: AxisController;
+    axisController: AxisController;
     #valueHeight: number;
     #columnWidth: number;
     #selectedColumnIndex: number;
-    #xAxisGroupElement: SVGElement;
-    #xAxisLabelsGroupElement: SVGElement;
-    
-    set xAxisLabelsGroupElement(value : SVGElement) {
-        this.#xAxisLabelsGroupElement = value;
-    }
-
-    get xAxisLabelsGroupElement() {
-        return this.#xAxisLabelsGroupElement;
-    }
-
-    set xAxisGroupElement(value : SVGElement) {
-        this.#xAxisGroupElement = value;
-    }
-
-    get xAxisGroupElement() {
-        return this.#xAxisGroupElement;
-    }
 
     set selectedColumnIndex(value: number) {
         this.#selectedColumnIndex = value;
@@ -60,9 +42,13 @@ class LineController extends Controller {
     /**
      * @param svgChart - SvgChart instance.
      */
-    constructor(svgChart: SvgChart) {
+    constructor(svgChart: SvgChart, axisController?: AxisController) {
         super(svgChart);
-        this.#axisController = new AxisController(svgChart);
+        if (axisController) {
+            this.axisController = axisController;
+        } else {
+            this.axisController = new AxisController(svgChart);
+        }
     }
 
     /**
@@ -155,7 +141,7 @@ class LineController extends Controller {
      * @param currentSerieGroupElement - DOM group element.
      */
     onDrawStart(currentSerieGroupElement: SVGElement) {
-        onDrawStartBarAndLine(this.svgChart, this.#axisController, currentSerieGroupElement);
+        onDrawStartBarAndLine(this.svgChart, this.axisController, currentSerieGroupElement);
     }
 
     /**
@@ -221,7 +207,7 @@ class LineController extends Controller {
      */
     onConfigBefore() {
         super.onConfigBefore();
-        onConfigBeforeBarAndLine(this.svgChart, this.#axisController);
+        onConfigBeforeBarAndLine(this.svgChart, this.axisController);
     }
 
 }

@@ -13,33 +13,15 @@ class BarController extends Controller {
     svgChart: SvgChart;
 
     // Shared with line and bar
-    #axisController: AxisController;
+    axisController: AxisController;
     #valueHeight: number;
     #columnWidth: number;
     #selectedColumnIndex: number;
-    #xAxisGroupElement: SVGElement;
-    #xAxisLabelsGroupElement: SVGElement;
 
     #barCountPerColumn: number;
     currentBarIndex: number;
     stackedBarValues: object;
     barWidth: number;
-    
-    set xAxisLabelsGroupElement(value : SVGElement) {
-        this.#xAxisLabelsGroupElement = value;
-    }
-
-    get xAxisLabelsGroupElement() {
-        return this.#xAxisLabelsGroupElement;
-    }
-
-    set xAxisGroupElement(value : SVGElement) {
-        this.#xAxisGroupElement = value;
-    }
-
-    get xAxisGroupElement() {
-        return this.#xAxisGroupElement;
-    }
 
     set selectedColumnIndex(value: number) {
         this.#selectedColumnIndex = value;
@@ -76,9 +58,13 @@ class BarController extends Controller {
     /**
      * @param svgChart - SvgChart instance.
      */
-    constructor(svgChart: SvgChart) {
+    constructor(svgChart: SvgChart, axisController?: AxisController) {
         super(svgChart);
-        this.#axisController = new AxisController(svgChart);
+        if (axisController) {
+            this.axisController = axisController;
+        } else {
+            this.axisController = new AxisController(svgChart);
+        }
     }
 
     /** @override */
@@ -145,7 +131,7 @@ class BarController extends Controller {
      */
     onDrawStart(currentSerieGroupElement: SVGElement) {
 
-        onDrawStartBarAndLine(this.svgChart, this.#axisController, currentSerieGroupElement);
+        onDrawStartBarAndLine(this.svgChart, this.axisController, currentSerieGroupElement);
         const barWidth = (this.columnWidth - (this.config.barSpacing * (this.barCountPerColumn + 1))) / (this.barCountPerColumn || 1);
 
         this.barWidth = barWidth;
@@ -161,7 +147,7 @@ class BarController extends Controller {
      */
     onConfigBefore() {
         super.onConfigBefore();
-        onConfigBeforeBarAndLine(this.svgChart, this.#axisController);
+        onConfigBeforeBarAndLine(this.svgChart, this.axisController);
     }
 
     /**

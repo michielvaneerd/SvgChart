@@ -3,6 +3,7 @@ import { LineController } from "./line_chart_controller";
 import { BarController } from "./bar_chart_controller";
 import { SvgChart } from "../svg";
 import { ChartConfigSerie, ChartType } from "../types";
+import { AxisController } from "../axis";
 
 /**
  * Controller class for bar and line charts.
@@ -11,32 +12,16 @@ class BarAndLineController extends Controller {
 
     #lineChartController: LineController;
     #barChartController: BarController;
+    axisController: AxisController;
 
     /**
      * @param svgChart - SvgChart instance.
      */
     constructor(svgChart: SvgChart) {
         super(svgChart);
-        this.#barChartController = new BarController(svgChart);
-        this.#lineChartController = new LineController(svgChart);
-    }
-
-    set xAxisLabelsGroupElement(value: SVGElement) {
-        this.#barChartController.xAxisLabelsGroupElement = value;
-        this.#lineChartController.xAxisLabelsGroupElement = value;
-    }
-
-    get xAxisLabelsGroupElement() {
-        return this.#barChartController.xAxisLabelsGroupElement;
-    }
-
-    set xAxisGroupElement(value: SVGElement) {
-        this.#barChartController.xAxisGroupElement = value;
-        this.#lineChartController.xAxisGroupElement = value;
-    }
-
-    get xAxisGroupElement() {
-        return this.#barChartController.xAxisGroupElement;
+        this.axisController = new AxisController(svgChart);
+        this.#barChartController = new BarController(svgChart, this.axisController);
+        this.#lineChartController = new LineController(svgChart, this.axisController);
     }
 
     set selectedColumnIndex(value: number) {

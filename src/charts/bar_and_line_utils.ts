@@ -16,12 +16,12 @@ function onDrawStartBarAndLine(svgChart: SvgChart, axisController: AxisControlle
 
     const controller = getController(svgChart);
 
-    if (controller.xAxisGroupElement.firstChild) {
-        controller.xAxisGroupElement.removeChild(controller.xAxisGroupElement.firstChild);
+    if (axisController.xAxisGroupElement.firstChild) {
+        axisController.xAxisGroupElement.removeChild(axisController.xAxisGroupElement.firstChild);
     }
 
-    if (controller.xAxisLabelsGroupElement.firstChild) {
-        controller.xAxisLabelsGroupElement.removeChild(controller.xAxisLabelsGroupElement.firstChild);
+    if (axisController.xAxisLabelsGroupElement.firstChild) {
+        axisController.xAxisLabelsGroupElement.removeChild(axisController.xAxisLabelsGroupElement.firstChild);
     }
 
     // Note that for bar charts to display correctly, this.config.xAxisGridColumns MUST be true!
@@ -69,7 +69,7 @@ function onConfigBeforeBarAndLine(svgChart: SvgChart, axisController: AxisContro
         axisController.addXAxisLabelsGroup();
     }
 
-    controller.xAxisGroupElement = svgChart.svg.appendChild(el('g', {
+    axisController.xAxisGroupElement = svgChart.svg.appendChild(el('g', {
         className: prefixed('x-axis-group')
     }));
 }

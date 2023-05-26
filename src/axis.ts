@@ -11,10 +11,29 @@ class AxisController {
     #onXAxisLabelGroupClickScoped: ScopedEventCallback;
     #onXAxisLabelGroupKeypressScoped: ScopedEventCallback;
 
+    #xAxisGroupElement: SVGElement;
+    #xAxisLabelsGroupElement: SVGElement;
+
     svgChart: SvgChart;
     config: SvgChartConfig;
 
     #xAxisGridColumnsSelectableGroupElement: SVGElement;
+
+    set xAxisLabelsGroupElement(value : SVGElement) {
+        this.#xAxisLabelsGroupElement = value;
+    }
+
+    get xAxisLabelsGroupElement() {
+        return this.#xAxisLabelsGroupElement;
+    }
+
+    set xAxisGroupElement(value : SVGElement) {
+        this.#xAxisGroupElement = value;
+    }
+
+    get xAxisGroupElement() {
+        return this.#xAxisGroupElement;
+    }
 
     /**
      * @param svgChart SvgChart instance.
@@ -141,9 +160,9 @@ class AxisController {
         if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
             this.#addXAxisLine(currentXAxisGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.svgChart.data.xAxis.columns.length * columnWidth));
         }
-        controller.xAxisGroupElement.appendChild(currentXAxisGroupElement);
+        this.xAxisGroupElement.appendChild(currentXAxisGroupElement);
         this.config.xAxisGridColumnsSelectable && this.#xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
-        controller.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
+        this.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
     }
 
     /**
@@ -214,7 +233,7 @@ class AxisController {
      */
     addXAxisLabelsGroup() {
         const controller = this.#getController();
-        controller.xAxisLabelsGroupElement = el('g', {
+        this.xAxisLabelsGroupElement = el('g', {
             className: prefixed('x-axis-label-group')
         });
         if (this.config.xAxisGridColumnsSelectable) {
@@ -222,14 +241,14 @@ class AxisController {
                 this.#onXAxisLabelGroupClickScoped = this.#onXAxisLabelGroupClick.bind(this);
                 this.#onXAxisLabelGroupKeypressScoped = this.#onXAxisLabelGroupKeypress.bind(this);
             }
-            this.svgChart.addEventListener(controller.xAxisLabelsGroupElement, 'click', this.#onXAxisLabelGroupClickScoped, false);
-            this.svgChart.addEventListener(controller.xAxisLabelsGroupElement, 'keydown', this.#onXAxisLabelGroupKeypressScoped, false);
+            this.svgChart.addEventListener(this.xAxisLabelsGroupElement, 'click', this.#onXAxisLabelGroupClickScoped, false);
+            this.svgChart.addEventListener(this.xAxisLabelsGroupElement, 'keydown', this.#onXAxisLabelGroupKeypressScoped, false);
             // Group element that wraps the rects that indicates a selected column for line and bar charts.
             this.#xAxisGridColumnsSelectableGroupElement = this.svgChart.svg.appendChild(el('g', {
                 className: prefixed('x-axis-columns-selectable-group')
             }));
         }
-        this.svgChart.svg.appendChild(controller.xAxisLabelsGroupElement);
+        this.svgChart.svg.appendChild(this.xAxisLabelsGroupElement);
     }
 
     /**
@@ -248,7 +267,7 @@ class AxisController {
      */
     #onXAxisLabelGroupSelect(label: SVGElement) {
         const controller = this.#getController();
-        var textNodes = controller.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
+        var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
         var rects = this.#xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.' + prefixed('x-axis-grid-column-selectable'));
         for (var i = 0; i < textNodes.length; i++) {
             if (textNodes[i] === label) {
