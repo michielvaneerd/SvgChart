@@ -616,7 +616,7 @@
   });
 
   // src/axis.ts
-  var _onXAxisLabelGroupClickScoped, _onXAxisLabelGroupKeypressScoped, _addXAxisLine, addXAxisLine_fn, _onXAxisLabelGroupClick, onXAxisLabelGroupClick_fn, _onXAxisLabelGroupSelect, onXAxisLabelGroupSelect_fn, _onXAxisLabelGroupKeypress, onXAxisLabelGroupKeypress_fn, AxisController;
+  var _onXAxisLabelGroupClickScoped, _onXAxisLabelGroupKeypressScoped, _xAxisGridColumnsSelectableGroupElement, _getController, getController_fn, _addXAxisLine, addXAxisLine_fn, _onXAxisLabelGroupClick, onXAxisLabelGroupClick_fn, _onXAxisLabelGroupSelect, onXAxisLabelGroupSelect_fn, _onXAxisLabelGroupKeypress, onXAxisLabelGroupKeypress_fn, AxisController;
   var init_axis = __esm({
     "src/axis.ts"() {
       init_config();
@@ -627,6 +627,7 @@
          * @param svgChart SvgChart instance.
          */
         constructor(svgChart) {
+          __privateAdd(this, _getController);
           /**
            * Draws an X axis line.
            * 
@@ -654,6 +655,7 @@
           __privateAdd(this, _onXAxisLabelGroupKeypress);
           __privateAdd(this, _onXAxisLabelGroupClickScoped, void 0);
           __privateAdd(this, _onXAxisLabelGroupKeypressScoped, void 0);
+          __privateAdd(this, _xAxisGridColumnsSelectableGroupElement, void 0);
           this.svgChart = svgChart;
           this.config = svgChart.config;
         }
@@ -661,7 +663,7 @@
          * Add Y axis grid lines and labels.
          */
         addYAxisGridAndLabels() {
-          const controller = this.svgChart.config.chartType === 0 /* Line */ ? this.svgChart.controller : this.svgChart.config.chartType === 1 /* Bar */ ? this.svgChart.controller : this.svgChart.controller;
+          const controller = __privateMethod(this, _getController, getController_fn).call(this);
           const valueHeight = controller.valueHeight;
           var gYAxis = el("g", {
             className: prefixed("y-axis-group")
@@ -708,6 +710,12 @@
          * @param columnWidth - Width of each column.
          */
         addXAxisGridAndLabels(columnWidth) {
+          const controller = __privateMethod(this, _getController, getController_fn).call(this);
+          if (this.svgChart.config.xAxisGridColumnsSelectable) {
+            if (__privateGet(this, _xAxisGridColumnsSelectableGroupElement).firstChild) {
+              __privateGet(this, _xAxisGridColumnsSelectableGroupElement).firstChild.remove();
+            }
+          }
           var currentXAxisGroupElement = el("g");
           var currentXAxisLabelsGroupElement = el("g", {
             className: prefixed("x-axis-label-group-current")
@@ -753,9 +761,9 @@
           if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
             __privateMethod(this, _addXAxisLine, addXAxisLine_fn).call(this, currentXAxisGroupElement, this.config.padding.left + this.config.xAxisGridPadding + this.svgChart.data.xAxis.columns.length * columnWidth);
           }
-          this.svgChart.xAxisGroupElement.appendChild(currentXAxisGroupElement);
-          this.config.xAxisGridColumnsSelectable && this.svgChart.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
-          this.svgChart.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
+          controller.xAxisGroupElement.appendChild(currentXAxisGroupElement);
+          this.config.xAxisGridColumnsSelectable && __privateGet(this, _xAxisGridColumnsSelectableGroupElement).appendChild(currentXAxisGridColumnsSelectableGroupElement);
+          controller.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
         }
         /**
          * Draws the X axis title.
@@ -803,7 +811,8 @@
          * Adds group for x axis labels.
          */
         addXAxisLabelsGroup() {
-          this.svgChart.xAxisLabelsGroupElement = el("g", {
+          const controller = __privateMethod(this, _getController, getController_fn).call(this);
+          controller.xAxisLabelsGroupElement = el("g", {
             className: prefixed("x-axis-label-group")
           });
           if (this.config.xAxisGridColumnsSelectable) {
@@ -811,17 +820,22 @@
               __privateSet(this, _onXAxisLabelGroupClickScoped, __privateMethod(this, _onXAxisLabelGroupClick, onXAxisLabelGroupClick_fn).bind(this));
               __privateSet(this, _onXAxisLabelGroupKeypressScoped, __privateMethod(this, _onXAxisLabelGroupKeypress, onXAxisLabelGroupKeypress_fn).bind(this));
             }
-            this.svgChart.addEventListener(this.svgChart.xAxisLabelsGroupElement, "click", __privateGet(this, _onXAxisLabelGroupClickScoped), false);
-            this.svgChart.addEventListener(this.svgChart.xAxisLabelsGroupElement, "keydown", __privateGet(this, _onXAxisLabelGroupKeypressScoped), false);
-            this.svgChart.xAxisGridColumnsSelectableGroupElement = this.svgChart.svg.appendChild(el("g", {
+            this.svgChart.addEventListener(controller.xAxisLabelsGroupElement, "click", __privateGet(this, _onXAxisLabelGroupClickScoped), false);
+            this.svgChart.addEventListener(controller.xAxisLabelsGroupElement, "keydown", __privateGet(this, _onXAxisLabelGroupKeypressScoped), false);
+            __privateSet(this, _xAxisGridColumnsSelectableGroupElement, this.svgChart.svg.appendChild(el("g", {
               className: prefixed("x-axis-columns-selectable-group")
-            }));
+            })));
           }
-          this.svgChart.svg.appendChild(this.svgChart.xAxisLabelsGroupElement);
+          this.svgChart.svg.appendChild(controller.xAxisLabelsGroupElement);
         }
       };
       _onXAxisLabelGroupClickScoped = new WeakMap();
       _onXAxisLabelGroupKeypressScoped = new WeakMap();
+      _xAxisGridColumnsSelectableGroupElement = new WeakMap();
+      _getController = new WeakSet();
+      getController_fn = function() {
+        return this.svgChart.config.chartType === 0 /* Line */ ? this.svgChart.controller : this.svgChart.config.chartType === 1 /* Bar */ ? this.svgChart.controller : this.svgChart.controller;
+      };
       _addXAxisLine = new WeakSet();
       addXAxisLine_fn = function(parent2, x) {
         parent2.appendChild(el("line", {
@@ -841,16 +855,17 @@
       };
       _onXAxisLabelGroupSelect = new WeakSet();
       onXAxisLabelGroupSelect_fn = function(label) {
-        var textNodes = this.svgChart.xAxisLabelsGroupElement.querySelectorAll("text." + prefixed("x-axis-grid-column-selectable-label"));
-        var rects = this.svgChart.xAxisGridColumnsSelectableGroupElement.querySelectorAll("rect." + prefixed("x-axis-grid-column-selectable"));
+        const controller = __privateMethod(this, _getController, getController_fn).call(this);
+        var textNodes = controller.xAxisLabelsGroupElement.querySelectorAll("text." + prefixed("x-axis-grid-column-selectable-label"));
+        var rects = __privateGet(this, _xAxisGridColumnsSelectableGroupElement).querySelectorAll("rect." + prefixed("x-axis-grid-column-selectable"));
         for (var i = 0; i < textNodes.length; i++) {
           if (textNodes[i] === label) {
-            this.svgChart.lineAndBarSelectedColumnIndex = i;
+            controller.selectedColumnIndex = i;
             textNodes[i].classList.add(prefixed("selected"));
             rects[i].classList.add(prefixed("selected"));
             rects[i].setAttribute("fill-opacity", this.config.xAxisGridSelectedColumnOpacity.toString());
             if (this.config.onXAxisLabelGroupSelect) {
-              this.config.onXAxisLabelGroupSelect(this.svgChart, this.svgChart.lineAndBarSelectedColumnIndex);
+              this.config.onXAxisLabelGroupSelect(this.svgChart, controller.selectedColumnIndex);
             }
           } else {
             textNodes[i].classList.remove(prefixed("selected"));
@@ -871,16 +886,11 @@
   // src/charts/bar_and_line_utils.ts
   function onDrawStartBarAndLine(svgChart, axisController, currentSerieGroupElement) {
     const controller = getController(svgChart);
-    if (svgChart.xAxisGroupElement.firstChild) {
-      svgChart.xAxisGroupElement.removeChild(svgChart.xAxisGroupElement.firstChild);
+    if (controller.xAxisGroupElement.firstChild) {
+      controller.xAxisGroupElement.removeChild(controller.xAxisGroupElement.firstChild);
     }
-    if (svgChart.config.xAxisGridColumnsSelectable) {
-      if (svgChart.xAxisGridColumnsSelectableGroupElement.firstChild) {
-        svgChart.xAxisGridColumnsSelectableGroupElement.firstChild.remove();
-      }
-    }
-    if (svgChart.xAxisLabelsGroupElement.firstChild) {
-      svgChart.xAxisLabelsGroupElement.removeChild(svgChart.xAxisLabelsGroupElement.firstChild);
+    if (controller.xAxisLabelsGroupElement.firstChild) {
+      controller.xAxisLabelsGroupElement.removeChild(controller.xAxisLabelsGroupElement.firstChild);
     }
     const columnWidth = svgChart.config.xAxisGridColumns ? svgChart.chartWidth / svgChart.data.xAxis.columns.length : svgChart.chartWidth / (svgChart.data.xAxis.columns.length - 1);
     controller.columnWidth = columnWidth;
@@ -891,7 +901,7 @@
   }
   function onConfigBeforeBarAndLine(svgChart, axisController) {
     const controller = getController(svgChart);
-    svgChart.lineAndBarSelectedColumnIndex = null;
+    controller.selectedColumnIndex = null;
     controller.valueHeight = svgChart.chartHeight / (Math.abs(svgChart.config.minValue) + svgChart.config.maxValue);
     controller.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
     if (svgChart.config.yAxisGrid) {
@@ -906,7 +916,7 @@
     if (svgChart.config.xAxisLabels) {
       axisController.addXAxisLabelsGroup();
     }
-    svgChart.xAxisGroupElement = svgChart.svg.appendChild(el("g", {
+    controller.xAxisGroupElement = svgChart.svg.appendChild(el("g", {
       className: prefixed("x-axis-group")
     }));
   }
@@ -918,7 +928,7 @@
   });
 
   // src/charts/line_chart_controller.ts
-  var _axisController, _valueHeight, _columnWidth, _barCountPerColumn, _getCurvedPathFromPoints, getCurvedPathFromPoints_fn, _closePath, closePath_fn, _getStraightPathFromPoints, getStraightPathFromPoints_fn, LineController;
+  var _axisController, _valueHeight, _columnWidth, _barCountPerColumn, _selectedColumnIndex, _xAxisGroupElement, _xAxisLabelsGroupElement, _getCurvedPathFromPoints, getCurvedPathFromPoints_fn, _closePath, closePath_fn, _getStraightPathFromPoints, getStraightPathFromPoints_fn, LineController;
   var init_line_chart_controller = __esm({
     "src/charts/line_chart_controller.ts"() {
       init_utils();
@@ -956,7 +966,28 @@
           __privateAdd(this, _valueHeight, void 0);
           __privateAdd(this, _columnWidth, void 0);
           __privateAdd(this, _barCountPerColumn, void 0);
+          __privateAdd(this, _selectedColumnIndex, void 0);
+          __privateAdd(this, _xAxisGroupElement, void 0);
+          __privateAdd(this, _xAxisLabelsGroupElement, void 0);
           __privateSet(this, _axisController, new AxisController(svgChart));
+        }
+        set xAxisLabelsGroupElement(value) {
+          __privateSet(this, _xAxisLabelsGroupElement, value);
+        }
+        get xAxisLabelsGroupElement() {
+          return __privateGet(this, _xAxisLabelsGroupElement);
+        }
+        set xAxisGroupElement(value) {
+          __privateSet(this, _xAxisGroupElement, value);
+        }
+        get xAxisGroupElement() {
+          return __privateGet(this, _xAxisGroupElement);
+        }
+        set selectedColumnIndex(value) {
+          __privateSet(this, _selectedColumnIndex, value);
+        }
+        get selectedColumnIndex() {
+          return __privateGet(this, _selectedColumnIndex);
         }
         set valueHeight(value) {
           __privateSet(this, _valueHeight, value);
@@ -1067,6 +1098,9 @@
       _valueHeight = new WeakMap();
       _columnWidth = new WeakMap();
       _barCountPerColumn = new WeakMap();
+      _selectedColumnIndex = new WeakMap();
+      _xAxisGroupElement = new WeakMap();
+      _xAxisLabelsGroupElement = new WeakMap();
       _getCurvedPathFromPoints = new WeakSet();
       getCurvedPathFromPoints_fn = function(points) {
         let path = ["M " + points[0].x + " " + points[0].y];
@@ -1107,7 +1141,7 @@
   });
 
   // src/charts/bar_chart_controller.ts
-  var _valueHeight2, _columnWidth2, _barCountPerColumn2, _axisController2, BarController;
+  var _valueHeight2, _columnWidth2, _barCountPerColumn2, _selectedColumnIndex2, _axisController2, _xAxisGroupElement2, _xAxisLabelsGroupElement2, BarController;
   var init_bar_chart_controller = __esm({
     "src/charts/bar_chart_controller.ts"() {
       init_utils();
@@ -1124,8 +1158,29 @@
           __privateAdd(this, _valueHeight2, void 0);
           __privateAdd(this, _columnWidth2, void 0);
           __privateAdd(this, _barCountPerColumn2, void 0);
+          __privateAdd(this, _selectedColumnIndex2, void 0);
           __privateAdd(this, _axisController2, void 0);
+          __privateAdd(this, _xAxisGroupElement2, void 0);
+          __privateAdd(this, _xAxisLabelsGroupElement2, void 0);
           __privateSet(this, _axisController2, new AxisController(svgChart));
+        }
+        set xAxisLabelsGroupElement(value) {
+          __privateSet(this, _xAxisLabelsGroupElement2, value);
+        }
+        get xAxisLabelsGroupElement() {
+          return __privateGet(this, _xAxisLabelsGroupElement2);
+        }
+        set xAxisGroupElement(value) {
+          __privateSet(this, _xAxisGroupElement2, value);
+        }
+        get xAxisGroupElement() {
+          return __privateGet(this, _xAxisGroupElement2);
+        }
+        set selectedColumnIndex(value) {
+          __privateSet(this, _selectedColumnIndex2, value);
+        }
+        get selectedColumnIndex() {
+          return __privateGet(this, _selectedColumnIndex2);
         }
         set barCountPerColumn(value) {
           __privateSet(this, _barCountPerColumn2, value);
@@ -1231,7 +1286,10 @@
       _valueHeight2 = new WeakMap();
       _columnWidth2 = new WeakMap();
       _barCountPerColumn2 = new WeakMap();
+      _selectedColumnIndex2 = new WeakMap();
       _axisController2 = new WeakMap();
+      _xAxisGroupElement2 = new WeakMap();
+      _xAxisLabelsGroupElement2 = new WeakMap();
       /** @override */
       BarController.requiredConfigWithValue = {
         xAxisGridColumns: true
@@ -1257,6 +1315,27 @@
           __privateAdd(this, _barChartController, void 0);
           __privateSet(this, _barChartController, new BarController(svgChart));
           __privateSet(this, _lineChartController, new LineController(svgChart));
+        }
+        set xAxisLabelsGroupElement(value) {
+          __privateGet(this, _barChartController).xAxisLabelsGroupElement = value;
+          __privateGet(this, _lineChartController).xAxisLabelsGroupElement = value;
+        }
+        get xAxisLabelsGroupElement() {
+          return __privateGet(this, _barChartController).xAxisLabelsGroupElement;
+        }
+        set xAxisGroupElement(value) {
+          __privateGet(this, _barChartController).xAxisGroupElement = value;
+          __privateGet(this, _lineChartController).xAxisGroupElement = value;
+        }
+        get xAxisGroupElement() {
+          return __privateGet(this, _barChartController).xAxisGroupElement;
+        }
+        set selectedColumnIndex(value) {
+          __privateGet(this, _barChartController).selectedColumnIndex = value;
+          __privateGet(this, _lineChartController).selectedColumnIndex = value;
+        }
+        get selectedColumnIndex() {
+          return __privateGet(this, _barChartController).selectedColumnIndex;
         }
         set barCountPerColumn(value) {
           __privateGet(this, _barChartController).barCountPerColumn = value;
@@ -1465,7 +1544,7 @@
   });
 
   // src/charts/radar_chart_controller.ts
-  var _radius, _centerX, _centerY, _seriesCount, _degreeSteps, _radiusByXStep, _drawAxis, drawAxis_fn, RadarController;
+  var _radius, _centerX, _centerY, _seriesCount, _degreeSteps, _radiusByXStep, _axisGroupElement, _drawAxis, drawAxis_fn, RadarController;
   var init_radar_chart_controller = __esm({
     "src/charts/radar_chart_controller.ts"() {
       init_config();
@@ -1481,6 +1560,7 @@
           __privateAdd(this, _seriesCount, void 0);
           __privateAdd(this, _degreeSteps, void 0);
           __privateAdd(this, _radiusByXStep, void 0);
+          __privateAdd(this, _axisGroupElement, void 0);
         }
         /**
          * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
@@ -1520,9 +1600,9 @@
         }
         onConfigBefore() {
           super.onConfigBefore();
-          this.svgChart.xAxisGroupElement = this.svgChart.svg.appendChild(el("g", {
+          __privateSet(this, _axisGroupElement, this.svgChart.svg.appendChild(el("g", {
             className: prefixed("x-axis-group")
-          }));
+          })));
         }
         /**
          * Do things at the start of the draw for this chart.
@@ -1542,6 +1622,7 @@
       _seriesCount = new WeakMap();
       _degreeSteps = new WeakMap();
       _radiusByXStep = new WeakMap();
+      _axisGroupElement = new WeakMap();
       _drawAxis = new WeakSet();
       drawAxis_fn = function() {
         __privateSet(this, _radius, this.svgChart.chartHeight / 2);
@@ -1620,7 +1701,7 @@
             }, document.createTextNode(curYStep.toString())));
           }
         }
-        this.svgChart.xAxisGroupElement.appendChild(gAxis);
+        __privateGet(this, _axisGroupElement).appendChild(gAxis);
       };
     }
   });

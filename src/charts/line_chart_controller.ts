@@ -14,6 +14,36 @@ class LineController extends Controller {
     #valueHeight: number;
     #columnWidth: number;
     #barCountPerColumn: number;
+    #selectedColumnIndex: number;
+
+    
+    #xAxisGroupElement: SVGElement;
+    #xAxisLabelsGroupElement: SVGElement;
+
+    
+    set xAxisLabelsGroupElement(value : SVGElement) {
+        this.#xAxisLabelsGroupElement = value;
+    }
+
+    get xAxisLabelsGroupElement() {
+        return this.#xAxisLabelsGroupElement;
+    }
+
+    set xAxisGroupElement(value : SVGElement) {
+        this.#xAxisGroupElement = value;
+    }
+
+    get xAxisGroupElement() {
+        return this.#xAxisGroupElement;
+    }
+
+    set selectedColumnIndex(value: number) {
+        this.#selectedColumnIndex = value;
+    }
+
+    get selectedColumnIndex() {
+        return this.#selectedColumnIndex;
+    }
 
     set valueHeight(value: number) {
         this.#valueHeight = value;

@@ -127,26 +127,6 @@ class SvgChart {
     valueElText: SVGGraphicsElement;
 
     /**
-     * SVG group element for X axis.
-     */
-    xAxisGroupElement: SVGElement;
-
-    /**
-     * SVG group element for X axis labels.
-     */
-    xAxisLabelsGroupElement: SVGElement;
-
-    /**
-     * SVG group element for selectable columns.
-     */
-    xAxisGridColumnsSelectableGroupElement: SVGElement;
-
-    /**
-     * Current selected column index.
-     */
-    lineAndBarSelectedColumnIndex: number;    
-
-    /**
      * Scoped callback to call when a legend item gets clicked.
      */
     #onLegendClickScoped: ScopedEventCallback = null;

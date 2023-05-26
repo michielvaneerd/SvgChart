@@ -21,6 +21,33 @@ class BarAndLineController extends Controller {
         this.#lineChartController = new LineController(svgChart);
     }
 
+    set xAxisLabelsGroupElement(value: SVGElement) {
+        this.#barChartController.xAxisLabelsGroupElement = value;
+        this.#lineChartController.xAxisLabelsGroupElement = value;
+    }
+
+    get xAxisLabelsGroupElement() {
+        return this.#barChartController.xAxisLabelsGroupElement;
+    }
+
+    set xAxisGroupElement(value: SVGElement) {
+        this.#barChartController.xAxisGroupElement = value;
+        this.#lineChartController.xAxisGroupElement = value;
+    }
+
+    get xAxisGroupElement() {
+        return this.#barChartController.xAxisGroupElement;
+    }
+
+    set selectedColumnIndex(value: number) {
+        this.#barChartController.selectedColumnIndex = value;
+        this.#lineChartController.selectedColumnIndex = value;
+    }
+
+    get selectedColumnIndex() {
+        return this.#barChartController.selectedColumnIndex;
+    }
+
     set barCountPerColumn(value: number) {
         this.#barChartController.barCountPerColumn = value;
         this.#lineChartController.barCountPerColumn = value;

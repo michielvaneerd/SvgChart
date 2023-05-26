@@ -14,12 +14,20 @@ class AxisController {
     svgChart: SvgChart;
     config: SvgChartConfig;
 
+    #xAxisGridColumnsSelectableGroupElement: SVGElement;
+
     /**
      * @param svgChart SvgChart instance.
      */
     constructor(svgChart: SvgChart) {
         this.svgChart = svgChart;
         this.config = svgChart.config;
+        // We cannot call getController here, because the this constructor is called inside the
+        // constructor of the Controller...
+    }
+
+    #getController(): LineController | BarController | BarAndLineController {
+        return this.svgChart.config.chartType === ChartType.Line ? this.svgChart.controller as LineController : (this.svgChart.config.chartType === ChartType.Bar ? this.svgChart.controller as BarController : this.svgChart.controller as BarAndLineController);
     }
 
     /**
@@ -27,7 +35,7 @@ class AxisController {
      */
     addYAxisGridAndLabels() {
 
-        const controller = this.svgChart.config.chartType === ChartType.Line ? this.svgChart.controller as LineController : (this.svgChart.config.chartType === ChartType.Bar ? this.svgChart.controller as BarController : this.svgChart.controller as BarAndLineController);
+        const controller = this.#getController();
         const valueHeight = controller.valueHeight;
 
         var gYAxis = el('g', {
@@ -76,6 +84,15 @@ class AxisController {
      * @param columnWidth - Width of each column.
      */
     addXAxisGridAndLabels(columnWidth: number) {
+
+        const controller = this.#getController();
+
+        if (this.svgChart.config.xAxisGridColumnsSelectable) {
+            if (this.#xAxisGridColumnsSelectableGroupElement.firstChild) {
+                this.#xAxisGridColumnsSelectableGroupElement.firstChild.remove();
+            }
+        }
+
         // Draw xAxis lines
         var currentXAxisGroupElement = el('g');
 
@@ -124,9 +141,9 @@ class AxisController {
         if (this.config.xAxisGrid && this.config.xAxisGridColumns) {
             this.#addXAxisLine(currentXAxisGroupElement, this.config.padding.left + this.config.xAxisGridPadding + (this.svgChart.data.xAxis.columns.length * columnWidth));
         }
-        this.svgChart.xAxisGroupElement.appendChild(currentXAxisGroupElement);
-        this.config.xAxisGridColumnsSelectable && this.svgChart.xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
-        this.svgChart.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
+        controller.xAxisGroupElement.appendChild(currentXAxisGroupElement);
+        this.config.xAxisGridColumnsSelectable && this.#xAxisGridColumnsSelectableGroupElement.appendChild(currentXAxisGridColumnsSelectableGroupElement);
+        controller.xAxisLabelsGroupElement.appendChild(currentXAxisLabelsGroupElement);
     }
 
     /**
@@ -196,7 +213,8 @@ class AxisController {
      * Adds group for x axis labels.
      */
     addXAxisLabelsGroup() {
-        this.svgChart.xAxisLabelsGroupElement = el('g', {
+        const controller = this.#getController();
+        controller.xAxisLabelsGroupElement = el('g', {
             className: prefixed('x-axis-label-group')
         });
         if (this.config.xAxisGridColumnsSelectable) {
@@ -204,14 +222,14 @@ class AxisController {
                 this.#onXAxisLabelGroupClickScoped = this.#onXAxisLabelGroupClick.bind(this);
                 this.#onXAxisLabelGroupKeypressScoped = this.#onXAxisLabelGroupKeypress.bind(this);
             }
-            this.svgChart.addEventListener(this.svgChart.xAxisLabelsGroupElement, 'click', this.#onXAxisLabelGroupClickScoped, false);
-            this.svgChart.addEventListener(this.svgChart.xAxisLabelsGroupElement, 'keydown', this.#onXAxisLabelGroupKeypressScoped, false);
+            this.svgChart.addEventListener(controller.xAxisLabelsGroupElement, 'click', this.#onXAxisLabelGroupClickScoped, false);
+            this.svgChart.addEventListener(controller.xAxisLabelsGroupElement, 'keydown', this.#onXAxisLabelGroupKeypressScoped, false);
             // Group element that wraps the rects that indicates a selected column for line and bar charts.
-            this.svgChart.xAxisGridColumnsSelectableGroupElement = this.svgChart.svg.appendChild(el('g', {
+            this.#xAxisGridColumnsSelectableGroupElement = this.svgChart.svg.appendChild(el('g', {
                 className: prefixed('x-axis-columns-selectable-group')
             }));
         }
-        this.svgChart.svg.appendChild(this.svgChart.xAxisLabelsGroupElement);
+        this.svgChart.svg.appendChild(controller.xAxisLabelsGroupElement);
     }
 
     /**
@@ -229,16 +247,17 @@ class AxisController {
      * @param label - Node (x axis label) that is selected.
      */
     #onXAxisLabelGroupSelect(label: SVGElement) {
-        var textNodes = this.svgChart.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
-        var rects = this.svgChart.xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.' + prefixed('x-axis-grid-column-selectable'));
+        const controller = this.#getController();
+        var textNodes = controller.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
+        var rects = this.#xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.' + prefixed('x-axis-grid-column-selectable'));
         for (var i = 0; i < textNodes.length; i++) {
             if (textNodes[i] === label) {
-                this.svgChart.lineAndBarSelectedColumnIndex = i;
+                controller.selectedColumnIndex = i;
                 textNodes[i].classList.add(prefixed('selected'));
                 rects[i].classList.add(prefixed('selected'));
                 rects[i].setAttribute('fill-opacity', this.config.xAxisGridSelectedColumnOpacity.toString());
                 if (this.config.onXAxisLabelGroupSelect) {
-                    this.config.onXAxisLabelGroupSelect(this.svgChart, this.svgChart.lineAndBarSelectedColumnIndex);
+                    this.config.onXAxisLabelGroupSelect(this.svgChart, controller.selectedColumnIndex);
                 }
             } else {
                 textNodes[i].classList.remove(prefixed('selected'));

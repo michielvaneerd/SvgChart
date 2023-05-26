@@ -14,6 +14,7 @@ class RadarController extends Controller {
     #seriesCount: number;
     #degreeSteps: number;
     #radiusByXStep: number;
+    #axisGroupElement: SVGElement;
 
     /**
      * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
@@ -58,7 +59,7 @@ class RadarController extends Controller {
 
         super.onConfigBefore();
 
-        this.svgChart.xAxisGroupElement = this.svgChart.svg.appendChild(el('g', {
+        this.#axisGroupElement = this.svgChart.svg.appendChild(el('g', {
             className: prefixed('x-axis-group')
         }));
     }
@@ -170,7 +171,7 @@ class RadarController extends Controller {
 
         }
 
-        this.svgChart.xAxisGroupElement.appendChild(gAxis);
+        this.#axisGroupElement.appendChild(gAxis);
     }
 
 }

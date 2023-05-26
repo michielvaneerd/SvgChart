@@ -4,7 +4,6 @@ import { ChartType } from "../types";
 import { el, prefixed } from "../utils";
 import { BarAndLineController } from "./bar_and_line_chart_controller";
 import { BarController } from "./bar_chart_controller";
-import { Controller } from "./controller";
 import { LineController } from "./line_chart_controller";
 
 /**
@@ -17,18 +16,12 @@ function onDrawStartBarAndLine(svgChart: SvgChart, axisController: AxisControlle
 
     const controller = getController(svgChart);
 
-    if (svgChart.xAxisGroupElement.firstChild) {
-        svgChart.xAxisGroupElement.removeChild(svgChart.xAxisGroupElement.firstChild);
+    if (controller.xAxisGroupElement.firstChild) {
+        controller.xAxisGroupElement.removeChild(controller.xAxisGroupElement.firstChild);
     }
 
-    if (svgChart.config.xAxisGridColumnsSelectable) {
-        if (svgChart.xAxisGridColumnsSelectableGroupElement.firstChild) {
-            svgChart.xAxisGridColumnsSelectableGroupElement.firstChild.remove();
-        }
-    }
-
-    if (svgChart.xAxisLabelsGroupElement.firstChild) {
-        svgChart.xAxisLabelsGroupElement.removeChild(svgChart.xAxisLabelsGroupElement.firstChild);
+    if (controller.xAxisLabelsGroupElement.firstChild) {
+        controller.xAxisLabelsGroupElement.removeChild(controller.xAxisLabelsGroupElement.firstChild);
     }
 
     // Note that for bar charts to display correctly, this.config.xAxisGridColumns MUST be true!
@@ -54,7 +47,7 @@ function onConfigBeforeBarAndLine(svgChart: SvgChart, axisController: AxisContro
 
     const controller = getController(svgChart);
 
-    svgChart.lineAndBarSelectedColumnIndex = null;
+    controller.selectedColumnIndex = null;
     controller.valueHeight = svgChart.chartHeight / (Math.abs(svgChart.config.minValue) + svgChart.config.maxValue);
     controller.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
 
@@ -74,7 +67,7 @@ function onConfigBeforeBarAndLine(svgChart: SvgChart, axisController: AxisContro
         axisController.addXAxisLabelsGroup();
     }
 
-    svgChart.xAxisGroupElement = svgChart.svg.appendChild(el('g', {
+    controller.xAxisGroupElement = svgChart.svg.appendChild(el('g', {
         className: prefixed('x-axis-group')
     }));
 }
