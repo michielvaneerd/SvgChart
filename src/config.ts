@@ -11,7 +11,7 @@ class SvgChartConfig {
      * @param config Config object.
      * @returns Attribute value.
      */
-    static getDirection(config: SvgChartConfig) : string {
+    static getDirection(config: SvgChartConfig): string {
         return config.ltr ? 'ltr' : 'rtl';
     }
 
@@ -130,7 +130,7 @@ class SvgChartConfig {
     /**
      * Fontsize for the title.
      */
-    titleFontSize: string|number = 'normal';
+    titleFontSize: string | number = 'normal';
 
     /**
      * Font color of title.
@@ -422,7 +422,7 @@ class SvgChartConfig {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Bar charts
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     /**
      * Opacity of bars.
      */
