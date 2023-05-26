@@ -2,6 +2,7 @@ import { SvgChart } from "../src/svg.js";
 import { SvgChartConfig } from "../src/config.js";
 import { ChartType, ChartPosition } from "../src/types.js";
 import { el } from "../src/utils.js";
+import { LineController } from "../src/charts/line_chart_controller.js";
 
 //SvgChart.setActiveColorPalette(SvgChart.colorPalettes.springPastelsColorPalette);
 
@@ -429,27 +430,29 @@ var chartInfo = {
                 }, document.createTextNode(Date.now())));
             },
             drawOnConfig: function (chart, groupNode) {
+                const controller = chart.controller;
+                const valueHeight = controller.valueHeight;
                 groupNode.appendChild(el.call(chart, 'rect', {
                     x: chart.config.padding.left,
                     y: chart.config.padding.top,
                     width: chart.chartWidth,
-                    height: chart.lineAndBarValueHeight * 20,
+                    height: valueHeight * 20,
                     fill: 'darkgreen',
                     fillOpacity: 0.2
                 }));
                 groupNode.appendChild(el.call(chart, 'rect', {
                     x: chart.config.padding.left,
-                    y: chart.config.padding.top + (chart.lineAndBarValueHeight * 20),
+                    y: chart.config.padding.top + (valueHeight * 20),
                     width: chart.chartWidth,
-                    height: chart.lineAndBarValueHeight * 40,
+                    height: valueHeight * 40,
                     fill: 'orange',
                     fillOpacity: 0.2
                 }));
                 groupNode.appendChild(el.call(chart, 'rect', {
                     x: chart.config.padding.left,
-                    y: chart.config.padding.top + (chart.lineAndBarValueHeight * 60),
+                    y: chart.config.padding.top + (valueHeight * 60),
                     width: chart.chartWidth,
-                    height: chart.lineAndBarValueHeight * 40,
+                    height: valueHeight * 40,
                     fill: 'red',
                     fillOpacity: 0.2
                 }));

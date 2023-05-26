@@ -14,8 +14,35 @@ class BarController extends Controller {
     currentBarIndex: number;
     stackedBarValues: object;
     barWidth: number;
+    #valueHeight: number;
+    #columnWidth: number;
+    #barCountPerColumn: number;
 
     #axisController: AxisController;
+
+    set barCountPerColumn(value: number) {
+        this.#barCountPerColumn = value;
+    }
+
+    get barCountPerColumn() {
+        return this.#barCountPerColumn;
+    }
+
+    set valueHeight(value: number) {
+        this.#valueHeight = value;
+    }
+
+    get valueHeight() {
+        return this.#valueHeight;
+    }
+
+    get columnWidth() {
+        return this.#columnWidth;
+    }
+
+    set columnWidth(value: number) {
+        this.#columnWidth = value;
+    }
 
     /**
      * @param svgChart - SvgChart instance.
@@ -49,16 +76,16 @@ class BarController extends Controller {
                 if (!this.stackedBarValues[valueIndex]) {
                     this.stackedBarValues[valueIndex] = this.config.minValue
                 };
-                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + this.config.barSpacing;
-                y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.svgChart.lineAndBarValueHeight) - (this.stackedBarValues[valueIndex] * this.svgChart.lineAndBarValueHeight);
-                height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.svgChart.lineAndBarValueHeight);
+                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.columnWidth) + this.config.barSpacing;
+                y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.valueHeight) - (this.stackedBarValues[valueIndex] * this.valueHeight);
+                height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.valueHeight);
                 this.stackedBarValues[valueIndex] = this.stackedBarValues[valueIndex] += value;
             } else {
-                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + (this.barWidth * this.currentBarIndex) + (this.config.barSpacing * (this.currentBarIndex + 1));
+                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.columnWidth) + (this.barWidth * this.currentBarIndex) + (this.config.barSpacing * (this.currentBarIndex + 1));
                 if (isNaN(x)) {
                     console.log(this.currentBarIndex);
                 }
-                height = y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.svgChart.lineAndBarValueHeight);
+                height = y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.valueHeight);
             }
 
             serieGroup.appendChild(el('rect', {
@@ -90,7 +117,7 @@ class BarController extends Controller {
     onDrawStart(currentSerieGroupElement: SVGElement) {
 
         onDrawStartBarAndLine(this.svgChart, this.#axisController, currentSerieGroupElement);
-        const barWidth = (this.svgChart.columnWidth - (this.config.barSpacing * (this.svgChart.barCountPerColumn + 1))) / (this.svgChart.barCountPerColumn || 1);
+        const barWidth = (this.columnWidth - (this.config.barSpacing * (this.barCountPerColumn + 1))) / (this.barCountPerColumn || 1);
 
         this.barWidth = barWidth;
 
@@ -118,7 +145,7 @@ class BarController extends Controller {
     onConfigSerieBefore(serie: ChartConfigSerie) {
         super.onConfigSerieBefore(serie);
         if (!this.config.barStacked && (serie.type === ChartType.Bar || this.config.chartType === ChartType.Bar)) {
-            this.svgChart.barCountPerColumn += 1;
+            this.barCountPerColumn += 1;
         }
     }
 

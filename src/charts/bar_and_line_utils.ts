@@ -1,6 +1,11 @@
 import { AxisController } from "../axis";
 import { SvgChart } from "../svg";
+import { ChartType } from "../types";
 import { el, prefixed } from "../utils";
+import { BarAndLineController } from "./bar_and_line_chart_controller";
+import { BarController } from "./bar_chart_controller";
+import { Controller } from "./controller";
+import { LineController } from "./line_chart_controller";
 
 /**
      * Do things at the start of the draw for this chart.
@@ -9,6 +14,9 @@ import { el, prefixed } from "../utils";
      * @param {SVGElement} currentSerieGroupElement DOM group element.
      */
 function onDrawStartBarAndLine(svgChart: SvgChart, axisController: AxisController, currentSerieGroupElement: SVGElement) {
+
+    const controller = getController(svgChart);
+
     if (svgChart.xAxisGroupElement.firstChild) {
         svgChart.xAxisGroupElement.removeChild(svgChart.xAxisGroupElement.firstChild);
     }
@@ -27,10 +35,14 @@ function onDrawStartBarAndLine(svgChart: SvgChart, axisController: AxisControlle
     const columnWidth = svgChart.config.xAxisGridColumns
         ? (svgChart.chartWidth / (svgChart.data.xAxis.columns.length))
         : (svgChart.chartWidth / (svgChart.data.xAxis.columns.length - 1));
-    
-    svgChart.columnWidth = columnWidth;
-    
+
+    controller.columnWidth = columnWidth;
+
     axisController.addXAxisGridAndLabels(columnWidth);
+}
+
+function getController(svgChart: SvgChart): LineController | BarController | BarAndLineController {
+    return svgChart.config.chartType === ChartType.Line ? svgChart.controller as LineController : (svgChart.config.chartType === ChartType.Bar ? svgChart.controller as BarController : svgChart.controller as BarAndLineController);
 }
 
 /**
@@ -40,9 +52,11 @@ function onDrawStartBarAndLine(svgChart: SvgChart, axisController: AxisControlle
  */
 function onConfigBeforeBarAndLine(svgChart: SvgChart, axisController: AxisController) {
 
+    const controller = getController(svgChart);
+
     svgChart.lineAndBarSelectedColumnIndex = null;
-    svgChart.lineAndBarValueHeight = svgChart.chartHeight / (Math.abs(svgChart.config.minValue) + svgChart.config.maxValue);
-    svgChart.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
+    controller.valueHeight = svgChart.chartHeight / (Math.abs(svgChart.config.minValue) + svgChart.config.maxValue);
+    controller.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
 
     if (svgChart.config.yAxisGrid) {
         axisController.addYAxisGridAndLabels();

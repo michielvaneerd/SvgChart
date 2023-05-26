@@ -122,7 +122,7 @@ class RadarController extends Controller {
                     }
 
                     gAxis.appendChild(el('text', {
-                        x: angle === 0 || angle === 180 ? point.x : (angle < 180 ? (point.x + 10) : point.x - this.config.paddingDefault),
+                        x: angle === 0 || angle === 180 ? point.x : (angle < 180 ? (point.x + this.config.paddingDefault) : point.x - this.config.paddingDefault),
                         y: angle === 0 ? point.y - this.config.paddingDefault : (angle === 180 ? (point.y + this.config.paddingDefault) : point.y),
                         direction: SvgChartConfig.getDirection(this.config),
                         textAnchor: angle === 0 || angle === 180 ? 'middle' : (angle < 180 ? 'start' : 'end'),

@@ -102,11 +102,6 @@ class SvgChart {
     #defsElement: SVGElement;
 
     /**
-     * Element where the config.drawOnConfig method will paint in. Only created when config.drawOnConfig is specified.
-     */
-    #drawOnConfigGroup: SVGElement;
-
-    /**
      * Element where the config.drawOnDarta method will paint in. Only created when config.drawOnData is specified.
      */
     #drawOnDataGroup: SVGElement;
@@ -132,11 +127,6 @@ class SvgChart {
     valueElText: SVGGraphicsElement;
 
     /**
-     * Height for 1 value.
-     */
-    lineAndBarValueHeight: number;
-
-    /**
      * SVG group element for X axis.
      */
     xAxisGroupElement: SVGElement;
@@ -154,17 +144,7 @@ class SvgChart {
     /**
      * Current selected column index.
      */
-    lineAndBarSelectedColumnIndex: number;
-
-    /**
-     * Bar and line column width.
-     */
-    columnWidth: number;
-
-    /**
-     * Number of bars per column.
-     */
-    barCountPerColumn: number;
+    lineAndBarSelectedColumnIndex: number;    
 
     /**
      * Scoped callback to call when a legend item gets clicked.
@@ -242,7 +222,7 @@ class SvgChart {
      * Actions during this method:
      * - Merge config from parameter with default config.
      * - Create chart controller for this charttype.
-     * - Remove all child element for this chart (only does something when this method is called multiple times).
+     * - Remove all child element and event listeners for this chart (only does something when this method is called multiple times).
      * - Adding elements like title, legend, etc.
      * - Add the {@link serieGroupElement}.
      * 
@@ -298,12 +278,9 @@ class SvgChart {
             this.#onSerieGroupTransitionendScoped = this.#onSerieGroupTransitionend.bind(this);
         }
 
-        if (this.config.drawOnConfig) {
-            this.#drawOnConfigGroup = el('g', {
-                className: prefixed('draw-on-config-group')
-            });
-            this.svg.appendChild(this.#drawOnConfigGroup);
-        }
+        let drawOnConfigGroup = this.config.drawOnConfig ? this.svg.appendChild(el('g', {
+            className: prefixed('draw-on-config-group')
+        })) : null;
 
         if (this.config.title) {
             this.#addTitle();
@@ -343,7 +320,7 @@ class SvgChart {
         });
 
         if (this.config.drawOnConfig) {
-            this.config.drawOnConfig(this, this.#drawOnConfigGroup);
+            this.config.drawOnConfig(this, drawOnConfigGroup);
         }
 
         if (this.config.drawOnData) {
@@ -628,7 +605,15 @@ class SvgChart {
         }, document.createTextNode(this.config.title)));
     }
 
-    getSeriePropertyColor(props: Array<any>, serie: ChartConfigSerie, serieIndex: number) {
+    /**
+     * Get the color or gradient for this serie for a specific property.
+     * 
+     * @param props - 
+     * @param serie - Serie object.
+     * @param serieIndex - Serie index.
+     * @returns Color or gradient.
+     */
+    getSeriePropertyColor(props: Array<any>, serie: ChartConfigSerie, serieIndex: number): string {
         for (var i = 0; i < props.length; i++) {
             var key = props[i];
             if (serie[key]) {
@@ -641,15 +626,36 @@ class SvgChart {
         return SvgChart.#activeColorPalette[serieIndex];
     }
 
-    getSeriePointColor(serie: ChartConfigSerie, serieIndex: number) {
+    /**
+     * Get the point color or gradient for this serie.
+     * 
+     * @param serie - Serie object.
+     * @param serieIndex - Serie index.
+     * @returns Color or gradient.
+     */
+    getSeriePointColor(serie: ChartConfigSerie, serieIndex: number): string {
         return this.getSeriePropertyColor(['pointColor', 'strokeColor'], serie, serieIndex);
     }
 
-    getSerieStrokeColor(serie: ChartConfigSerie, serieIndex: number) {
+    /**
+     * Get the stroke color or gradient for this serie.
+     * 
+     * @param serie - Serie object.
+     * @param serieIndex - Serie index.
+     * @returns Color or gradient.
+     */
+    getSerieStrokeColor(serie: ChartConfigSerie, serieIndex: number): string {
         return this.getSeriePropertyColor(['strokeColor'], serie, serieIndex);
     }
 
-    getSerieFill(serie: ChartConfigSerie, serieIndex: number) {
+    /**
+     * Get the fill color or gradient for this serie.
+     * 
+     * @param serie - Serie object.
+     * @param serieIndex - Serie index.
+     * @returns Color or gradient.
+     */
+    getSerieFill(serie: ChartConfigSerie, serieIndex: number): string {
         return this.getSeriePropertyColor(['fillGradient'], serie, serieIndex);
     }
 

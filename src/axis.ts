@@ -1,6 +1,9 @@
+import { BarAndLineController } from "./charts/bar_and_line_chart_controller";
+import { BarController } from "./charts/bar_chart_controller";
+import { LineController } from "./charts/line_chart_controller";
 import { SvgChartConfig } from "./config";
 import { SvgChart } from "./svg";
-import { ScopedEventCallback } from "./types";
+import { ChartType, ScopedEventCallback } from "./types";
 import { el, prefixed, directionForEach } from "./utils";
 
 class AxisController {
@@ -23,6 +26,10 @@ class AxisController {
      * Add Y axis grid lines and labels.
      */
     addYAxisGridAndLabels() {
+
+        const controller = this.svgChart.config.chartType === ChartType.Line ? this.svgChart.controller as LineController : (this.svgChart.config.chartType === ChartType.Bar ? this.svgChart.controller as BarController : this.svgChart.controller as BarAndLineController);
+        const valueHeight = controller.valueHeight;
+
         var gYAxis = el('g', {
             className: prefixed('y-axis-group')
         });
@@ -31,7 +38,7 @@ class AxisController {
         var currentYAxisLabelValue = this.config.minValue;
         while (currentYAxisValue <= this.config.maxValue || currentYAxisLabelValue <= this.config.maxValue) {
             if (this.config.yAxisGrid && currentYAxisValue <= this.config.maxValue) {
-                let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((currentYAxisValue + absMinValue) * this.svgChart.lineAndBarValueHeight);
+                let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((currentYAxisValue + absMinValue) * valueHeight);
                 gYAxis.appendChild(el('line', {
                     x1: this.config.padding.left,
                     y1: y,
@@ -45,7 +52,7 @@ class AxisController {
             }
             currentYAxisValue += this.config.yAxisStep;
             if (this.config.yAxisLabels && currentYAxisLabelValue <= this.config.maxValue) {
-                let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((currentYAxisLabelValue + absMinValue) * this.svgChart.lineAndBarValueHeight);
+                let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((currentYAxisLabelValue + absMinValue) * valueHeight);
                 gYAxis.appendChild(el('text', {
                     direction: SvgChartConfig.getDirection(this.config),
                     x: this.config.ltr ? (this.config.padding.left - 10) : (this.config.padding.left + this.svgChart.chartWidth + 10),

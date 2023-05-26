@@ -11,6 +11,33 @@ import { ChartConfigSerie, ChartPoint } from "../types";
 class LineController extends Controller {
 
     #axisController: AxisController;
+    #valueHeight: number;
+    #columnWidth: number;
+    #barCountPerColumn: number;
+
+    set valueHeight(value: number) {
+        this.#valueHeight = value;
+    }
+
+    get valueHeight() {
+        return this.#valueHeight;
+    }
+
+    get columnWidth() {
+        return this.#columnWidth;
+    }
+
+    set columnWidth(value: number) {
+        this.#columnWidth = value;
+    }
+
+    set barCountPerColumn(value: number) {
+        this.#barCountPerColumn = value;
+    }
+
+    get barCountPerColumn() {
+        return this.#barCountPerColumn;
+    }
 
     /**
      * @param svgChart - SvgChart instance.
@@ -35,8 +62,8 @@ class LineController extends Controller {
         const absMinValue = Math.abs(this.config.minValue);
 
         directionForEach(this, this.svgChart.data.series[serie.id], this.config.ltr, (value: number, valueIndex: number, values: Array<number>) => {
-            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.svgChart.columnWidth) + (this.config.xAxisGridColumns ? (this.svgChart.columnWidth / 2) : 0);
-            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((value + absMinValue) * this.svgChart.lineAndBarValueHeight);
+            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.columnWidth) + (this.config.xAxisGridColumns ? (this.columnWidth / 2) : 0);
+            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((value + absMinValue) * this.valueHeight);
 
             if (value === null) {
                 if (nonNullPoints[nonNullPoints.length - 1].length > 0 && valueIndex + 1 < values.length) {
