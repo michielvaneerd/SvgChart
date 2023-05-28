@@ -220,7 +220,13 @@
     "src/config.ts"() {
       init_types();
       SvgChartConfig = class {
-        constructor() {
+        /**
+         * Creates a new SvgChartConfig instance with properties from parameter.
+         * Note: config parameter object is referenced.
+         * 
+         * @param props Object with all non-default properties.
+         */
+        constructor(props) {
           /**
            * Whether language direction is ltr.
            */
@@ -602,6 +608,17 @@
           this.donutStrokeWidth = 2;
           this.radarStrokeWidth = 2;
           this.radarFillOpacity = 0.3;
+          if (props) {
+            Object.keys(props).forEach((key) => {
+              switch (key) {
+                case "padding":
+                  this[key] = Object.assign(this.padding, props[key]);
+                  break;
+                default:
+                  this[key] = props[key];
+              }
+            });
+          }
         }
         /**
          * Get direction string to use for dom direction attribute.
@@ -1643,7 +1660,7 @@
   });
 
   // src/svg.ts
-  var _chartTypeControllers, _cssAdded, _activeColorPalette, _defsElement, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
+  var _chartTypeControllers, _cssAdded, _activeColorPalette, _controller, _data, _defsElement, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
   var init_svg = __esm({
     "src/svg.ts"() {
       init_utils();
@@ -1717,6 +1734,14 @@
            */
           __privateAdd(this, _onSerieGroupFocus);
           /**
+           * Controller that is in charge of drawing the chart.
+           */
+          __privateAdd(this, _controller, void 0);
+          /**
+           * Chart data object. Set during the chart() method.
+           */
+          __privateAdd(this, _data, void 0);
+          /**
            * Element that contains definitions, for example for gradients.
            */
           __privateAdd(this, _defsElement, void 0);
@@ -1762,6 +1787,12 @@
           parent2.appendChild(this.svg);
           this.setConfig(config2);
         }
+        get controller() {
+          return __privateGet(this, _controller);
+        }
+        get data() {
+          return __privateGet(this, _data);
+        }
         /**
          * Set a color palette for all chart instances.
          * 
@@ -1785,10 +1816,10 @@
          * @param config - Configuration object.
          */
         setConfig(config2) {
-          const newConfig = new SvgChartConfig();
-          this.config = Object.assign({}, newConfig, config2);
-          this.config.padding = Object.assign({}, newConfig.padding, this.config.padding);
-          this.config = Object.assign(this.config, __privateGet(_SvgChart, _chartTypeControllers)[this.config.chartType].requiredConfigWithValue);
+          this.config = config2;
+          Object.keys(__privateGet(_SvgChart, _chartTypeControllers)[this.config.chartType].requiredConfigWithValue).forEach((key) => {
+            this.config[key] = __privateGet(_SvgChart, _chartTypeControllers)[this.config.chartType].requiredConfigWithValue[key];
+          });
           if (this.config.ltr) {
             this.config.padding.left = this.config.padding.start;
             this.config.padding.right = this.config.padding.end;
@@ -1796,7 +1827,7 @@
             this.config.padding.left = this.config.padding.end;
             this.config.padding.right = this.config.padding.start;
           }
-          this.controller = new (__privateGet(_SvgChart, _chartTypeControllers))[config2.chartType](this);
+          __privateSet(this, _controller, new (__privateGet(_SvgChart, _chartTypeControllers))[config2.chartType](this));
           this.svg.setAttribute("direction", SvgChartConfig.getDirection(this.config));
           if (__privateGet(this, _listenersToRemoveAfterConfigChange) && __privateGet(this, _listenersToRemoveAfterConfigChange).length) {
             __privateGet(this, _listenersToRemoveAfterConfigChange).forEach((item) => {
@@ -1807,7 +1838,7 @@
           while (this.svg.childNodes.length) {
             this.svg.firstChild.remove();
           }
-          this.data = null;
+          __privateSet(this, _data, null);
           this.unselectedSeries = {};
           this.chartWidth = this.width - this.config.padding.start - this.config.padding.end - this.config.xAxisGridPadding * 2;
           this.chartHeight = this.height - this.config.padding.top - this.config.padding.bottom - this.config.yAxisGridPadding * 2;
@@ -1870,7 +1901,7 @@
          */
         chart(data2 = null) {
           if (data2 !== null) {
-            this.data = data2;
+            __privateSet(this, _data, data2);
           }
           if (this.serieGroupElement.firstChild) {
             this.serieGroupElement.firstChild.remove();
@@ -2000,6 +2031,8 @@
       _chartTypeControllers = new WeakMap();
       _cssAdded = new WeakMap();
       _activeColorPalette = new WeakMap();
+      _controller = new WeakMap();
+      _data = new WeakMap();
       _defsElement = new WeakMap();
       _drawOnDataGroup = new WeakMap();
       _onLegendClickScoped = new WeakMap();
@@ -2903,7 +2936,7 @@
           chartInfo[id].dataFunc ? chartInfo[id].dataFunc(id) : setChartData(id);
         }
         if (chartInfo[id].chart === null) {
-          chartInfo[id].chart = new SvgChart(document.getElementById(id), chartInfo[id].config);
+          chartInfo[id].chart = new SvgChart(document.getElementById(id), new SvgChartConfig(chartInfo[id].config));
           document.getElementById(id + "RandomDataButton").addEventListener("click", function() {
             doChart(id);
           });
@@ -2911,7 +2944,7 @@
             chartInfo[id].chart.saveAsPng(id + ".png");
           });
         } else {
-          chartInfo[id].chart.setConfig(chartInfo[id].config);
+          chartInfo[id].chart.setConfig(new SvgChartConfig(chartInfo[id].config));
         }
         chartInfo[id].chart.chart(chartInfo[id].data);
         var codeConfig = document.getElementById(id + "CodeConfig").querySelector("code");
@@ -2933,9 +2966,9 @@
         const config = eval("(" + document.getElementById("chartDynamicCodeConfig").value + ")");
         const data = eval("(" + document.getElementById("chartDynamicCodeData").value + ")");
         if (!chartInfo["chartDynamic"].chart) {
-          chartInfo["chartDynamic"].chart = new SvgChart(document.getElementById("chartDynamic"), config);
+          chartInfo["chartDynamic"].chart = new SvgChart(document.getElementById("chartDynamic"), new SvgChartConfig(config));
         } else {
-          chartInfo["chartDynamic"].chart.setConfig(config);
+          chartInfo["chartDynamic"].chart.setConfig(new SvgChartConfig(config));
         }
         chartInfo["chartDynamic"].chart.chart(data);
       }

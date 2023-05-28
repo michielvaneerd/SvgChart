@@ -116,4 +116,16 @@ function polarToCartesian(centerX: number, centerY: number, radius: number, angl
     };
 }
 
-export { el, parent, prefixed, directionForEach, polarToCartesian, DirectionForEachCallback };
+// Note works only for objects, if we have arrays, we need to add.
+function deepClone(src: object, target: any) {
+    Object.keys(src).forEach(function(key) {
+        if (typeof src[key] === 'object') {
+            target[key] = deepClone(src[key], target);
+        } else {
+            target[key] = src[key];
+        }
+    });
+    return target;
+}
+
+export { el, parent, prefixed, directionForEach, polarToCartesian, DirectionForEachCallback, deepClone };

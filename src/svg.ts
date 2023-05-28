@@ -86,7 +86,7 @@ class SvgChart {
     /**
      * Controller that is in charge of drawing the chart.
      */
-    controller: Controller;
+    #controller: Controller;
 
     /**
      * Hash where key = serie and value = whether it is selected or nor not.
@@ -96,7 +96,7 @@ class SvgChart {
     /**
      * Chart data object. Set during the chart() method.
      */
-    data: ChartData;
+    #data: ChartData;
 
     /**
      * Element that contains definitions, for example for gradients.
@@ -142,6 +142,14 @@ class SvgChart {
     #onSerieGroupBlurScoped: ScopedEventCallback = null;
 
     #listenersToRemoveAfterConfigChange: Array<ChartEventInfo>;
+
+    get controller() {
+        return this.#controller;
+    }
+
+    get data() {
+        return this.#data;
+    }
 
     /**
      * Set a color palette for all chart instances.
@@ -212,12 +220,16 @@ class SvgChart {
      */
     setConfig(config: SvgChartConfig) {
 
-        const newConfig = new SvgChartConfig();
+        // const newConfig = new SvgChartConfig();
 
-        this.config = Object.assign({}, newConfig, config);
-        this.config.padding = Object.assign({}, newConfig.padding, this.config.padding);
+        // this.config = Object.assign({}, newConfig, config);
+        // this.config.padding = Object.assign({}, newConfig.padding, this.config.padding);
 
-        this.config = Object.assign(this.config, SvgChart.#chartTypeControllers[this.config.chartType].requiredConfigWithValue);
+        this.config = config;
+        Object.keys(SvgChart.#chartTypeControllers[this.config.chartType].requiredConfigWithValue).forEach((key) => {
+            this.config[key] = SvgChart.#chartTypeControllers[this.config.chartType].requiredConfigWithValue[key];
+        });
+        //this.config = Object.assign(this.config, SvgChart.#chartTypeControllers[this.config.chartType].requiredConfigWithValue);
 
         if (this.config.ltr) {
             this.config.padding.left = this.config.padding.start;
@@ -227,7 +239,7 @@ class SvgChart {
             this.config.padding.right = this.config.padding.start;
         }
 
-        this.controller = new SvgChart.#chartTypeControllers[config.chartType](this);
+        this.#controller = new SvgChart.#chartTypeControllers[config.chartType](this);
 
         this.svg.setAttribute('direction', SvgChartConfig.getDirection(this.config));
 
@@ -244,7 +256,7 @@ class SvgChart {
             this.svg.firstChild.remove();
         }
 
-        this.data = null;
+        this.#data = null;
         this.unselectedSeries = {} as StringBooleanHash;
 
         this.chartWidth = this.width - this.config.padding.start - this.config.padding.end - (this.config.xAxisGridPadding * 2);
@@ -326,7 +338,7 @@ class SvgChart {
     chart(data: ChartData = null) {
 
         if (data !== null) {
-            this.data = data;
+            this.#data = data;
         }
 
         if (this.serieGroupElement.firstChild) {

@@ -1,9 +1,30 @@
 import { ChartConfigSerie, ChartType, XAxisColumnSelectedCallback, DrawCallback, ChartPosition } from "./types";
+import { deepClone } from "./utils";
 
 /**
  * SvgChart config class.
  */
 class SvgChartConfig {
+
+    /**
+     * Creates a new SvgChartConfig instance with properties from parameter.
+     * Note: config parameter object is referenced.
+     * 
+     * @param props Object with all non-default properties.
+     */
+    constructor(props?: object) {
+        if (props) {
+            Object.keys(props).forEach((key) => {
+                switch (key) {
+                    case 'padding':
+                        this[key] = Object.assign(this.padding, props[key]);
+                        break;
+                    default:
+                        this[key] = props[key];       
+                }
+            });
+        }
+    }
 
     /**
      * Get direction string to use for dom direction attribute.

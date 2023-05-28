@@ -2,7 +2,6 @@ import { prefixed, directionForEach, el } from "../utils";
 import { Controller } from "./controller";
 import { SvgChart } from "../svg";
 import { XYHorVertAxisController } from "../x_y_hor_vert_axis";
-//import { onDrawStartBarAndLine } from "./bar_and_line_utils";
 import { ChartConfigSerie, ChartType } from "../types";
 
 /**

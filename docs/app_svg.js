@@ -643,7 +643,7 @@ function doChart(id) {
     }
     //}
     if (chartInfo[id].chart === null) {
-        chartInfo[id].chart = new SvgChart(document.getElementById(id), chartInfo[id].config);
+        chartInfo[id].chart = new SvgChart(document.getElementById(id), new SvgChartConfig(chartInfo[id].config));
         document.getElementById(id + 'RandomDataButton').addEventListener('click', function () {
             doChart(id);
         });
@@ -651,7 +651,7 @@ function doChart(id) {
             chartInfo[id].chart.saveAsPng(id + '.png');
         });
     } else {
-        chartInfo[id].chart.setConfig(chartInfo[id].config);
+        chartInfo[id].chart.setConfig(new SvgChartConfig(chartInfo[id].config));
     }
     chartInfo[id].chart.chart(chartInfo[id].data);
     var codeConfig = document.getElementById(id + 'CodeConfig').querySelector('code');
@@ -677,9 +677,9 @@ function dynamicChart() {
     const data = eval("(" + document.getElementById('chartDynamicCodeData').value + ")");
 
     if (!chartInfo['chartDynamic'].chart) {
-        chartInfo['chartDynamic'].chart = new SvgChart(document.getElementById('chartDynamic'), config);
+        chartInfo['chartDynamic'].chart = new SvgChart(document.getElementById('chartDynamic'), new SvgChartConfig(config));
     } else {
-        chartInfo['chartDynamic'].chart.setConfig(config);
+        chartInfo['chartDynamic'].chart.setConfig(new SvgChartConfig(config));
     }
     chartInfo['chartDynamic'].chart.chart(data);
 }
