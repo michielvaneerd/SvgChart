@@ -1,17 +1,17 @@
-import { AxisController } from "../axis";
+import { XYHorVertAxisController } from "../x_y_hor_vert_axis";
 import { SvgChart } from "../svg";
 import { Controller } from "./controller";
 
 export class BubbleController extends Controller {
 
-    axisController: AxisController;
+    axisController: XYHorVertAxisController;
 
     /**
      * @param svgChart - SvgChart instance.
      */
     constructor(svgChart: SvgChart) {
         super(svgChart);
-        this.axisController = new AxisController(svgChart);
+        this.axisController = new XYHorVertAxisController(svgChart);
     }
     
 }

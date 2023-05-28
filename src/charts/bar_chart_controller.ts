@@ -1,35 +1,35 @@
 import { prefixed, directionForEach, el } from "../utils";
 import { Controller } from "./controller";
 import { SvgChart } from "../svg";
-import { AxisController } from "../axis";
-import { onDrawStartBarAndLine, onConfigBeforeBarAndLine } from "./bar_and_line_utils";
+import { XYHorVertAxisController } from "../x_y_hor_vert_axis";
+//import { onDrawStartBarAndLine } from "./bar_and_line_utils";
 import { ChartConfigSerie, ChartType } from "../types";
 
 /**
  * Controller class for bar and line charts.
  */
-class BarController extends Controller {
+export class BarController extends Controller {
 
     svgChart: SvgChart;
 
     // Shared with line and bar
-    axisController: AxisController;
-    #valueHeight: number;
-    #columnWidth: number;
-    #selectedColumnIndex: number;
+    axisController: XYHorVertAxisController;
+    // #valueHeight: number;
+    // #columnWidth: number;
+    // #selectedColumnIndex: number;
 
     #barCountPerColumn: number;
     currentBarIndex: number;
     stackedBarValues: object;
     barWidth: number;
 
-    set selectedColumnIndex(value: number) {
-        this.#selectedColumnIndex = value;
-    }
+    // set selectedColumnIndex(value: number) {
+    //     this.#selectedColumnIndex = value;
+    // }
 
-    get selectedColumnIndex() {
-        return this.#selectedColumnIndex;
-    }
+    // get selectedColumnIndex() {
+    //     return this.#selectedColumnIndex;
+    // }
 
     set barCountPerColumn(value: number) {
         this.#barCountPerColumn = value;
@@ -39,31 +39,31 @@ class BarController extends Controller {
         return this.#barCountPerColumn;
     }
 
-    set valueHeight(value: number) {
-        this.#valueHeight = value;
-    }
+    // set valueHeight(value: number) {
+    //     this.#valueHeight = value;
+    // }
 
-    get valueHeight() {
-        return this.#valueHeight;
-    }
+    // get valueHeight() {
+    //     return this.#valueHeight;
+    // }
 
-    get columnWidth() {
-        return this.#columnWidth;
-    }
+    // get columnWidth() {
+    //     return this.#columnWidth;
+    // }
 
-    set columnWidth(value: number) {
-        this.#columnWidth = value;
-    }
+    // set columnWidth(value: number) {
+    //     this.#columnWidth = value;
+    // }
 
     /**
      * @param svgChart - SvgChart instance.
      */
-    constructor(svgChart: SvgChart, axisController?: AxisController) {
+    constructor(svgChart: SvgChart, axisController?: XYHorVertAxisController) {
         super(svgChart);
         if (axisController) {
             this.axisController = axisController;
         } else {
-            this.axisController = new AxisController(svgChart);
+            this.axisController = new XYHorVertAxisController(svgChart);
         }
     }
 
@@ -91,16 +91,16 @@ class BarController extends Controller {
                 if (!this.stackedBarValues[valueIndex]) {
                     this.stackedBarValues[valueIndex] = this.config.minValue
                 };
-                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.columnWidth) + this.config.barSpacing;
-                y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.valueHeight) - (this.stackedBarValues[valueIndex] * this.valueHeight);
-                height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.valueHeight);
+                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.axisController.columnWidth) + this.config.barSpacing;
+                y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.axisController.valueHeight) - (this.stackedBarValues[valueIndex] * this.axisController.valueHeight);
+                height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.axisController.valueHeight);
                 this.stackedBarValues[valueIndex] = this.stackedBarValues[valueIndex] += value;
             } else {
-                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.columnWidth) + (this.barWidth * this.currentBarIndex) + (this.config.barSpacing * (this.currentBarIndex + 1));
+                x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.axisController.columnWidth) + (this.barWidth * this.currentBarIndex) + (this.config.barSpacing * (this.currentBarIndex + 1));
                 if (isNaN(x)) {
                     console.log(this.currentBarIndex);
                 }
-                height = y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.valueHeight);
+                height = y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value * this.axisController.valueHeight);
             }
 
             serieGroup.appendChild(el('rect', {
@@ -131,8 +131,9 @@ class BarController extends Controller {
      */
     onDrawStart(currentSerieGroupElement: SVGElement) {
 
-        onDrawStartBarAndLine(this.svgChart, this.axisController, currentSerieGroupElement);
-        const barWidth = (this.columnWidth - (this.config.barSpacing * (this.barCountPerColumn + 1))) / (this.barCountPerColumn || 1);
+        this.axisController.onDrawStart();
+        
+        const barWidth = (this.axisController.columnWidth - (this.config.barSpacing * (this.barCountPerColumn + 1))) / (this.barCountPerColumn || 1);
 
         this.barWidth = barWidth;
 
@@ -147,7 +148,9 @@ class BarController extends Controller {
      */
     onConfigBefore() {
         super.onConfigBefore();
-        onConfigBeforeBarAndLine(this.svgChart, this.axisController);
+        //onConfigBeforeBarAndLine(this.svgChart, this.axisController);
+        this.barCountPerColumn = this.config.barStacked ? 1 : 0;
+        this.axisController.onConfigBefore();
     }
 
     /**
@@ -165,11 +168,3 @@ class BarController extends Controller {
     }
 
 }
-
-export { BarController };
-
-
-
-
-
-

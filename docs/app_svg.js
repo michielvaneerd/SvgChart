@@ -431,7 +431,7 @@ var chartInfo = {
             },
             drawOnConfig: function (chart, groupNode) {
                 const controller = chart.controller;
-                const valueHeight = controller.valueHeight;
+                const valueHeight = controller.axisController.valueHeight;
                 groupNode.appendChild(el.call(chart, 'rect', {
                     x: chart.config.padding.left,
                     y: chart.config.padding.top,

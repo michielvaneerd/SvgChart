@@ -208,6 +208,7 @@
         ChartType3[ChartType3["Pie"] = 3] = "Pie";
         ChartType3[ChartType3["Donut"] = 4] = "Donut";
         ChartType3[ChartType3["Radar"] = 5] = "Radar";
+        ChartType3[ChartType3["Bubble"] = 6] = "Bubble";
         return ChartType3;
       })(ChartType || {});
     }
@@ -615,19 +616,17 @@
     }
   });
 
-  // src/axis.ts
-  var _onXAxisLabelGroupClickScoped, _onXAxisLabelGroupKeypressScoped, _xAxisGroupElement, _xAxisLabelsGroupElement, _xAxisGridColumnsSelectableGroupElement, _getController, getController_fn, _addXAxisLine, addXAxisLine_fn, _onXAxisLabelGroupClick, onXAxisLabelGroupClick_fn, _onXAxisLabelGroupSelect, onXAxisLabelGroupSelect_fn, _onXAxisLabelGroupKeypress, onXAxisLabelGroupKeypress_fn, AxisController;
-  var init_axis = __esm({
-    "src/axis.ts"() {
+  // src/x_y_hor_vert_axis.ts
+  var _onXAxisLabelGroupClickScoped, _onXAxisLabelGroupKeypressScoped, _xAxisGroupElement, _xAxisLabelsGroupElement, _xAxisGridColumnsSelectableGroupElement, _addXAxisLine, addXAxisLine_fn, _onXAxisLabelGroupClick, onXAxisLabelGroupClick_fn, _onXAxisLabelGroupSelect, onXAxisLabelGroupSelect_fn, _onXAxisLabelGroupKeypress, onXAxisLabelGroupKeypress_fn, XYHorVertAxisController;
+  var init_x_y_hor_vert_axis = __esm({
+    "src/x_y_hor_vert_axis.ts"() {
       init_config();
-      init_types();
       init_utils();
-      AxisController = class {
+      XYHorVertAxisController = class {
         /**
          * @param svgChart SvgChart instance.
          */
         constructor(svgChart) {
-          __privateAdd(this, _getController);
           /**
            * Draws an X axis line.
            * 
@@ -673,12 +672,40 @@
         get xAxisGroupElement() {
           return __privateGet(this, _xAxisGroupElement);
         }
+        onDrawStart() {
+          if (this.xAxisGroupElement.firstChild) {
+            this.xAxisGroupElement.removeChild(this.xAxisGroupElement.firstChild);
+          }
+          if (this.xAxisLabelsGroupElement.firstChild) {
+            this.xAxisLabelsGroupElement.removeChild(this.xAxisLabelsGroupElement.firstChild);
+          }
+          const columnWidth = this.config.xAxisGridColumns ? this.svgChart.chartWidth / this.svgChart.data.xAxis.columns.length : this.svgChart.chartWidth / (this.svgChart.data.xAxis.columns.length - 1);
+          this.columnWidth = columnWidth;
+          this.addXAxisGridAndLabels(columnWidth);
+        }
+        onConfigBefore() {
+          this.selectedColumnIndex = null;
+          this.valueHeight = this.svgChart.chartHeight / (Math.abs(this.config.minValue) + this.config.maxValue);
+          if (this.config.yAxisGrid) {
+            this.addYAxisGridAndLabels();
+          }
+          if (this.config.xAxisTitle) {
+            this.addXAxisTitle();
+          }
+          if (this.config.yAxisTitle) {
+            this.addYAxisTitle();
+          }
+          if (this.config.xAxisLabels) {
+            this.addXAxisLabelsGroup();
+          }
+          this.xAxisGroupElement = this.svgChart.svg.appendChild(el("g", {
+            className: prefixed("x-axis-group")
+          }));
+        }
         /**
          * Add Y axis grid lines and labels.
          */
         addYAxisGridAndLabels() {
-          const controller = __privateMethod(this, _getController, getController_fn).call(this);
-          const valueHeight = controller.valueHeight;
           var gYAxis = el("g", {
             className: prefixed("y-axis-group")
           });
@@ -687,7 +714,7 @@
           var currentYAxisLabelValue = this.config.minValue;
           while (currentYAxisValue <= this.config.maxValue || currentYAxisLabelValue <= this.config.maxValue) {
             if (this.config.yAxisGrid && currentYAxisValue <= this.config.maxValue) {
-              let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (currentYAxisValue + absMinValue) * valueHeight;
+              let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (currentYAxisValue + absMinValue) * this.valueHeight;
               gYAxis.appendChild(el("line", {
                 x1: this.config.padding.left,
                 y1: y,
@@ -701,7 +728,7 @@
             }
             currentYAxisValue += this.config.yAxisStep;
             if (this.config.yAxisLabels && currentYAxisLabelValue <= this.config.maxValue) {
-              let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (currentYAxisLabelValue + absMinValue) * valueHeight;
+              let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (currentYAxisLabelValue + absMinValue) * this.valueHeight;
               gYAxis.appendChild(el("text", {
                 direction: SvgChartConfig.getDirection(this.config),
                 x: this.config.ltr ? this.config.padding.left - 10 : this.config.padding.left + this.svgChart.chartWidth + 10,
@@ -724,7 +751,6 @@
          * @param columnWidth - Width of each column.
          */
         addXAxisGridAndLabels(columnWidth) {
-          const controller = __privateMethod(this, _getController, getController_fn).call(this);
           if (this.svgChart.config.xAxisGridColumnsSelectable) {
             if (__privateGet(this, _xAxisGridColumnsSelectableGroupElement).firstChild) {
               __privateGet(this, _xAxisGridColumnsSelectableGroupElement).firstChild.remove();
@@ -825,7 +851,6 @@
          * Adds group for x axis labels.
          */
         addXAxisLabelsGroup() {
-          const controller = __privateMethod(this, _getController, getController_fn).call(this);
           this.xAxisLabelsGroupElement = el("g", {
             className: prefixed("x-axis-label-group")
           });
@@ -848,10 +873,6 @@
       _xAxisGroupElement = new WeakMap();
       _xAxisLabelsGroupElement = new WeakMap();
       _xAxisGridColumnsSelectableGroupElement = new WeakMap();
-      _getController = new WeakSet();
-      getController_fn = function() {
-        return this.svgChart.config.chartType === 0 /* Line */ ? this.svgChart.controller : this.svgChart.config.chartType === 1 /* Bar */ ? this.svgChart.controller : this.svgChart.controller;
-      };
       _addXAxisLine = new WeakSet();
       addXAxisLine_fn = function(parent2, x) {
         parent2.appendChild(el("line", {
@@ -871,17 +892,16 @@
       };
       _onXAxisLabelGroupSelect = new WeakSet();
       onXAxisLabelGroupSelect_fn = function(label) {
-        const controller = __privateMethod(this, _getController, getController_fn).call(this);
         var textNodes = this.xAxisLabelsGroupElement.querySelectorAll("text." + prefixed("x-axis-grid-column-selectable-label"));
         var rects = __privateGet(this, _xAxisGridColumnsSelectableGroupElement).querySelectorAll("rect." + prefixed("x-axis-grid-column-selectable"));
         for (var i = 0; i < textNodes.length; i++) {
           if (textNodes[i] === label) {
-            controller.selectedColumnIndex = i;
+            this.selectedColumnIndex = i;
             textNodes[i].classList.add(prefixed("selected"));
             rects[i].classList.add(prefixed("selected"));
             rects[i].setAttribute("fill-opacity", this.config.xAxisGridSelectedColumnOpacity.toString());
             if (this.config.onXAxisLabelGroupSelect) {
-              this.config.onXAxisLabelGroupSelect(this.svgChart, controller.selectedColumnIndex);
+              this.config.onXAxisLabelGroupSelect(this.svgChart, this.selectedColumnIndex);
             }
           } else {
             textNodes[i].classList.remove(prefixed("selected"));
@@ -899,287 +919,13 @@
     }
   });
 
-  // src/charts/bar_chart_controller.ts
-  var _valueHeight, _columnWidth, _selectedColumnIndex, _barCountPerColumn, BarController;
-  var init_bar_chart_controller = __esm({
-    "src/charts/bar_chart_controller.ts"() {
-      init_utils();
-      init_controller();
-      init_axis();
-      init_bar_and_line_utils();
-      init_types();
-      BarController = class extends Controller {
-        /**
-         * @param svgChart - SvgChart instance.
-         */
-        constructor(svgChart, axisController) {
-          super(svgChart);
-          __privateAdd(this, _valueHeight, void 0);
-          __privateAdd(this, _columnWidth, void 0);
-          __privateAdd(this, _selectedColumnIndex, void 0);
-          __privateAdd(this, _barCountPerColumn, void 0);
-          if (axisController) {
-            this.axisController = axisController;
-          } else {
-            this.axisController = new AxisController(svgChart);
-          }
-        }
-        set selectedColumnIndex(value) {
-          __privateSet(this, _selectedColumnIndex, value);
-        }
-        get selectedColumnIndex() {
-          return __privateGet(this, _selectedColumnIndex);
-        }
-        set barCountPerColumn(value) {
-          __privateSet(this, _barCountPerColumn, value);
-        }
-        get barCountPerColumn() {
-          return __privateGet(this, _barCountPerColumn);
-        }
-        set valueHeight(value) {
-          __privateSet(this, _valueHeight, value);
-        }
-        get valueHeight() {
-          return __privateGet(this, _valueHeight);
-        }
-        get columnWidth() {
-          return __privateGet(this, _columnWidth);
-        }
-        set columnWidth(value) {
-          __privateSet(this, _columnWidth, value);
-        }
-        /**
-         * Draws chart element for this serie and attached it to the serieGroup.
-         * 
-         * @override
-         * 
-         * @param serie - Serie object.
-         * @param serieIndex - Serie index.
-         * @param serieGroup - DOM group element for this serie.
-         */
-        onDrawSerie(serie, serieIndex, serieGroup) {
-          directionForEach(this, this.svgChart.data.series[serie.id], this.config.ltr, (value, valueIndex) => {
-            var x = null;
-            var y = null;
-            var height = null;
-            if (this.config.barStacked) {
-              if (!this.stackedBarValues[valueIndex]) {
-                this.stackedBarValues[valueIndex] = this.config.minValue;
-              }
-              ;
-              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.columnWidth + this.config.barSpacing;
-              y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.valueHeight - this.stackedBarValues[valueIndex] * this.valueHeight;
-              height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.valueHeight;
-              this.stackedBarValues[valueIndex] = this.stackedBarValues[valueIndex] += value;
-            } else {
-              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.columnWidth + this.barWidth * this.currentBarIndex + this.config.barSpacing * (this.currentBarIndex + 1);
-              if (isNaN(x)) {
-                console.log(this.currentBarIndex);
-              }
-              height = y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.valueHeight;
-            }
-            serieGroup.appendChild(el("rect", {
-              x,
-              y,
-              width: this.barWidth,
-              height: this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
-              fill: this.svgChart.getSerieFill(serie, serieIndex),
-              className: prefixed("bar"),
-              fillOpacity: this.config.barFillOpacity || "",
-              strokeWidth: this.config.barStrokeWidth || 0,
-              stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
-              dataValue: value,
-              tabindex: this.config.focusedValueShow ? 0 : null
-            }));
-          });
-          this.currentBarIndex += 1;
-        }
-        /**
-         * Do things at the start of the draw for this chart.
-         * 
-         * @override
-         * 
-         * @param currentSerieGroupElement - DOM group element.
-         */
-        onDrawStart(currentSerieGroupElement) {
-          onDrawStartBarAndLine(this.svgChart, this.axisController, currentSerieGroupElement);
-          const barWidth = (this.columnWidth - this.config.barSpacing * (this.barCountPerColumn + 1)) / (this.barCountPerColumn || 1);
-          this.barWidth = barWidth;
-          this.currentBarIndex = 0;
-          this.stackedBarValues = {};
-        }
-        /**
-         * Execute config things before global config things are done.
-         * 
-         * @override
-         */
-        onConfigBefore() {
-          super.onConfigBefore();
-          onConfigBeforeBarAndLine(this.svgChart, this.axisController);
-        }
-        /**
-         * Execute serie config things before global config serie things are done.
-         * 
-         * @override
-         * 
-         * @param serie - Serie object
-         */
-        onConfigSerieBefore(serie) {
-          super.onConfigSerieBefore(serie);
-          if (!this.config.barStacked && (serie.type === 1 /* Bar */ || this.config.chartType === 1 /* Bar */)) {
-            this.barCountPerColumn += 1;
-          }
-        }
-      };
-      _valueHeight = new WeakMap();
-      _columnWidth = new WeakMap();
-      _selectedColumnIndex = new WeakMap();
-      _barCountPerColumn = new WeakMap();
-      /** @override */
-      BarController.requiredConfigWithValue = {
-        xAxisGridColumns: true
-      };
-    }
-  });
-
-  // src/charts/bar_and_line_chart_controller.ts
-  var _lineChartController, _barChartController, BarAndLineController;
-  var init_bar_and_line_chart_controller = __esm({
-    "src/charts/bar_and_line_chart_controller.ts"() {
-      init_controller();
-      init_line_chart_controller();
-      init_bar_chart_controller();
-      init_types();
-      init_axis();
-      BarAndLineController = class extends Controller {
-        /**
-         * @param svgChart - SvgChart instance.
-         */
-        constructor(svgChart) {
-          super(svgChart);
-          __privateAdd(this, _lineChartController, void 0);
-          __privateAdd(this, _barChartController, void 0);
-          this.axisController = new AxisController(svgChart);
-          __privateSet(this, _barChartController, new BarController(svgChart, this.axisController));
-          __privateSet(this, _lineChartController, new LineController(svgChart, this.axisController));
-        }
-        set selectedColumnIndex(value) {
-          __privateGet(this, _barChartController).selectedColumnIndex = value;
-          __privateGet(this, _lineChartController).selectedColumnIndex = value;
-        }
-        get selectedColumnIndex() {
-          return __privateGet(this, _barChartController).selectedColumnIndex;
-        }
-        set barCountPerColumn(value) {
-          __privateGet(this, _barChartController).barCountPerColumn = value;
-        }
-        get barCountPerColumn() {
-          return __privateGet(this, _barChartController).barCountPerColumn;
-        }
-        set valueHeight(value) {
-          __privateGet(this, _barChartController).valueHeight = value;
-          __privateGet(this, _lineChartController).valueHeight = value;
-        }
-        get valueHeight() {
-          return __privateGet(this, _barChartController).valueHeight;
-        }
-        get columnWidth() {
-          return __privateGet(this, _barChartController).columnWidth;
-        }
-        set columnWidth(value) {
-          __privateGet(this, _barChartController).columnWidth = value;
-          __privateGet(this, _lineChartController).columnWidth = value;
-        }
-        /** @override */
-        onDrawSerie(serie, serieIndex, serieGroup) {
-          const serieType = serie.type || (this.config.chartType === 2 /* LineAndBar */ ? 0 /* Line */ : this.config.chartType);
-          switch (serieType) {
-            case 0 /* Line */:
-              __privateGet(this, _lineChartController).onDrawSerie(serie, serieIndex, serieGroup);
-              break;
-            case 1 /* Bar */:
-              __privateGet(this, _barChartController).onDrawSerie(serie, serieIndex, serieGroup);
-              break;
-          }
-        }
-        /** @override */
-        onDrawStart(currentSerieGroupElement) {
-          __privateGet(this, _barChartController).onDrawStart(currentSerieGroupElement);
-        }
-        /** @override */
-        onConfigBefore() {
-          __privateGet(this, _barChartController).onConfigBefore();
-        }
-        /** @override */
-        onConfigSerieBefore(serie) {
-          __privateGet(this, _barChartController).onConfigSerieBefore(serie);
-        }
-      };
-      _lineChartController = new WeakMap();
-      _barChartController = new WeakMap();
-      /** @override */
-      BarAndLineController.requiredConfigWithValue = {
-        xAxisGridColumns: true
-      };
-    }
-  });
-
-  // src/charts/bar_and_line_utils.ts
-  function onDrawStartBarAndLine(svgChart, axisController, currentSerieGroupElement) {
-    const controller = getController(svgChart);
-    if (axisController.xAxisGroupElement.firstChild) {
-      axisController.xAxisGroupElement.removeChild(axisController.xAxisGroupElement.firstChild);
-    }
-    if (axisController.xAxisLabelsGroupElement.firstChild) {
-      axisController.xAxisLabelsGroupElement.removeChild(axisController.xAxisLabelsGroupElement.firstChild);
-    }
-    const columnWidth = svgChart.config.xAxisGridColumns ? svgChart.chartWidth / svgChart.data.xAxis.columns.length : svgChart.chartWidth / (svgChart.data.xAxis.columns.length - 1);
-    controller.columnWidth = columnWidth;
-    axisController.addXAxisGridAndLabels(columnWidth);
-  }
-  function getController(svgChart) {
-    return svgChart.config.chartType === 0 /* Line */ ? svgChart.controller : svgChart.config.chartType === 1 /* Bar */ ? svgChart.controller : svgChart.controller;
-  }
-  function onConfigBeforeBarAndLine(svgChart, axisController) {
-    const controller = getController(svgChart);
-    controller.selectedColumnIndex = null;
-    controller.valueHeight = svgChart.chartHeight / (Math.abs(svgChart.config.minValue) + svgChart.config.maxValue);
-    if (controller instanceof BarController || controller instanceof BarAndLineController) {
-      controller.barCountPerColumn = svgChart.config.barStacked ? 1 : 0;
-    }
-    if (svgChart.config.yAxisGrid) {
-      axisController.addYAxisGridAndLabels();
-    }
-    if (svgChart.config.xAxisTitle) {
-      axisController.addXAxisTitle();
-    }
-    if (svgChart.config.yAxisTitle) {
-      axisController.addYAxisTitle();
-    }
-    if (svgChart.config.xAxisLabels) {
-      axisController.addXAxisLabelsGroup();
-    }
-    axisController.xAxisGroupElement = svgChart.svg.appendChild(el("g", {
-      className: prefixed("x-axis-group")
-    }));
-  }
-  var init_bar_and_line_utils = __esm({
-    "src/charts/bar_and_line_utils.ts"() {
-      init_types();
-      init_utils();
-      init_bar_and_line_chart_controller();
-      init_bar_chart_controller();
-    }
-  });
-
   // src/charts/line_chart_controller.ts
-  var _valueHeight2, _columnWidth2, _selectedColumnIndex2, _getCurvedPathFromPoints, getCurvedPathFromPoints_fn, _closePath, closePath_fn, _getStraightPathFromPoints, getStraightPathFromPoints_fn, LineController;
+  var _getCurvedPathFromPoints, getCurvedPathFromPoints_fn, _closePath, closePath_fn, _getStraightPathFromPoints, getStraightPathFromPoints_fn, LineController;
   var init_line_chart_controller = __esm({
     "src/charts/line_chart_controller.ts"() {
       init_utils();
       init_controller();
-      init_axis();
-      init_bar_and_line_utils();
+      init_x_y_hor_vert_axis();
       LineController = class extends Controller {
         /**
          * @param svgChart - SvgChart instance.
@@ -1207,32 +953,11 @@
            * @returns Array of path coordinates.
            */
           __privateAdd(this, _getStraightPathFromPoints);
-          __privateAdd(this, _valueHeight2, void 0);
-          __privateAdd(this, _columnWidth2, void 0);
-          __privateAdd(this, _selectedColumnIndex2, void 0);
           if (axisController) {
             this.axisController = axisController;
           } else {
-            this.axisController = new AxisController(svgChart);
+            this.axisController = new XYHorVertAxisController(svgChart);
           }
-        }
-        set selectedColumnIndex(value) {
-          __privateSet(this, _selectedColumnIndex2, value);
-        }
-        get selectedColumnIndex() {
-          return __privateGet(this, _selectedColumnIndex2);
-        }
-        set valueHeight(value) {
-          __privateSet(this, _valueHeight2, value);
-        }
-        get valueHeight() {
-          return __privateGet(this, _valueHeight2);
-        }
-        get columnWidth() {
-          return __privateGet(this, _columnWidth2);
-        }
-        set columnWidth(value) {
-          __privateSet(this, _columnWidth2, value);
         }
         /**
          * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
@@ -1248,8 +973,8 @@
           var flatNonNullPoints = [];
           const absMinValue = Math.abs(this.config.minValue);
           directionForEach(this, this.svgChart.data.series[serie.id], this.config.ltr, (value, valueIndex, values) => {
-            var x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.columnWidth + (this.config.xAxisGridColumns ? this.columnWidth / 2 : 0);
-            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value + absMinValue) * this.valueHeight;
+            var x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.axisController.columnWidth + (this.config.xAxisGridColumns ? this.axisController.columnWidth / 2 : 0);
+            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value + absMinValue) * this.axisController.valueHeight;
             if (value === null) {
               if (nonNullPoints[nonNullPoints.length - 1].length > 0 && valueIndex + 1 < values.length) {
                 nonNullPoints.push([]);
@@ -1309,7 +1034,7 @@
          * @param currentSerieGroupElement - DOM group element.
          */
         onDrawStart(currentSerieGroupElement) {
-          onDrawStartBarAndLine(this.svgChart, this.axisController, currentSerieGroupElement);
+          this.axisController.onDrawStart();
         }
         /**
          * Execute config things before global config things are done.
@@ -1318,12 +1043,9 @@
          */
         onConfigBefore() {
           super.onConfigBefore();
-          onConfigBeforeBarAndLine(this.svgChart, this.axisController);
+          this.axisController.onConfigBefore();
         }
       };
-      _valueHeight2 = new WeakMap();
-      _columnWidth2 = new WeakMap();
-      _selectedColumnIndex2 = new WeakMap();
       _getCurvedPathFromPoints = new WeakSet();
       getCurvedPathFromPoints_fn = function(points) {
         let path = ["M " + points[0].x + " " + points[0].y];
@@ -1359,6 +1081,228 @@
         });
         __privateMethod(this, _closePath, closePath_fn).call(this, path, points);
         return path;
+      };
+    }
+  });
+
+  // src/charts/bar_chart_controller.ts
+  var _barCountPerColumn, BarController;
+  var init_bar_chart_controller = __esm({
+    "src/charts/bar_chart_controller.ts"() {
+      init_utils();
+      init_controller();
+      init_x_y_hor_vert_axis();
+      init_types();
+      BarController = class extends Controller {
+        // set valueHeight(value: number) {
+        //     this.#valueHeight = value;
+        // }
+        // get valueHeight() {
+        //     return this.#valueHeight;
+        // }
+        // get columnWidth() {
+        //     return this.#columnWidth;
+        // }
+        // set columnWidth(value: number) {
+        //     this.#columnWidth = value;
+        // }
+        /**
+         * @param svgChart - SvgChart instance.
+         */
+        constructor(svgChart, axisController) {
+          super(svgChart);
+          // #valueHeight: number;
+          // #columnWidth: number;
+          // #selectedColumnIndex: number;
+          __privateAdd(this, _barCountPerColumn, void 0);
+          if (axisController) {
+            this.axisController = axisController;
+          } else {
+            this.axisController = new XYHorVertAxisController(svgChart);
+          }
+        }
+        // set selectedColumnIndex(value: number) {
+        //     this.#selectedColumnIndex = value;
+        // }
+        // get selectedColumnIndex() {
+        //     return this.#selectedColumnIndex;
+        // }
+        set barCountPerColumn(value) {
+          __privateSet(this, _barCountPerColumn, value);
+        }
+        get barCountPerColumn() {
+          return __privateGet(this, _barCountPerColumn);
+        }
+        /**
+         * Draws chart element for this serie and attached it to the serieGroup.
+         * 
+         * @override
+         * 
+         * @param serie - Serie object.
+         * @param serieIndex - Serie index.
+         * @param serieGroup - DOM group element for this serie.
+         */
+        onDrawSerie(serie, serieIndex, serieGroup) {
+          directionForEach(this, this.svgChart.data.series[serie.id], this.config.ltr, (value, valueIndex) => {
+            var x = null;
+            var y = null;
+            var height = null;
+            if (this.config.barStacked) {
+              if (!this.stackedBarValues[valueIndex]) {
+                this.stackedBarValues[valueIndex] = this.config.minValue;
+              }
+              ;
+              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.axisController.columnWidth + this.config.barSpacing;
+              y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.axisController.valueHeight - this.stackedBarValues[valueIndex] * this.axisController.valueHeight;
+              height = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.axisController.valueHeight;
+              this.stackedBarValues[valueIndex] = this.stackedBarValues[valueIndex] += value;
+            } else {
+              x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.axisController.columnWidth + this.barWidth * this.currentBarIndex + this.config.barSpacing * (this.currentBarIndex + 1);
+              if (isNaN(x)) {
+                console.log(this.currentBarIndex);
+              }
+              height = y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - value * this.axisController.valueHeight;
+            }
+            serieGroup.appendChild(el("rect", {
+              x,
+              y,
+              width: this.barWidth,
+              height: this.svgChart.chartHeight + this.config.padding.top + this.config.yAxisGridPadding - height,
+              fill: this.svgChart.getSerieFill(serie, serieIndex),
+              className: prefixed("bar"),
+              fillOpacity: this.config.barFillOpacity || "",
+              strokeWidth: this.config.barStrokeWidth || 0,
+              stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
+              dataValue: value,
+              tabindex: this.config.focusedValueShow ? 0 : null
+            }));
+          });
+          this.currentBarIndex += 1;
+        }
+        /**
+         * Do things at the start of the draw for this chart.
+         * 
+         * @override
+         * 
+         * @param currentSerieGroupElement - DOM group element.
+         */
+        onDrawStart(currentSerieGroupElement) {
+          this.axisController.onDrawStart();
+          const barWidth = (this.axisController.columnWidth - this.config.barSpacing * (this.barCountPerColumn + 1)) / (this.barCountPerColumn || 1);
+          this.barWidth = barWidth;
+          this.currentBarIndex = 0;
+          this.stackedBarValues = {};
+        }
+        /**
+         * Execute config things before global config things are done.
+         * 
+         * @override
+         */
+        onConfigBefore() {
+          super.onConfigBefore();
+          this.barCountPerColumn = this.config.barStacked ? 1 : 0;
+          this.axisController.onConfigBefore();
+        }
+        /**
+         * Execute serie config things before global config serie things are done.
+         * 
+         * @override
+         * 
+         * @param serie - Serie object
+         */
+        onConfigSerieBefore(serie) {
+          super.onConfigSerieBefore(serie);
+          if (!this.config.barStacked && (serie.type === 1 /* Bar */ || this.config.chartType === 1 /* Bar */)) {
+            this.barCountPerColumn += 1;
+          }
+        }
+      };
+      _barCountPerColumn = new WeakMap();
+      /** @override */
+      BarController.requiredConfigWithValue = {
+        xAxisGridColumns: true
+      };
+    }
+  });
+
+  // src/charts/bar_and_line_chart_controller.ts
+  var _lineChartController, _barChartController, BarAndLineController;
+  var init_bar_and_line_chart_controller = __esm({
+    "src/charts/bar_and_line_chart_controller.ts"() {
+      init_controller();
+      init_line_chart_controller();
+      init_bar_chart_controller();
+      init_types();
+      init_x_y_hor_vert_axis();
+      BarAndLineController = class extends Controller {
+        /**
+         * @param svgChart - SvgChart instance.
+         */
+        constructor(svgChart) {
+          super(svgChart);
+          __privateAdd(this, _lineChartController, void 0);
+          __privateAdd(this, _barChartController, void 0);
+          this.axisController = new XYHorVertAxisController(svgChart);
+          __privateSet(this, _barChartController, new BarController(svgChart, this.axisController));
+          __privateSet(this, _lineChartController, new LineController(svgChart, this.axisController));
+        }
+        // set selectedColumnIndex(value: number) {
+        //     this.#barChartController.selectedColumnIndex = value;
+        //     this.#lineChartController.selectedColumnIndex = value;
+        // }
+        // get selectedColumnIndex() {
+        //     return this.#barChartController.selectedColumnIndex;
+        // }
+        set barCountPerColumn(value) {
+          __privateGet(this, _barChartController).barCountPerColumn = value;
+        }
+        get barCountPerColumn() {
+          return __privateGet(this, _barChartController).barCountPerColumn;
+        }
+        /** @override */
+        onDrawSerie(serie, serieIndex, serieGroup) {
+          const serieType = serie.type || (this.config.chartType === 2 /* LineAndBar */ ? 0 /* Line */ : this.config.chartType);
+          switch (serieType) {
+            case 0 /* Line */:
+              __privateGet(this, _lineChartController).onDrawSerie(serie, serieIndex, serieGroup);
+              break;
+            case 1 /* Bar */:
+              __privateGet(this, _barChartController).onDrawSerie(serie, serieIndex, serieGroup);
+              break;
+          }
+        }
+        /** @override */
+        onDrawStart(currentSerieGroupElement) {
+          __privateGet(this, _barChartController).onDrawStart(currentSerieGroupElement);
+        }
+        /** @override */
+        onConfigBefore() {
+          __privateGet(this, _barChartController).onConfigBefore();
+        }
+        /** @override */
+        onConfigSerieBefore(serie) {
+          __privateGet(this, _barChartController).onConfigSerieBefore(serie);
+        }
+      };
+      _lineChartController = new WeakMap();
+      _barChartController = new WeakMap();
+      // set valueHeight(value: number) {
+      //     this.#barChartController.valueHeight = value;
+      //     this.#lineChartController.valueHeight = value;
+      // }
+      // get valueHeight() {
+      //     return this.#barChartController.valueHeight;
+      // }
+      // get columnWidth() {
+      //     return this.#barChartController.columnWidth;
+      // }
+      // set columnWidth(value: number) {
+      //     this.#barChartController.columnWidth = value;
+      //     this.#lineChartController.columnWidth = value;
+      // }
+      /** @override */
+      BarAndLineController.requiredConfigWithValue = {
+        xAxisGridColumns: true
       };
     }
   });
@@ -1569,6 +1513,9 @@
             strokeWidth: this.config.radarStrokeWidth
           }));
         }
+        /**
+         * @override
+         */
         onConfigBefore() {
           super.onConfigBefore();
           __privateSet(this, _axisGroupElement, this.svgChart.svg.appendChild(el("g", {
@@ -1677,6 +1624,24 @@
     }
   });
 
+  // src/charts/bubble_chart_controller.ts
+  var BubbleController;
+  var init_bubble_chart_controller = __esm({
+    "src/charts/bubble_chart_controller.ts"() {
+      init_x_y_hor_vert_axis();
+      init_controller();
+      BubbleController = class extends Controller {
+        /**
+         * @param svgChart - SvgChart instance.
+         */
+        constructor(svgChart) {
+          super(svgChart);
+          this.axisController = new XYHorVertAxisController(svgChart);
+        }
+      };
+    }
+  });
+
   // src/svg.ts
   var _chartTypeControllers, _cssAdded, _activeColorPalette, _defsElement, _drawOnDataGroup, _onLegendClickScoped, _onLegendKeypressScoped, _onSerieGroupTransitionendScoped, _onSerieGroupFocusScoped, _onSerieGroupBlurScoped, _listenersToRemoveAfterConfigChange, _addSerieGroup, addSerieGroup_fn, _addLegend, addLegend_fn, _addTitle, addTitle_fn, _onLegendToggle, onLegendToggle_fn, _onLegendKeypress, onLegendKeypress_fn, _onLegendClick, onLegendClick_fn, _onSerieGroupTransitionend, onSerieGroupTransitionend_fn, _onSerieGroupBlur, onSerieGroupBlur_fn, _onSerieGroupFocus, onSerieGroupFocus_fn, _SvgChart, SvgChart;
   var init_svg = __esm({
@@ -1692,6 +1657,7 @@
       init_controller();
       init_types();
       init_radar_chart_controller();
+      init_bubble_chart_controller();
       _SvgChart = class {
         /**
          * Constructor - create a new chart instance.
@@ -2300,6 +2266,7 @@
         __privateGet(_SvgChart, _chartTypeControllers)[3 /* Pie */] = PieController;
         __privateGet(_SvgChart, _chartTypeControllers)[4 /* Donut */] = DonutController;
         __privateGet(_SvgChart, _chartTypeControllers)[5 /* Radar */] = RadarController;
+        __privateGet(_SvgChart, _chartTypeControllers)[6 /* Bubble */] = BubbleController;
       })();
       /**
        * All embedded color palettes. Set another with {@link setActiveColorPalette}.
@@ -2750,7 +2717,7 @@
             },
             drawOnConfig: function(chart, groupNode) {
               const controller = chart.controller;
-              const valueHeight = controller.valueHeight;
+              const valueHeight = controller.axisController.valueHeight;
               groupNode.appendChild(el.call(chart, "rect", {
                 x: chart.config.padding.left,
                 y: chart.config.padding.top,

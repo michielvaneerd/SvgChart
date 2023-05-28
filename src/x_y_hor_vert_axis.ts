@@ -1,12 +1,9 @@
-import { BarAndLineController } from "./charts/bar_and_line_chart_controller";
-import { BarController } from "./charts/bar_chart_controller";
-import { LineController } from "./charts/line_chart_controller";
 import { SvgChartConfig } from "./config";
 import { SvgChart } from "./svg";
-import { ChartType, ScopedEventCallback } from "./types";
+import { ScopedEventCallback } from "./types";
 import { el, prefixed, directionForEach } from "./utils";
 
-class AxisController {
+export class XYHorVertAxisController {
 
     #onXAxisLabelGroupClickScoped: ScopedEventCallback;
     #onXAxisLabelGroupKeypressScoped: ScopedEventCallback;
@@ -17,9 +14,13 @@ class AxisController {
     svgChart: SvgChart;
     config: SvgChartConfig;
 
+    valueHeight: number;
+    columnWidth: number;
+    selectedColumnIndex: number;
+
     #xAxisGridColumnsSelectableGroupElement: SVGElement;
 
-    set xAxisLabelsGroupElement(value : SVGElement) {
+    set xAxisLabelsGroupElement(value: SVGElement) {
         this.#xAxisLabelsGroupElement = value;
     }
 
@@ -27,7 +28,7 @@ class AxisController {
         return this.#xAxisLabelsGroupElement;
     }
 
-    set xAxisGroupElement(value : SVGElement) {
+    set xAxisGroupElement(value: SVGElement) {
         this.#xAxisGroupElement = value;
     }
 
@@ -45,17 +46,55 @@ class AxisController {
         // constructor of the Controller...
     }
 
-    #getController(): LineController | BarController | BarAndLineController {
-        return this.svgChart.config.chartType === ChartType.Line ? this.svgChart.controller as LineController : (this.svgChart.config.chartType === ChartType.Bar ? this.svgChart.controller as BarController : this.svgChart.controller as BarAndLineController);
+    onDrawStart() {
+
+        if (this.xAxisGroupElement.firstChild) {
+            this.xAxisGroupElement.removeChild(this.xAxisGroupElement.firstChild);
+        }
+
+        if (this.xAxisLabelsGroupElement.firstChild) {
+            this.xAxisLabelsGroupElement.removeChild(this.xAxisLabelsGroupElement.firstChild);
+        }
+
+        // Note that for bar charts to display correctly, this.config.xAxisGridColumns MUST be true!
+        const columnWidth = this.config.xAxisGridColumns
+            ? (this.svgChart.chartWidth / (this.svgChart.data.xAxis.columns.length))
+            : (this.svgChart.chartWidth / (this.svgChart.data.xAxis.columns.length - 1));
+
+        this.columnWidth = columnWidth;
+
+        this.addXAxisGridAndLabels(columnWidth);
+    }
+
+    onConfigBefore() {
+        this.selectedColumnIndex = null;
+        this.valueHeight = this.svgChart.chartHeight / (Math.abs(this.config.minValue) + this.config.maxValue);
+
+        if (this.config.yAxisGrid) {
+            this.addYAxisGridAndLabels();
+        }
+
+        if (this.config.xAxisTitle) {
+            this.addXAxisTitle();
+        }
+
+        if (this.config.yAxisTitle) {
+            this.addYAxisTitle();
+        }
+
+        if (this.config.xAxisLabels) {
+            this.addXAxisLabelsGroup();
+        }
+
+        this.xAxisGroupElement = this.svgChart.svg.appendChild(el('g', {
+            className: prefixed('x-axis-group')
+        }));
     }
 
     /**
      * Add Y axis grid lines and labels.
      */
     addYAxisGridAndLabels() {
-
-        const controller = this.#getController();
-        const valueHeight = controller.valueHeight;
 
         var gYAxis = el('g', {
             className: prefixed('y-axis-group')
@@ -65,7 +104,7 @@ class AxisController {
         var currentYAxisLabelValue = this.config.minValue;
         while (currentYAxisValue <= this.config.maxValue || currentYAxisLabelValue <= this.config.maxValue) {
             if (this.config.yAxisGrid && currentYAxisValue <= this.config.maxValue) {
-                let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((currentYAxisValue + absMinValue) * valueHeight);
+                let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((currentYAxisValue + absMinValue) * this.valueHeight);
                 gYAxis.appendChild(el('line', {
                     x1: this.config.padding.left,
                     y1: y,
@@ -79,7 +118,7 @@ class AxisController {
             }
             currentYAxisValue += this.config.yAxisStep;
             if (this.config.yAxisLabels && currentYAxisLabelValue <= this.config.maxValue) {
-                let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((currentYAxisLabelValue + absMinValue) * valueHeight);
+                let y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((currentYAxisLabelValue + absMinValue) * this.valueHeight);
                 gYAxis.appendChild(el('text', {
                     direction: SvgChartConfig.getDirection(this.config),
                     x: this.config.ltr ? (this.config.padding.left - 10) : (this.config.padding.left + this.svgChart.chartWidth + 10),
@@ -103,8 +142,6 @@ class AxisController {
      * @param columnWidth - Width of each column.
      */
     addXAxisGridAndLabels(columnWidth: number) {
-
-        const controller = this.#getController();
 
         if (this.svgChart.config.xAxisGridColumnsSelectable) {
             if (this.#xAxisGridColumnsSelectableGroupElement.firstChild) {
@@ -232,7 +269,6 @@ class AxisController {
      * Adds group for x axis labels.
      */
     addXAxisLabelsGroup() {
-        const controller = this.#getController();
         this.xAxisLabelsGroupElement = el('g', {
             className: prefixed('x-axis-label-group')
         });
@@ -266,17 +302,17 @@ class AxisController {
      * @param label - Node (x axis label) that is selected.
      */
     #onXAxisLabelGroupSelect(label: SVGElement) {
-        const controller = this.#getController();
+
         var textNodes = this.xAxisLabelsGroupElement.querySelectorAll('text.' + prefixed('x-axis-grid-column-selectable-label'));
         var rects = this.#xAxisGridColumnsSelectableGroupElement.querySelectorAll('rect.' + prefixed('x-axis-grid-column-selectable'));
         for (var i = 0; i < textNodes.length; i++) {
             if (textNodes[i] === label) {
-                controller.selectedColumnIndex = i;
+                this.selectedColumnIndex = i;
                 textNodes[i].classList.add(prefixed('selected'));
                 rects[i].classList.add(prefixed('selected'));
                 rects[i].setAttribute('fill-opacity', this.config.xAxisGridSelectedColumnOpacity.toString());
                 if (this.config.onXAxisLabelGroupSelect) {
-                    this.config.onXAxisLabelGroupSelect(this.svgChart, controller.selectedColumnIndex);
+                    this.config.onXAxisLabelGroupSelect(this.svgChart, this.selectedColumnIndex);
                 }
             } else {
                 textNodes[i].classList.remove(prefixed('selected'));
@@ -298,5 +334,3 @@ class AxisController {
     }
 
 }
-
-export { AxisController };

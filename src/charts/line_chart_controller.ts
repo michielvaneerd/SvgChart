@@ -1,54 +1,25 @@
 import { prefixed, directionForEach, el } from "../utils";
 import { Controller } from "./controller";
 import { SvgChart } from "../svg";
-import { AxisController } from "../axis";
-import { onConfigBeforeBarAndLine, onDrawStartBarAndLine } from "./bar_and_line_utils";
+import { XYHorVertAxisController } from "../x_y_hor_vert_axis";
 import { ChartConfigSerie, ChartPoint } from "../types";
 
 /**
  * Controller class for bar and line charts.
  */
-class LineController extends Controller {
+export class LineController extends Controller {
 
-    axisController: AxisController;
-    // TODO: kan denk ik deel uitmaken van axisController, want dit heeft te makenm met x-y-asses die horizontaal en verticaal lopen (itt bijv. radar chart as)
-    #valueHeight: number; 
-    #columnWidth: number;
-    #selectedColumnIndex: number;
-
-    set selectedColumnIndex(value: number) {
-        this.#selectedColumnIndex = value;
-    }
-
-    get selectedColumnIndex() {
-        return this.#selectedColumnIndex;
-    }
-
-    set valueHeight(value: number) {
-        this.#valueHeight = value;
-    }
-
-    get valueHeight() {
-        return this.#valueHeight;
-    }
-
-    get columnWidth() {
-        return this.#columnWidth;
-    }
-
-    set columnWidth(value: number) {
-        this.#columnWidth = value;
-    }
-
+    axisController: XYHorVertAxisController;
+    
     /**
      * @param svgChart - SvgChart instance.
      */
-    constructor(svgChart: SvgChart, axisController?: AxisController) {
+    constructor(svgChart: SvgChart, axisController?: XYHorVertAxisController) {
         super(svgChart);
         if (axisController) {
             this.axisController = axisController;
         } else {
-            this.axisController = new AxisController(svgChart);
+            this.axisController = new XYHorVertAxisController(svgChart);
         }
     }
 
@@ -67,8 +38,8 @@ class LineController extends Controller {
         const absMinValue = Math.abs(this.config.minValue);
 
         directionForEach(this, this.svgChart.data.series[serie.id], this.config.ltr, (value: number, valueIndex: number, values: Array<number>) => {
-            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.columnWidth) + (this.config.xAxisGridColumns ? (this.columnWidth / 2) : 0);
-            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((value + absMinValue) * this.valueHeight);
+            var x = this.config.padding.left + this.config.xAxisGridPadding + (valueIndex * this.axisController.columnWidth) + (this.config.xAxisGridColumns ? (this.axisController.columnWidth / 2) : 0);
+            var y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - ((value + absMinValue) * this.axisController.valueHeight);
 
             if (value === null) {
                 if (nonNullPoints[nonNullPoints.length - 1].length > 0 && valueIndex + 1 < values.length) {
@@ -142,7 +113,7 @@ class LineController extends Controller {
      * @param currentSerieGroupElement - DOM group element.
      */
     onDrawStart(currentSerieGroupElement: SVGElement) {
-        onDrawStartBarAndLine(this.svgChart, this.axisController, currentSerieGroupElement);
+        this.axisController.onDrawStart();
     }
 
     /**
@@ -208,15 +179,7 @@ class LineController extends Controller {
      */
     onConfigBefore() {
         super.onConfigBefore();
-        onConfigBeforeBarAndLine(this.svgChart, this.axisController);
+        this.axisController.onConfigBefore();
     }
 
 }
-
-export { LineController };
-
-
-
-
-
-
