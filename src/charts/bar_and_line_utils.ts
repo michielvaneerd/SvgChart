@@ -11,6 +11,7 @@ import { LineController } from "./line_chart_controller";
      * @param {SvgChart} svgChart SvgChart instance.
      * @param {AxisController} axisController AxisController instance.
      * @param {SVGElement} currentSerieGroupElement DOM group element.
+     * @todo: Deel uit laten maken van axis controller!
      */
 function onDrawStartBarAndLine(svgChart: SvgChart, axisController: AxisController, currentSerieGroupElement: SVGElement) {
 
@@ -42,6 +43,7 @@ function getController(svgChart: SvgChart): LineController | BarController | Bar
  * Execute config things before global config things are done, like adding the axis lines and labels.
  * @param {SvgChart} svgChart SvgChart instance.
  * @param {AxisController} axisController AxisController instance.
+ * TODO: kan denk ik deel uitmaken van axis controller!
  */
 function onConfigBeforeBarAndLine(svgChart: SvgChart, axisController: AxisController) {
 

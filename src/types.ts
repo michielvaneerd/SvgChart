@@ -25,7 +25,8 @@ enum ChartType {
     LineAndBar,
     Pie,
     Donut,
-    Radar
+    Radar,
+    Bubble
 }
 
 /**

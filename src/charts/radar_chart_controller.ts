@@ -55,6 +55,9 @@ class RadarController extends Controller {
         }));
     }
 
+    /**
+     * @override
+     */
     onConfigBefore(): void {
 
         super.onConfigBefore();

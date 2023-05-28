@@ -11,7 +11,8 @@ import { ChartConfigSerie, ChartPoint } from "../types";
 class LineController extends Controller {
 
     axisController: AxisController;
-    #valueHeight: number;
+    // TODO: kan denk ik deel uitmaken van axisController, want dit heeft te makenm met x-y-asses die horizontaal en verticaal lopen (itt bijv. radar chart as)
+    #valueHeight: number; 
     #columnWidth: number;
     #selectedColumnIndex: number;
 

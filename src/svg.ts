@@ -9,6 +9,7 @@ import { SvgChartConfig } from "./config";
 import { Controller } from "./charts/controller";
 import { ChartConfigSerie, ChartData, ChartEventInfo, ChartPosition, ChartType, ScopedEventCallback, StringBooleanHash } from "./types";
 import { RadarController } from "./charts/radar_chart_controller";
+import { BubbleController } from "./charts/bubble_chart_controller";
 
 // Radar chart:
 // https://medium.com/@brianfoody/jogging-your-geometry-memory-by-building-an-svg-radar-chart-in-react-native-4aeee555809f
@@ -34,6 +35,7 @@ class SvgChart {
         SvgChart.#chartTypeControllers[ChartType.Pie] = PieController;
         SvgChart.#chartTypeControllers[ChartType.Donut] = DonutController;
         SvgChart.#chartTypeControllers[ChartType.Radar] = RadarController;
+        SvgChart.#chartTypeControllers[ChartType.Bubble] = BubbleController;
     }
 
     /**
