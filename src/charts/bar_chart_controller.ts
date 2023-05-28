@@ -13,22 +13,11 @@ export class BarController extends Controller {
 
     // Shared with line and bar
     axisController: XYHorVertAxisController;
-    // #valueHeight: number;
-    // #columnWidth: number;
-    // #selectedColumnIndex: number;
 
     #barCountPerColumn: number;
     currentBarIndex: number;
     stackedBarValues: object;
     barWidth: number;
-
-    // set selectedColumnIndex(value: number) {
-    //     this.#selectedColumnIndex = value;
-    // }
-
-    // get selectedColumnIndex() {
-    //     return this.#selectedColumnIndex;
-    // }
 
     set barCountPerColumn(value: number) {
         this.#barCountPerColumn = value;
@@ -37,22 +26,6 @@ export class BarController extends Controller {
     get barCountPerColumn() {
         return this.#barCountPerColumn;
     }
-
-    // set valueHeight(value: number) {
-    //     this.#valueHeight = value;
-    // }
-
-    // get valueHeight() {
-    //     return this.#valueHeight;
-    // }
-
-    // get columnWidth() {
-    //     return this.#columnWidth;
-    // }
-
-    // set columnWidth(value: number) {
-    //     this.#columnWidth = value;
-    // }
 
     /**
      * @param svgChart - SvgChart instance.

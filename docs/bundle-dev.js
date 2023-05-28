@@ -1111,26 +1111,11 @@
       init_x_y_hor_vert_axis();
       init_types();
       BarController = class extends Controller {
-        // set valueHeight(value: number) {
-        //     this.#valueHeight = value;
-        // }
-        // get valueHeight() {
-        //     return this.#valueHeight;
-        // }
-        // get columnWidth() {
-        //     return this.#columnWidth;
-        // }
-        // set columnWidth(value: number) {
-        //     this.#columnWidth = value;
-        // }
         /**
          * @param svgChart - SvgChart instance.
          */
         constructor(svgChart, axisController) {
           super(svgChart);
-          // #valueHeight: number;
-          // #columnWidth: number;
-          // #selectedColumnIndex: number;
           __privateAdd(this, _barCountPerColumn, void 0);
           if (axisController) {
             this.axisController = axisController;
@@ -1138,12 +1123,6 @@
             this.axisController = new XYHorVertAxisController(svgChart);
           }
         }
-        // set selectedColumnIndex(value: number) {
-        //     this.#selectedColumnIndex = value;
-        // }
-        // get selectedColumnIndex() {
-        //     return this.#selectedColumnIndex;
-        // }
         set barCountPerColumn(value) {
           __privateSet(this, _barCountPerColumn, value);
         }
@@ -1263,13 +1242,6 @@
           __privateSet(this, _barChartController, new BarController(svgChart, this.axisController));
           __privateSet(this, _lineChartController, new LineController(svgChart, this.axisController));
         }
-        // set selectedColumnIndex(value: number) {
-        //     this.#barChartController.selectedColumnIndex = value;
-        //     this.#lineChartController.selectedColumnIndex = value;
-        // }
-        // get selectedColumnIndex() {
-        //     return this.#barChartController.selectedColumnIndex;
-        // }
         set barCountPerColumn(value) {
           __privateGet(this, _barChartController).barCountPerColumn = value;
         }
@@ -1303,20 +1275,6 @@
       };
       _lineChartController = new WeakMap();
       _barChartController = new WeakMap();
-      // set valueHeight(value: number) {
-      //     this.#barChartController.valueHeight = value;
-      //     this.#lineChartController.valueHeight = value;
-      // }
-      // get valueHeight() {
-      //     return this.#barChartController.valueHeight;
-      // }
-      // get columnWidth() {
-      //     return this.#barChartController.columnWidth;
-      // }
-      // set columnWidth(value: number) {
-      //     this.#barChartController.columnWidth = value;
-      //     this.#lineChartController.columnWidth = value;
-      // }
       /** @override */
       BarAndLineController.requiredConfigWithValue = {
         xAxisGridColumns: true
