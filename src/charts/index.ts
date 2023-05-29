@@ -5,4 +5,3 @@ export * from "./bar_and_line_chart_controller";
 export * from "./pie_chart_controller";
 export * from "./donut_chart_controller";
 export * from "./donut_or_pie_utils";
-export * from "./bar_and_line_utils";

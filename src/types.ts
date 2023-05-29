@@ -33,8 +33,13 @@ enum ChartType {
  * Data object with series data and columns.
  */
 interface ChartData {
-    //series: { [key: string]: number[] },
+    /**
+     * Series are objects with key = serie ID and value = an array of numbers or an an array of array of numbers (for example for bubble charts for the 2d and 3th dimension because for this chart we have 3 dimensions)
+     */
     series: { [key: string]: [number] |  [[number]]},
+    /**
+     * For most charts we need colums to display on the X axis, but for example for pie and donut charts we don't need them.
+     */
     xAxis?: { columns: string[] };
 };
 
