@@ -72,6 +72,8 @@ type XAxisColumnSelectedCallback = (svgChart: SvgChart, selectedIndex: number) =
  */
 type DrawCallback = (svgChart: SvgChart, groupNode: SVGElement) => void;
 
+type FocusedValueCallback = (serie: ChartConfigSerie, value: any) => string;
+
 /**
  * Position enum.
  */
@@ -96,5 +98,6 @@ export {
     StringBooleanHash,
     XAxisColumnSelectedCallback,
     DrawCallback,
-    ChartPosition
+    ChartPosition,
+    FocusedValueCallback
 };

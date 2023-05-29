@@ -92,18 +92,19 @@
        * Whether the value box should be displayed when an element has focus.
        */
       this.focusedValueShow = true;
+      this.focusedValueCallback = null;
       /**
        * Fill color of focused value box.
        */
-      this.focusedValueFill = "black";
+      this.focusedCSSValueFill = "black";
       /**
        * Font color of focused value box.
        */
-      this.focusedValueColor = "white";
+      this.focusedCSSValueColor = "white";
       /**
        * Padding of focused value box.
        */
-      this.focusedValuePadding = 6;
+      this.focusedCSSValuePadding = "6px";
       /**
        * Draw function to execute in the config phase. It receives a SvgChart and HTMLElement parameter.
        * 
@@ -1575,7 +1576,7 @@
           stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
           // fill: this.svgChart.getSeriePointColor(serie, serieIndex),
           // stroke: this.svgChart.getSeriePointColor(serie, serieIndex),
-          dataValue: this.svgChart.data.xAxis.columns[valueIndex] + "<br>" + value.join(", "),
+          dataValue: this.svgChart.data.xAxis.columns[valueIndex] + "<br>" + value[0] + "<br>" + value[1],
           className: prefixed("value-point"),
           tabindex: this.config.focusedValueShow ? 0 : null
         }));
@@ -1966,22 +1967,16 @@
       }
       this.addEventListener(this.serieGroupElement, "focus", __privateGet(this, _onSerieGroupFocusScoped), true);
       this.addEventListener(this.serieGroupElement, "blur", __privateGet(this, _onSerieGroupBlurScoped), true);
-      this.valueElGroup = el("g", {
-        className: prefixed("value-element-group")
-      });
-      this.valueElRect = el("rect", {
-        fill: this.config.focusedValueFill || "black"
-      });
-      this.valueElText = el("text", {
-        direction: SvgChartConfig.getDirection(this.config),
-        textAnchor: "middle",
-        dominantBaseline: "middle",
-        fontFamily: this.config.fontFamily,
-        fontSize: "smaller",
-        fill: this.config.focusedValueColor || "white"
-      }, document.createTextNode(""));
-      this.valueElGroup.appendChild(this.valueElRect);
-      this.valueElGroup.appendChild(this.valueElText);
+      this.focusedValueForeignObject = el("foreignObject");
+      this.focusedValueDiv = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
+      this.focusedValueDiv.style.position = "absolute";
+      this.focusedValueDiv.style.backgroundColor = this.config.focusedCSSValueFill;
+      this.focusedValueDiv.style.fontFamily = this.config.fontFamily;
+      this.focusedValueDiv.style.fontSize = "smaller";
+      this.focusedValueDiv.style.color = this.config.focusedCSSValueColor;
+      this.focusedValueDiv.style.padding = this.config.focusedCSSValuePadding.toString();
+      this.focusedValueForeignObject.style.overflow = "visible";
+      this.focusedValueForeignObject.appendChild(this.focusedValueDiv);
     }
   };
   _addLegend = new WeakSet();
@@ -2160,7 +2155,6 @@
     var g = parent(circle, "g");
     var serie = g.dataset.serie;
     if (serie) {
-      this.serieGroupElement.removeChild(this.valueElGroup);
     }
   };
   _onSerieGroupFocus = new WeakSet();
@@ -2169,16 +2163,14 @@
     var g = parent(circle, "g");
     var serie = g.dataset.serie;
     if (serie) {
-      var serieItem = this.config.series.find((item) => item.id === serie);
-      this.valueElText.replaceChild(document.createTextNode(serieItem.title + ": " + circle.dataset.value), this.valueElText.firstChild);
-      this.serieGroupElement.appendChild(this.valueElGroup);
-      var box = this.valueElText.getBBox();
-      var width = box.width + this.config.focusedValuePadding * 2;
-      var height = box.height + this.config.focusedValuePadding * 2;
-      this.valueElRect.setAttribute("width", width.toString());
-      this.valueElRect.setAttribute("height", height.toString());
-      this.valueElText.setAttribute("x", (width / 2).toString());
-      this.valueElText.setAttribute("y", (height / 2).toString());
+      var serieItemIndex = this.config.series.findIndex((item) => item.id === serie);
+      var serieItem = this.config.series[serieItemIndex];
+      this.focusedValueDiv.innerHTML = this.config.focusedValueCallback ? this.config.focusedValueCallback(serieItem, circle.dataset.value) : serieItem.title + '<hr style="border-color:' + this.getSerieFill(serieItem, serieItemIndex) + '">' + circle.dataset.value;
+      this.serieGroupElement.appendChild(this.focusedValueForeignObject);
+      const width = this.focusedValueDiv.clientWidth;
+      const height = this.focusedValueDiv.clientHeight;
+      this.focusedValueForeignObject.setAttribute("width", width.toString());
+      this.focusedValueForeignObject.setAttribute("height", height.toString());
       const type = serieItem.type || this.config.chartType;
       let x, y = null;
       switch (type) {
@@ -2197,7 +2189,7 @@
           y = parseFloat(d[2].trim());
           break;
       }
-      this.valueElGroup.setAttribute("transform", "translate(" + x + ", " + y + ")");
+      this.focusedValueForeignObject.setAttribute("transform", "translate(" + x + ", " + y + ")");
     }
   };
   /**
@@ -2234,6 +2226,7 @@
   config.chartType = 6 /* Bubble */;
   config.xAxisGridPadding = 20;
   config.yAxisGridPadding = 20;
+  config.focusedValueCallback = (serie, value) => "<strong>Serie</strong>: " + serie.title + "<br> en value " + value;
   config.series = [
     {
       id: "humans",

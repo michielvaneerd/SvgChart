@@ -116,17 +116,8 @@ class SvgChart {
     /**
      * SVG group element that wraps the focused value element.
      */
-    valueElGroup: SVGElement;
-
-    /**
-     * SVG rect element for the focused value element.
-     */
-    valueElRect: SVGElement;
-
-    /**
-     * SVG text element for the focused value element.
-     */
-    valueElText: SVGGraphicsElement;
+    focusedValueForeignObject: SVGElement;
+    focusedValueDiv: HTMLElement;
 
     /**
      * Scoped callback to call when a legend item gets clicked.
@@ -417,6 +408,7 @@ class SvgChart {
         this.addEventListener(this.serieGroupElement, 'transitionend', this.#onSerieGroupTransitionendScoped, false);
 
         if (this.config.focusedValueShow) {
+
             if (!this.#onSerieGroupFocusScoped) {
                 this.#onSerieGroupFocusScoped = this.#onSerieGroupFocus.bind(this);
                 this.#onSerieGroupBlurScoped = this.#onSerieGroupBlur.bind(this);
@@ -425,22 +417,17 @@ class SvgChart {
             this.addEventListener(this.serieGroupElement, 'focus', this.#onSerieGroupFocusScoped, true);
             this.addEventListener(this.serieGroupElement, 'blur', this.#onSerieGroupBlurScoped, true);
 
-            this.valueElGroup = el('g', {
-                className: prefixed('value-element-group')
-            });
-            this.valueElRect = el('rect', {
-                fill: this.config.focusedValueFill || 'black'
-            });
-            this.valueElText = el('text', {
-                direction: SvgChartConfig.getDirection(this.config),
-                textAnchor: 'middle',
-                dominantBaseline: 'middle',
-                fontFamily: this.config.fontFamily,
-                fontSize: 'smaller',
-                fill: this.config.focusedValueColor || 'white'
-            }, document.createTextNode('')) as SVGGraphicsElement;
-            this.valueElGroup.appendChild(this.valueElRect);
-            this.valueElGroup.appendChild(this.valueElText);
+            this.focusedValueForeignObject = el('foreignObject');
+            this.focusedValueDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+            this.focusedValueDiv.style.position = 'absolute';
+            this.focusedValueDiv.style.backgroundColor = this.config.focusedCSSValueFill;
+            this.focusedValueDiv.style.fontFamily = this.config.fontFamily;
+            this.focusedValueDiv.style.fontSize = 'smaller';
+            this.focusedValueDiv.style.color = this.config.focusedCSSValueColor;
+            this.focusedValueDiv.style.padding = this.config.focusedCSSValuePadding.toString();
+            this.focusedValueForeignObject.style.overflow = 'visible';
+            this.focusedValueForeignObject.appendChild(this.focusedValueDiv);
+
         }
     }
 
@@ -740,7 +727,7 @@ class SvgChart {
         var serie = g.dataset.serie;
         if (serie) {
             // Remove the current value element.
-            this.serieGroupElement.removeChild(this.valueElGroup);
+            //this.serieGroupElement.removeChild(this.focusedValueEl);
         }
     }
 
@@ -754,16 +741,16 @@ class SvgChart {
         var g = parent(circle, 'g');
         var serie = g.dataset.serie;
         if (serie) {
-            var serieItem = this.config.series.find((item) => item.id === serie);
-            this.valueElText.replaceChild(document.createTextNode(serieItem.title + ': ' + circle.dataset.value), this.valueElText.firstChild);
-            this.serieGroupElement.appendChild(this.valueElGroup);
-            var box = this.valueElText.getBBox();
-            var width = box.width + (this.config.focusedValuePadding * 2);
-            var height = box.height + (this.config.focusedValuePadding * 2);
-            this.valueElRect.setAttribute('width', width.toString());
-            this.valueElRect.setAttribute('height', height.toString());
-            this.valueElText.setAttribute('x', (width / 2).toString());
-            this.valueElText.setAttribute('y', (height / 2).toString());
+            var serieItemIndex = this.config.series.findIndex((item) => item.id === serie);
+            var serieItem = this.config.series[serieItemIndex];
+            this.focusedValueDiv.innerHTML = this.config.focusedValueCallback
+                ? this.config.focusedValueCallback(serieItem, circle.dataset.value)
+                : serieItem.title + '<hr style="border-color:' + this.getSerieFill(serieItem, serieItemIndex) + '">' + circle.dataset.value;
+            this.serieGroupElement.appendChild(this.focusedValueForeignObject);
+            const width = this.focusedValueDiv.clientWidth;
+            const height = this.focusedValueDiv.clientHeight;
+            this.focusedValueForeignObject.setAttribute('width', width.toString());
+            this.focusedValueForeignObject.setAttribute('height', height.toString());
 
             const type = serieItem.type || this.config.chartType;
             let x: number, y: number = null;
@@ -783,7 +770,7 @@ class SvgChart {
                     y = parseFloat(d[2].trim());
                     break;
             }
-            this.valueElGroup.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
+            this.focusedValueForeignObject.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
         }
     }
 

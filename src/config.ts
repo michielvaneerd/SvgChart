@@ -1,4 +1,4 @@
-import { ChartConfigSerie, ChartType, XAxisColumnSelectedCallback, DrawCallback, ChartPosition } from "./types";
+import { ChartConfigSerie, ChartType, XAxisColumnSelectedCallback, DrawCallback, ChartPosition, FocusedValueCallback } from "./types";
 import { deepClone } from "./utils";
 
 /**
@@ -94,20 +94,22 @@ class SvgChartConfig {
      */
     focusedValueShow: boolean = true;
 
+    focusedValueCallback: FocusedValueCallback = null;
+
     /**
      * Fill color of focused value box.
      */
-    focusedValueFill: string = 'black';
+    focusedCSSValueFill: string = 'black';
 
     /**
      * Font color of focused value box.
      */
-    focusedValueColor: string = 'white';
+    focusedCSSValueColor: string = 'white';
 
     /**
      * Padding of focused value box.
      */
-    focusedValuePadding: number = 6;
+    focusedCSSValuePadding: string = '6px';
 
     /**
      * Draw function to execute in the config phase. It receives a SvgChart and HTMLElement parameter.

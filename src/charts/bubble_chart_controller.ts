@@ -70,7 +70,7 @@ export class BubbleController extends Controller {
 
                 // fill: this.svgChart.getSeriePointColor(serie, serieIndex),
                 // stroke: this.svgChart.getSeriePointColor(serie, serieIndex),
-                dataValue: this.svgChart.data.xAxis.columns[valueIndex] + "<br>" + value.join(', '),
+                dataValue: this.svgChart.data.xAxis.columns[valueIndex] + "<br>" + value[0] + '<br>' + value[1],
                 className: prefixed('value-point'),
                 tabindex: this.config.focusedValueShow ? 0 : null
             }));
