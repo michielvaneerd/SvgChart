@@ -33,7 +33,8 @@ enum ChartType {
  * Data object with series data and columns.
  */
 interface ChartData {
-    series: { [key: string]: number[] },
+    //series: { [key: string]: number[] },
+    series: { [key: string]: [number] |  [[number]]},
     xAxis?: { columns: string[] };
 };
 
@@ -72,7 +73,7 @@ type XAxisColumnSelectedCallback = (svgChart: SvgChart, selectedIndex: number) =
  */
 type DrawCallback = (svgChart: SvgChart, groupNode: SVGElement) => void;
 
-type FocusedValueCallback = (serie: ChartConfigSerie, value: any) => string;
+type FocusedValueCallback = (serie: ChartConfigSerie, serieIndex: number, dataIndex: number) => string;
 
 /**
  * Position enum.

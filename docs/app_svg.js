@@ -353,6 +353,59 @@ var chartInfo = {
         data: null,
         chart: null
     },
+    chartBasicBubble: {
+        config: {
+            chartType: ChartType.Bubble,
+            bubbleMaxRadius: 30,
+            xAxisGridPadding: 30,
+            yAxisGridPadding: 30,
+            ltr: htmlDirIsLtr,
+            legendPosition: ChartPosition.Top,
+            minValue: 0,
+            maxValue: 100,
+            bubbleMaxZValue: 100,
+            //yAxisStep: 20,
+            //yAxisLabelStep: 20,
+            ltr: htmlDirIsLtr,
+            title: 'Basic bubble chart',
+            padding: {
+                end: 100,
+                start: 100,
+                //top: 80,
+                //bottom: 20
+            },
+            series: [
+                {
+                    id: 'train',
+                    title: 'Train'
+                },
+                {
+                    id: 'car',
+                    title: 'Car'
+                },
+                {
+                    id: 'bike',
+                    title: 'Bike'
+                }
+            ]
+        },
+        dataFunc: function (id) {
+            chartInfo[id].data = {
+                series: {
+                    train: Array(7).fill(1).map(item => [getRandomIntInclusive(0, 100), getRandomIntInclusive(0, 100)]),
+                    car: Array(7).fill(1).map(item => [getRandomIntInclusive(0, 100), getRandomIntInclusive(0, 100)]),
+                    bike: Array(7).fill(1).map(item => [getRandomIntInclusive(0, 100), getRandomIntInclusive(0, 100)]),
+                    // train: [[12, 34], [3, 56], [3, 3], [6, 45], [33, 4], [44, 4], [5, 65]],
+                    // car: [],
+                    // bike: []
+                },
+                xAxis: {
+                    columns: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+                }
+            }
+        },
+        chart: null
+    },
     chartBarAndLine: {
         config: {
             chartType: ChartType.LineAndBar,
@@ -653,6 +706,7 @@ function doChart(id) {
     } else {
         chartInfo[id].chart.setConfig(new SvgChartConfig(chartInfo[id].config));
     }
+    
     chartInfo[id].chart.chart(chartInfo[id].data);
     var codeConfig = document.getElementById(id + 'CodeConfig').querySelector('code');
     var codeData = document.getElementById(id + 'CodeData').querySelector('code');
@@ -692,6 +746,7 @@ doChart('chartStackedBar');
 doChart('chartBasicPie');
 doChart('chartBasicDonut');
 doChart('chartBasicRadar');
+doChart('chartBasicBubble');
 doChart('chartBarAndLine');
 doChart('chartCustom');
 dynamicChart();

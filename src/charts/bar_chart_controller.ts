@@ -85,7 +85,7 @@ export class BarController extends Controller {
                 fillOpacity: this.config.barFillOpacity || '',
                 strokeWidth: this.config.barStrokeWidth || 0,
                 stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
-                dataValue: value,
+                dataIndex: valueIndex,
                 tabindex: this.config.focusedValueShow ? 0 : null
             }));
 

@@ -26,6 +26,10 @@ class Controller {
         this.config = this.svgChart.config;
     }
 
+    onFocusedValueDisplay(configSerie: ChartConfigSerie, serieIndex: number, dataIndex: number): string {
+        return configSerie.title + ': ' + this.svgChart.data.series[configSerie.id][dataIndex] + '<hr style="border-color:' + this.svgChart.getSerieStrokeColor(configSerie, serieIndex) + '">';
+    }
+
     /**
      * Draws chart.
      * 

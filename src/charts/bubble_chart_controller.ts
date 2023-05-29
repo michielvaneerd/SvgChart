@@ -67,10 +67,7 @@ export class BubbleController extends Controller {
                 fillOpacity: this.config.bubbleFillOpacity || '',
                 strokeWidth: this.config.bubbleStrokeWidth || 0,
                 stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
-
-                // fill: this.svgChart.getSeriePointColor(serie, serieIndex),
-                // stroke: this.svgChart.getSeriePointColor(serie, serieIndex),
-                dataValue: this.svgChart.data.xAxis.columns[valueIndex] + "<br>" + value[0] + '<br>' + value[1],
+                dataIndex: valueIndex,
                 className: prefixed('value-point'),
                 tabindex: this.config.focusedValueShow ? 0 : null
             }));

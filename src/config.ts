@@ -94,7 +94,7 @@ class SvgChartConfig {
      */
     focusedValueShow: boolean = true;
 
-    focusedValueCallback: FocusedValueCallback = null;
+    onFocusedValueDisplay: FocusedValueCallback = null;
 
     /**
      * Fill color of focused value box.

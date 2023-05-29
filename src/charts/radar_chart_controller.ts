@@ -30,8 +30,8 @@ class RadarController extends Controller {
         super.onDrawSerie(serie, serieIndex, serieGroup);
 
         let points = [];
-        this.svgChart.data.series[serie.id].forEach((value, index) => {
-            const curRadius = this.#radiusByXStep * value;
+        this.svgChart.data.series[serie.id].forEach((value: number | [number], index: number) => {
+            const curRadius = this.#radiusByXStep * (value as number);
             const point = polarToCartesian(this.#centerX, this.#centerY, curRadius, this.#degreeSteps * index);
             points.push(`${point.x}, ${point.y}`);
             serieGroup.appendChild(el('circle', {
@@ -41,7 +41,8 @@ class RadarController extends Controller {
                 fill: this.svgChart.getSerieFill(serie, serieIndex),
                 tabindex: this.config.focusedValueShow ? 0 : null,
                 zIndex: 1,
-                dataValue: value,
+                //dataValue: value,
+                dataIndex: index,
                 className: prefixed('value-point'),
                 stroke: this.svgChart.getSeriePointColor(serie, serieIndex)
             }));
@@ -53,6 +54,19 @@ class RadarController extends Controller {
             fillOpacity: this.config.radarFillOpacity,
             strokeWidth: this.config.radarStrokeWidth,
         }));
+    }
+
+    /**
+     * 
+     * @override
+     * 
+     * @param configSerie 
+     * @param serieIndex 
+     * @param dataIndex 
+     * @returns 
+     */
+    onFocusedValueDisplay(configSerie: ChartConfigSerie, serieIndex: number, dataIndex: number): string {
+        return configSerie.title + ' / ' + this.svgChart.data.xAxis.columns[dataIndex] + ': ' + this.svgChart.data.series[configSerie.id][dataIndex] + '<hr style="border-color:' + this.svgChart.getSerieStrokeColor(configSerie, serieIndex) + '">';
     }
 
     /**

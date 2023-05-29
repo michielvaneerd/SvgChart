@@ -122,6 +122,9 @@
           this.svgChart = svgChart;
           this.config = this.svgChart.config;
         }
+        onFocusedValueDisplay(configSerie, serieIndex, dataIndex) {
+          return configSerie.title + ": " + this.svgChart.data.series[configSerie.id][dataIndex] + '<hr style="border-color:' + this.svgChart.getSerieStrokeColor(configSerie, serieIndex) + '">';
+        }
         /**
          * Draws chart.
          * 
@@ -276,18 +279,19 @@
            * Whether the value box should be displayed when an element has focus.
            */
           this.focusedValueShow = true;
+          this.onFocusedValueDisplay = null;
           /**
            * Fill color of focused value box.
            */
-          this.focusedValueFill = "black";
+          this.focusedCSSValueFill = "black";
           /**
            * Font color of focused value box.
            */
-          this.focusedValueColor = "white";
+          this.focusedCSSValueColor = "white";
           /**
            * Padding of focused value box.
            */
-          this.focusedValuePadding = 6;
+          this.focusedCSSValuePadding = "6px";
           /**
            * Draw function to execute in the config phase. It receives a SvgChart and HTMLElement parameter.
            * 
@@ -606,8 +610,18 @@
            * Width of stroke for donut charts. If this is 0, no stroke is painted.
            */
           this.donutStrokeWidth = 2;
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          // Radar charts
+          ///////////////////////////////////////////////////////////////////////////////////////////////
           this.radarStrokeWidth = 2;
           this.radarFillOpacity = 0.3;
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          // Bubble charts
+          ///////////////////////////////////////////////////////////////////////////////////////////////
+          this.bubbleMaxZValue = 100;
+          this.bubbleFillOpacity = 0.5;
+          this.bubbleStrokeWidth = 1;
+          this.bubbleMaxRadius = null;
           if (props) {
             Object.keys(props).forEach((key) => {
               switch (key) {
@@ -998,7 +1012,7 @@
               }
             } else {
               nonNullPoints[nonNullPoints.length - 1].push({ x, y, value });
-              flatNonNullPoints.push({ x, y, value });
+              flatNonNullPoints.push({ x, y, value, index: valueIndex });
             }
           });
           var paths = [];
@@ -1036,7 +1050,7 @@
                 zIndex: 1,
                 fill: this.svgChart.getSeriePointColor(serie, serieIndex),
                 stroke: this.svgChart.getSeriePointColor(serie, serieIndex),
-                dataValue: point.value,
+                dataIndex: point.index,
                 className: prefixed("value-point"),
                 tabindex: this.config.focusedValueShow ? 0 : null
               }));
@@ -1169,7 +1183,7 @@
               fillOpacity: this.config.barFillOpacity || "",
               strokeWidth: this.config.barStrokeWidth || 0,
               stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
-              dataValue: value,
+              dataIndex: valueIndex,
               tabindex: this.config.focusedValueShow ? 0 : null
             }));
           });
@@ -1311,7 +1325,7 @@
         tabindex: 0,
         stroke: svgChart.config[ChartType[svgChart.config.chartType].toLowerCase() + "Stroke"],
         strokeWidth: svgChart.config[ChartType[svgChart.config.chartType].toLowerCase() + "StrokeWidth"],
-        dataValue: value
+        dataIndex: 0
       }));
       currentSerieGroupElement.appendChild(serieGroup);
     });
@@ -1475,7 +1489,8 @@
               fill: this.svgChart.getSerieFill(serie, serieIndex),
               tabindex: this.config.focusedValueShow ? 0 : null,
               zIndex: 1,
-              dataValue: value,
+              //dataValue: value,
+              dataIndex: index,
               className: prefixed("value-point"),
               stroke: this.svgChart.getSeriePointColor(serie, serieIndex)
             }));
@@ -1487,6 +1502,18 @@
             fillOpacity: this.config.radarFillOpacity,
             strokeWidth: this.config.radarStrokeWidth
           }));
+        }
+        /**
+         * 
+         * @override
+         * 
+         * @param configSerie 
+         * @param serieIndex 
+         * @param dataIndex 
+         * @returns 
+         */
+        onFocusedValueDisplay(configSerie, serieIndex, dataIndex) {
+          return configSerie.title + " / " + this.svgChart.data.xAxis.columns[dataIndex] + ": " + this.svgChart.data.series[configSerie.id][dataIndex] + '<hr style="border-color:' + this.svgChart.getSerieStrokeColor(configSerie, serieIndex) + '">';
         }
         /**
          * @override
@@ -1600,20 +1627,75 @@
   });
 
   // src/charts/bubble_chart_controller.ts
-  var BubbleController;
+  var _radiusPerZValue, BubbleController;
   var init_bubble_chart_controller = __esm({
     "src/charts/bubble_chart_controller.ts"() {
       init_x_y_hor_vert_axis();
       init_controller();
+      init_utils();
       BubbleController = class extends Controller {
         /**
          * @param svgChart - SvgChart instance.
          */
         constructor(svgChart) {
           super(svgChart);
+          __privateAdd(this, _radiusPerZValue, void 0);
           this.axisController = new XYHorVertAxisController(svgChart);
         }
+        /**
+         * Execute config things before global config things are done.
+         * 
+         * @override
+         */
+        onConfigBefore() {
+          super.onConfigBefore();
+          this.axisController.onConfigBefore();
+        }
+        /**
+         * Do things at the start of the draw for this chart.
+         * 
+         * @override
+         * 
+         * @param currentSerieGroupElement - DOM group element.
+         */
+        onDrawStart(currentSerieGroupElement) {
+          super.onDrawStart(currentSerieGroupElement);
+          this.axisController.onDrawStart();
+          const maxRadius = this.config.bubbleMaxRadius || this.svgChart.chartWidth / this.svgChart.data.xAxis.columns.length / 2;
+          __privateSet(this, _radiusPerZValue, maxRadius / this.config.bubbleMaxZValue);
+        }
+        /**
+         * Draws chart element for this serie and attached it to the serieGroup. Overrides base class method.
+         * 
+         * @override
+         * 
+         * @param serie - Serie object.
+         * @param serieIndex - Serie index.
+         * @param serieGroup - DOM group element for this serie.
+         */
+        onDrawSerie(serie, serieIndex, serieGroup) {
+          const absMinValue = Math.abs(this.config.minValue);
+          directionForEach(this, this.svgChart.data.series[serie.id], this.config.ltr, (value, valueIndex, values) => {
+            const x = this.config.padding.left + this.config.xAxisGridPadding + valueIndex * this.axisController.columnWidth + (this.config.xAxisGridColumns ? this.axisController.columnWidth / 2 : 0);
+            const y = this.config.padding.top + this.config.yAxisGridPadding + this.svgChart.chartHeight - (value[0] + absMinValue) * this.axisController.valueHeight;
+            serieGroup.appendChild(el("circle", {
+              cx: x,
+              cy: y,
+              r: __privateGet(this, _radiusPerZValue) * value[1],
+              zIndex: 1,
+              fill: this.svgChart.getSerieFill(serie, serieIndex),
+              //className: prefixed('bar'),
+              fillOpacity: this.config.bubbleFillOpacity || "",
+              strokeWidth: this.config.bubbleStrokeWidth || 0,
+              stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
+              dataIndex: valueIndex,
+              className: prefixed("value-point"),
+              tabindex: this.config.focusedValueShow ? 0 : null
+            }));
+          });
+        }
       };
+      _radiusPerZValue = new WeakMap();
     }
   });
 
@@ -2013,22 +2095,17 @@
           }
           this.addEventListener(this.serieGroupElement, "focus", __privateGet(this, _onSerieGroupFocusScoped), true);
           this.addEventListener(this.serieGroupElement, "blur", __privateGet(this, _onSerieGroupBlurScoped), true);
-          this.valueElGroup = el("g", {
-            className: prefixed("value-element-group")
-          });
-          this.valueElRect = el("rect", {
-            fill: this.config.focusedValueFill || "black"
-          });
-          this.valueElText = el("text", {
-            direction: SvgChartConfig.getDirection(this.config),
-            textAnchor: "middle",
-            dominantBaseline: "middle",
-            fontFamily: this.config.fontFamily,
-            fontSize: "smaller",
-            fill: this.config.focusedValueColor || "white"
-          }, document.createTextNode(""));
-          this.valueElGroup.appendChild(this.valueElRect);
-          this.valueElGroup.appendChild(this.valueElText);
+          this.focusedValueForeignObject = el("foreignObject");
+          this.focusedValueDiv = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
+          this.focusedValueDiv.style.position = "absolute";
+          this.focusedValueDiv.style.backgroundColor = this.config.focusedCSSValueFill;
+          this.focusedValueDiv.style.fontFamily = this.config.fontFamily;
+          this.focusedValueDiv.style.whiteSpace = "nowrap";
+          this.focusedValueDiv.style.fontSize = "smaller";
+          this.focusedValueDiv.style.color = this.config.focusedCSSValueColor;
+          this.focusedValueDiv.style.padding = this.config.focusedCSSValuePadding.toString();
+          this.focusedValueForeignObject.style.overflow = "visible";
+          this.focusedValueForeignObject.appendChild(this.focusedValueDiv);
         }
       };
       _addLegend = new WeakSet();
@@ -2207,7 +2284,6 @@
         var g = parent(circle, "g");
         var serie = g.dataset.serie;
         if (serie) {
-          this.serieGroupElement.removeChild(this.valueElGroup);
         }
       };
       _onSerieGroupFocus = new WeakSet();
@@ -2216,16 +2292,14 @@
         var g = parent(circle, "g");
         var serie = g.dataset.serie;
         if (serie) {
-          var serieItem = this.config.series.find((item) => item.id === serie);
-          this.valueElText.replaceChild(document.createTextNode(serieItem.title + ": " + circle.dataset.value), this.valueElText.firstChild);
-          this.serieGroupElement.appendChild(this.valueElGroup);
-          var box = this.valueElText.getBBox();
-          var width = box.width + this.config.focusedValuePadding * 2;
-          var height = box.height + this.config.focusedValuePadding * 2;
-          this.valueElRect.setAttribute("width", width.toString());
-          this.valueElRect.setAttribute("height", height.toString());
-          this.valueElText.setAttribute("x", (width / 2).toString());
-          this.valueElText.setAttribute("y", (height / 2).toString());
+          var serieItemIndex = this.config.series.findIndex((item) => item.id === serie);
+          var serieItem = this.config.series[serieItemIndex];
+          this.focusedValueDiv.innerHTML = this.config.onFocusedValueDisplay ? this.config.onFocusedValueDisplay(serieItem, serieItemIndex, parseInt(circle.dataset.index, 10)) : this.controller.onFocusedValueDisplay(serieItem, serieItemIndex, parseInt(circle.dataset.index, 10));
+          this.serieGroupElement.appendChild(this.focusedValueForeignObject);
+          const width = this.focusedValueDiv.clientWidth;
+          const height = this.focusedValueDiv.clientHeight;
+          this.focusedValueForeignObject.setAttribute("width", width.toString());
+          this.focusedValueForeignObject.setAttribute("height", height.toString());
           const type = serieItem.type || this.config.chartType;
           let x, y = null;
           switch (type) {
@@ -2233,6 +2307,7 @@
             case 1 /* Bar */:
             case 2 /* LineAndBar */:
             case 5 /* Radar */:
+            case 6 /* Bubble */:
               x = (parseFloat(circle.getAttribute("cx")) || parseFloat(circle.getAttribute("x")) + parseFloat(circle.getAttribute("width")) / 2) - width / 2;
               y = (parseFloat(circle.getAttribute("cy")) || parseFloat(circle.getAttribute("y"))) - 10 - height;
               break;
@@ -2243,7 +2318,7 @@
               y = parseFloat(d[2].trim());
               break;
           }
-          this.valueElGroup.setAttribute("transform", "translate(" + x + ", " + y + ")");
+          this.focusedValueForeignObject.setAttribute("transform", "translate(" + x + ", " + y + ")");
         }
       };
       /**
@@ -2630,6 +2705,59 @@
           data: null,
           chart: null
         },
+        chartBasicBubble: {
+          config: {
+            chartType: 6 /* Bubble */,
+            bubbleMaxRadius: 30,
+            xAxisGridPadding: 30,
+            yAxisGridPadding: 30,
+            ltr: htmlDirIsLtr,
+            legendPosition: 0 /* Top */,
+            minValue: 0,
+            maxValue: 100,
+            bubbleMaxZValue: 100,
+            //yAxisStep: 20,
+            //yAxisLabelStep: 20,
+            ltr: htmlDirIsLtr,
+            title: "Basic bubble chart",
+            padding: {
+              end: 100,
+              start: 100
+              //top: 80,
+              //bottom: 20
+            },
+            series: [
+              {
+                id: "train",
+                title: "Train"
+              },
+              {
+                id: "car",
+                title: "Car"
+              },
+              {
+                id: "bike",
+                title: "Bike"
+              }
+            ]
+          },
+          dataFunc: function(id) {
+            chartInfo[id].data = {
+              series: {
+                train: Array(7).fill(1).map((item) => [getRandomIntInclusive(0, 100), getRandomIntInclusive(0, 100)]),
+                car: Array(7).fill(1).map((item) => [getRandomIntInclusive(0, 100), getRandomIntInclusive(0, 100)]),
+                bike: Array(7).fill(1).map((item) => [getRandomIntInclusive(0, 100), getRandomIntInclusive(0, 100)])
+                // train: [[12, 34], [3, 56], [3, 3], [6, 45], [33, 4], [44, 4], [5, 65]],
+                // car: [],
+                // bike: []
+              },
+              xAxis: {
+                columns: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+              }
+            };
+          },
+          chart: null
+        },
         chartBarAndLine: {
           config: {
             chartType: 2 /* LineAndBar */,
@@ -2938,6 +3066,7 @@
       doChart("chartBasicPie");
       doChart("chartBasicDonut");
       doChart("chartBasicRadar");
+      doChart("chartBasicBubble");
       doChart("chartBarAndLine");
       doChart("chartCustom");
       dynamicChart();

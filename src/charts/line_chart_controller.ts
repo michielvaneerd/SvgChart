@@ -47,7 +47,7 @@ export class LineController extends Controller {
                 }
             } else {
                 nonNullPoints[nonNullPoints.length - 1].push({ x: x, y: y, value: value });
-                flatNonNullPoints.push({ x: x, y: y, value: value });
+                flatNonNullPoints.push({ x: x, y: y, value: value, index: valueIndex });
             }
         });
 
@@ -97,7 +97,7 @@ export class LineController extends Controller {
                     zIndex: 1,
                     fill: this.svgChart.getSeriePointColor(serie, serieIndex),
                     stroke: this.svgChart.getSeriePointColor(serie, serieIndex),
-                    dataValue: point.value,
+                    dataIndex: point.index,
                     className: prefixed('value-point'),
                     tabindex: this.config.focusedValueShow ? 0 : null
                 }));

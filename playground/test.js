@@ -11,7 +11,7 @@ config.maxValue = 100;
 config.chartType = ChartType.Bubble;
 config.xAxisGridPadding = 20;
 config.yAxisGridPadding = 20;
-config.focusedValueCallback = (serie, value) => '<strong>Serie</strong>: ' + serie.title + '<br> en value ' + value;
+//config.focusedValueCallback = (serie, value) => '<strong>Serie</strong>: ' + serie.title + '<br> en value ' + value;
 
 //config.backgroundColor = '#FCFCFC';
 config.series = [

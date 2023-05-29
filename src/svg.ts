@@ -422,6 +422,7 @@ class SvgChart {
             this.focusedValueDiv.style.position = 'absolute';
             this.focusedValueDiv.style.backgroundColor = this.config.focusedCSSValueFill;
             this.focusedValueDiv.style.fontFamily = this.config.fontFamily;
+            this.focusedValueDiv.style.whiteSpace = 'nowrap';
             this.focusedValueDiv.style.fontSize = 'smaller';
             this.focusedValueDiv.style.color = this.config.focusedCSSValueColor;
             this.focusedValueDiv.style.padding = this.config.focusedCSSValuePadding.toString();
@@ -743,9 +744,10 @@ class SvgChart {
         if (serie) {
             var serieItemIndex = this.config.series.findIndex((item) => item.id === serie);
             var serieItem = this.config.series[serieItemIndex];
-            this.focusedValueDiv.innerHTML = this.config.focusedValueCallback
-                ? this.config.focusedValueCallback(serieItem, circle.dataset.value)
-                : serieItem.title + '<hr style="border-color:' + this.getSerieFill(serieItem, serieItemIndex) + '">' + circle.dataset.value;
+
+            this.focusedValueDiv.innerHTML = this.config.onFocusedValueDisplay
+                ? this.config.onFocusedValueDisplay(serieItem, serieItemIndex, parseInt(circle.dataset.index, 10)) : this.controller.onFocusedValueDisplay(serieItem, serieItemIndex, parseInt(circle.dataset.index, 10));
+
             this.serieGroupElement.appendChild(this.focusedValueForeignObject);
             const width = this.focusedValueDiv.clientWidth;
             const height = this.focusedValueDiv.clientHeight;

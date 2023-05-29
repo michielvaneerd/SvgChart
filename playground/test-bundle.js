@@ -537,6 +537,9 @@
       this.svgChart = svgChart;
       this.config = this.svgChart.config;
     }
+    // onFocusedValueDisplay(configSerie: ChartConfigSerie, dataSerie: any) {
+    //         this.svgChart.data.series
+    // }
     /**
      * Draws chart.
      * 
@@ -1576,7 +1579,8 @@
           stroke: this.svgChart.getSerieStrokeColor(serie, serieIndex),
           // fill: this.svgChart.getSeriePointColor(serie, serieIndex),
           // stroke: this.svgChart.getSeriePointColor(serie, serieIndex),
-          dataValue: this.svgChart.data.xAxis.columns[valueIndex] + "<br>" + value[0] + "<br>" + value[1],
+          //dataValue: this.svgChart.data.xAxis.columns[valueIndex] + ", " + value[0] + ', ' + value[1],
+          dataIndex: valueIndex,
           className: prefixed("value-point"),
           tabindex: this.config.focusedValueShow ? 0 : null
         }));
@@ -1972,6 +1976,7 @@
       this.focusedValueDiv.style.position = "absolute";
       this.focusedValueDiv.style.backgroundColor = this.config.focusedCSSValueFill;
       this.focusedValueDiv.style.fontFamily = this.config.fontFamily;
+      this.focusedValueDiv.style.whiteSpace = "nowrap";
       this.focusedValueDiv.style.fontSize = "smaller";
       this.focusedValueDiv.style.color = this.config.focusedCSSValueColor;
       this.focusedValueDiv.style.padding = this.config.focusedCSSValuePadding.toString();
@@ -2165,6 +2170,8 @@
     if (serie) {
       var serieItemIndex = this.config.series.findIndex((item) => item.id === serie);
       var serieItem = this.config.series[serieItemIndex];
+      var data = this.data.series[circle.dataset.index];
+      console.log(this.data.series[serie][circle.dataset.index]);
       this.focusedValueDiv.innerHTML = this.config.focusedValueCallback ? this.config.focusedValueCallback(serieItem, circle.dataset.value) : serieItem.title + '<hr style="border-color:' + this.getSerieFill(serieItem, serieItemIndex) + '">' + circle.dataset.value;
       this.serieGroupElement.appendChild(this.focusedValueForeignObject);
       const width = this.focusedValueDiv.clientWidth;
@@ -2226,7 +2233,6 @@
   config.chartType = 6 /* Bubble */;
   config.xAxisGridPadding = 20;
   config.yAxisGridPadding = 20;
-  config.focusedValueCallback = (serie, value) => "<strong>Serie</strong>: " + serie.title + "<br> en value " + value;
   config.series = [
     {
       id: "humans",

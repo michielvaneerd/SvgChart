@@ -226,6 +226,29 @@ car,55,4,7,6,8,9,0</textarea>
 
         </div>
 
+        <h3>Basic bubble chart</h3>
+        <div class="chartRow">
+            <div class="chartTools">
+                <div>
+                    <button class="chartToolsButton" id="chartBasicBubbleRandomDataButton">Update data</button>
+                    <button class="chartToolsButton" id="chartBasicBubblePngButton">Download</button>
+                </div>
+                <div>
+                    <button class="my-active-tab" data-target-id="chartBasicBubble" data-toggle="chart">Chart</button>
+                    <button data-target-id="chartBasicBubble" data-toggle="config">Config</button>
+                    <button data-target-id="chartBasicBubble" data-toggle="data">Data</button>
+                </div>
+            </div>
+            <div class="chartDivsWrapper">
+                <div class="chartDiv" id="chartBasicBubble"></div>
+                <pre class="chartCodeConfig my-hidden"
+                    id="chartBasicBubbleCodeConfig"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+                <pre class="chartCodeData my-hidden"
+                    id="chartBasicBubbleCodeData"><button class="my-copy-button">Copy</button><code class="language-json"></code></pre>
+            </div>
+
+        </div>
+
         <h3>Custom chart</h3>
         <p id="chartCustomCodeInfo">...</p>
         <div class="chartRow">
