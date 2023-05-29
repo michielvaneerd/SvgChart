@@ -122,8 +122,16 @@
           this.svgChart = svgChart;
           this.config = this.svgChart.config;
         }
+        /**
+         * Returns HTML string to display when an item has received focus.
+         * 
+         * @param configSerie - Config serie for which to display the value.
+         * @param serieIndex - Index of the serie.
+         * @param dataIndex - Index of the data.
+         * @returns The HTML string to display.
+         */
         onFocusedValueDisplay(configSerie, serieIndex, dataIndex) {
-          return configSerie.title + ": " + this.svgChart.data.series[configSerie.id][dataIndex] + '<hr style="border-color:' + this.svgChart.getSerieStrokeColor(configSerie, serieIndex) + '">';
+          return configSerie.title + ": " + this.svgChart.data.series[configSerie.id][dataIndex] + '<hr style="margin-bottom:0; border: 2px solid ' + this.svgChart.getSerieStrokeColor(configSerie, serieIndex) + '">';
         }
         /**
          * Draws chart.
@@ -279,6 +287,9 @@
            * Whether the value box should be displayed when an element has focus.
            */
           this.focusedValueShow = true;
+          /**
+           * Callback that returns a custom string to display when an item receives focus.
+           */
           this.onFocusedValueDisplay = null;
           /**
            * Fill color of focused value box.
@@ -317,7 +328,7 @@
           /**
            * transition - Whether the chart elements should be faded in or nor.
            */
-          this.transition = true;
+          this.fade = true;
           /**
            * Background color of the SVG element.
            */
@@ -1477,19 +1488,19 @@
          */
         onDrawSerie(serie, serieIndex, serieGroup) {
           super.onDrawSerie(serie, serieIndex, serieGroup);
-          let points = [];
+          const points = [];
+          const circles = [];
           this.svgChart.data.series[serie.id].forEach((value, index) => {
             const curRadius = __privateGet(this, _radiusByXStep) * value;
             const point = polarToCartesian(__privateGet(this, _centerX), __privateGet(this, _centerY), curRadius, __privateGet(this, _degreeSteps) * index);
             points.push(`${point.x}, ${point.y}`);
-            serieGroup.appendChild(el("circle", {
+            circles.push(el("circle", {
               cx: point.x,
               cy: point.y,
               r: this.config.pointRadius,
               fill: this.svgChart.getSerieFill(serie, serieIndex),
               tabindex: this.config.focusedValueShow ? 0 : null,
               zIndex: 1,
-              //dataValue: value,
               dataIndex: index,
               className: prefixed("value-point"),
               stroke: this.svgChart.getSeriePointColor(serie, serieIndex)
@@ -1502,15 +1513,12 @@
             fillOpacity: this.config.radarFillOpacity,
             strokeWidth: this.config.radarStrokeWidth
           }));
+          circles.forEach((circle) => {
+            serieGroup.appendChild(circle);
+          });
         }
         /**
-         * 
          * @override
-         * 
-         * @param configSerie 
-         * @param serieIndex 
-         * @param dataIndex 
-         * @returns 
          */
         onFocusedValueDisplay(configSerie, serieIndex, dataIndex) {
           return configSerie.title + " / " + this.svgChart.data.xAxis.columns[dataIndex] + ": " + this.svgChart.data.series[configSerie.id][dataIndex] + '<hr style="border-color:' + this.svgChart.getSerieStrokeColor(configSerie, serieIndex) + '">';
@@ -1805,7 +1813,7 @@
             __privateSet(_SvgChart, _cssAdded, true);
             const cssRules = [
               "." + prefixed("value-point") + ", g." + prefixed("legend-group") + " g, ." + prefixed("x-axis-grid-column-selectable-label") + " { cursor: pointer; }",
-              "." + prefixed("value-point") + ":hover, circle." + prefixed("value-point") + ":focus { stroke-width: 6; outline: none; }",
+              "." + prefixed("value-point") + ":hover, circle." + prefixed("value-point") + ":focus { stroke-width: 10; outline: none; }",
               "#" + prefixed("serie-group") + " g { transition: opacity 0.6s; }",
               "#" + prefixed("serie-group") + " g." + prefixed("unselected") + " { opacity: 0; }",
               "#" + prefixed("serie-group-current") + " { transition: opacity 1s; opacity: 1; }",
@@ -1948,11 +1956,11 @@
           }
           const currentSerieGroupElement = el("g", {
             id: prefixed("serie-group-current"),
-            className: this.config.transition ? prefixed("unattached") : ""
+            className: this.config.fade ? prefixed("unattached") : ""
           });
           this.controller.onDraw(currentSerieGroupElement);
           this.serieGroupElement.appendChild(currentSerieGroupElement);
-          if (this.config.transition) {
+          if (this.config.fade) {
             currentSerieGroupElement.getBoundingClientRect();
             currentSerieGroupElement.classList.remove(prefixed("unattached"));
           }
@@ -2284,6 +2292,7 @@
         var g = parent(circle, "g");
         var serie = g.dataset.serie;
         if (serie) {
+          this.serieGroupElement.removeChild(this.focusedValueForeignObject);
         }
       };
       _onSerieGroupFocus = new WeakSet();

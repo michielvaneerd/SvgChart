@@ -73,6 +73,9 @@ type XAxisColumnSelectedCallback = (svgChart: SvgChart, selectedIndex: number) =
  */
 type DrawCallback = (svgChart: SvgChart, groupNode: SVGElement) => void;
 
+/**
+ * Callback function that needs to return the HTML string to display when an item received focus.
+ */
 type FocusedValueCallback = (serie: ChartConfigSerie, serieIndex: number, dataIndex: number) => string;
 
 /**

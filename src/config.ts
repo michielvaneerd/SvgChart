@@ -1,5 +1,4 @@
 import { ChartConfigSerie, ChartType, XAxisColumnSelectedCallback, DrawCallback, ChartPosition, FocusedValueCallback } from "./types";
-import { deepClone } from "./utils";
 
 /**
  * SvgChart config class.
@@ -94,6 +93,9 @@ class SvgChartConfig {
      */
     focusedValueShow: boolean = true;
 
+    /**
+     * Callback that returns a custom string to display when an item receives focus.
+     */
     onFocusedValueDisplay: FocusedValueCallback = null;
 
     /**
@@ -138,7 +140,7 @@ class SvgChartConfig {
     /**
      * transition - Whether the chart elements should be faded in or nor.
      */
-    transition: boolean = true;
+    fade: boolean = true;
 
     /**
      * Background color of the SVG element.

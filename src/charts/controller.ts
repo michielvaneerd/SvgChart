@@ -26,8 +26,16 @@ class Controller {
         this.config = this.svgChart.config;
     }
 
+    /**
+     * Returns HTML string to display when an item has received focus.
+     * 
+     * @param configSerie - Config serie for which to display the value.
+     * @param serieIndex - Index of the serie.
+     * @param dataIndex - Index of the data.
+     * @returns The HTML string to display.
+     */
     onFocusedValueDisplay(configSerie: ChartConfigSerie, serieIndex: number, dataIndex: number): string {
-        return configSerie.title + ': ' + this.svgChart.data.series[configSerie.id][dataIndex] + '<hr style="border-color:' + this.svgChart.getSerieStrokeColor(configSerie, serieIndex) + '">';
+        return configSerie.title + ': ' + this.svgChart.data.series[configSerie.id][dataIndex] + '<hr style="margin-bottom:0; border: 2px solid ' + this.svgChart.getSerieStrokeColor(configSerie, serieIndex) + '">';
     }
 
     /**

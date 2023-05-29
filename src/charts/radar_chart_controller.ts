@@ -29,23 +29,24 @@ class RadarController extends Controller {
 
         super.onDrawSerie(serie, serieIndex, serieGroup);
 
-        let points = [];
+        const points = [];
+        const circles = [];
         this.svgChart.data.series[serie.id].forEach((value: number | [number], index: number) => {
             const curRadius = this.#radiusByXStep * (value as number);
             const point = polarToCartesian(this.#centerX, this.#centerY, curRadius, this.#degreeSteps * index);
             points.push(`${point.x}, ${point.y}`);
-            serieGroup.appendChild(el('circle', {
+            circles.push(el('circle', {
                 cx: point.x,
                 cy: point.y,
                 r: this.config.pointRadius,
                 fill: this.svgChart.getSerieFill(serie, serieIndex),
                 tabindex: this.config.focusedValueShow ? 0 : null,
                 zIndex: 1,
-                //dataValue: value,
                 dataIndex: index,
                 className: prefixed('value-point'),
                 stroke: this.svgChart.getSeriePointColor(serie, serieIndex)
             }));
+            //serieGroup.appendChild();
         });
         serieGroup.appendChild(el('polygon', {
             points: points.join(' '),
@@ -54,16 +55,13 @@ class RadarController extends Controller {
             fillOpacity: this.config.radarFillOpacity,
             strokeWidth: this.config.radarStrokeWidth,
         }));
+        circles.forEach((circle) => {
+            serieGroup.appendChild(circle);
+        });
     }
 
     /**
-     * 
      * @override
-     * 
-     * @param configSerie 
-     * @param serieIndex 
-     * @param dataIndex 
-     * @returns 
      */
     onFocusedValueDisplay(configSerie: ChartConfigSerie, serieIndex: number, dataIndex: number): string {
         return configSerie.title + ' / ' + this.svgChart.data.xAxis.columns[dataIndex] + ': ' + this.svgChart.data.series[configSerie.id][dataIndex] + '<hr style="border-color:' + this.svgChart.getSerieStrokeColor(configSerie, serieIndex) + '">';

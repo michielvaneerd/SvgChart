@@ -168,7 +168,7 @@ class SvgChart {
             SvgChart.#cssAdded = true;
             const cssRules = [
                 '.' + prefixed('value-point') + ', g.' + prefixed('legend-group') + ' g, .' + prefixed('x-axis-grid-column-selectable-label') + ' { cursor: pointer; }',
-                '.' + prefixed('value-point') + ':hover, circle.' + prefixed('value-point') + ':focus { stroke-width: 6; outline: none; }',
+                '.' + prefixed('value-point') + ':hover, circle.' + prefixed('value-point') + ':focus { stroke-width: 10; outline: none; }',
                 '#' + prefixed('serie-group') + ' g { transition: opacity 0.6s; }',
                 '#' + prefixed('serie-group') + ' g.' + prefixed('unselected') + ' { opacity: 0; }',
                 '#' + prefixed('serie-group-current') + ' { transition: opacity 1s; opacity: 1; }',
@@ -337,14 +337,14 @@ class SvgChart {
         }
         const currentSerieGroupElement = el('g', {
             id: prefixed('serie-group-current'),
-            className: this.config.transition ? prefixed('unattached') : ''
+            className: this.config.fade ? prefixed('unattached') : ''
         });
 
         this.controller.onDraw(currentSerieGroupElement);
 
         this.serieGroupElement.appendChild(currentSerieGroupElement);
 
-        if (this.config.transition) {
+        if (this.config.fade) {
             // getBoundingClientRect causes a reflow, so we don't have to use setTimeout to remove the class.
             currentSerieGroupElement.getBoundingClientRect();
             currentSerieGroupElement.classList.remove(prefixed('unattached'));
@@ -728,7 +728,7 @@ class SvgChart {
         var serie = g.dataset.serie;
         if (serie) {
             // Remove the current value element.
-            //this.serieGroupElement.removeChild(this.focusedValueEl);
+            this.serieGroupElement.removeChild(this.focusedValueForeignObject);
         }
     }
 
