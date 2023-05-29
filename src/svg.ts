@@ -772,6 +772,7 @@ class SvgChart {
                 case ChartType.Bar:
                 case ChartType.LineAndBar:
                 case ChartType.Radar:
+                case ChartType.Bubble:
                     x = (parseFloat(circle.getAttribute('cx')) || (parseFloat(circle.getAttribute('x')) + (parseFloat(circle.getAttribute('width')) / 2))) - (width / 2);
                     y = (parseFloat(circle.getAttribute('cy')) || parseFloat(circle.getAttribute('y'))) - 10 - height;
                     break;
