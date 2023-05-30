@@ -4,6 +4,11 @@ import { Controller } from "./controller";
 import { ChartConfigSerie } from "../types";
 import { directionForEach, el, prefixed } from "../utils";
 
+/**
+ * Controller for the bubble chart.
+ * 
+ * The bubble chart displays 3 dimensional data.
+ */
 export class BubbleController extends Controller {
 
     axisController: XYHorVertAxisController;

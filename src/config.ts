@@ -138,7 +138,7 @@ class SvgChartConfig {
     drawOnData: DrawCallback = null;
 
     /**
-     * transition - Whether the chart elements should be faded in or nor.
+     * Whether the chart elements should be faded in or nor.
      */
     fade: boolean = true;
 

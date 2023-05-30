@@ -69,11 +69,11 @@ var chartInfo = {
             yAxisLabelColor: '#C0C0C0',
             xAxisTitleColor: 'white',
             yAxisTitleColor: 'white',
-            focusedValueFill: 'white',
-            focusedValueColor: 'black',
+            focusedCSSValueFill: 'white',
+            focusedCSSValueColor: 'black',
             lineChartFilled: true,
             legendColor: 'white',
-            transition: true,
+            fade: true,
             ltr: htmlDirIsLtr,
             title: 'Basic line chart dark',
             minValue: 0,
@@ -327,7 +327,6 @@ var chartInfo = {
             maxValue: 100,
             yAxisStep: 20,
             yAxisLabelStep: 20,
-            ltr: htmlDirIsLtr,
             title: 'Basic radar chart',
             padding: {
                 end: 100,
@@ -364,9 +363,6 @@ var chartInfo = {
             minValue: 0,
             maxValue: 100,
             bubbleMaxZValue: 100,
-            //yAxisStep: 20,
-            //yAxisLabelStep: 20,
-            ltr: htmlDirIsLtr,
             title: 'Basic bubble chart',
             padding: {
                 end: 100,
@@ -727,8 +723,8 @@ function dynamicChart() {
         });
     }
 
-    const config = eval("(" + document.getElementById('chartDynamicCodeConfig').value + ")"); // note that JSON.parse doesn't work with functions as values.
-    const data = eval("(" + document.getElementById('chartDynamicCodeData').value + ")");
+    const config = (0, eval)("(" + document.getElementById('chartDynamicCodeConfig').value + ")"); // note that JSON.parse doesn't work with functions as values.
+    const data = (0, eval)("(" + document.getElementById('chartDynamicCodeData').value + ")");
 
     if (!chartInfo['chartDynamic'].chart) {
         chartInfo['chartDynamic'].chart = new SvgChart(document.getElementById('chartDynamic'), new SvgChartConfig(config));
